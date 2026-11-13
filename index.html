@@ -694,7 +694,7 @@ function initLeaf(){
 }
 function nearMapHTML(){
   if(!nearC)return '<p class="small muted" style="margin:0">Pas de position connue pour ce code postal : la carte n’est pas disponible, la liste reste juste en dessous.</p>';
-  if(SITE()){const ty0=new Set(nearAll.filter(([x,d])=>d<=nearR).map(([x])=>x[6]));const types=['creche','micro','mam','domicile','rpe','autre'].filter(t=>ty0.has(t));
+  if(SITE()){const ty0=new Set(nearAll.filter(([x])=>x[4]!=null).map(([x])=>x[6]));const types=['creche','micro','mam','domicile','rpe','autre'].filter(t=>ty0.has(t));
     return `<div class="choices seg" style="grid-template-columns:repeat(3,1fr)" role="group" aria-label="Zoom de la carte">${[2,5,12].map(r=>`<button type="button" id="nz-${r}" data-nz="${r}" aria-pressed="${nearR===r}">${r} km</button>`).join('')}</div>
     <div id="lmap" class="nmap" role="region" aria-label="Carte des lieux de garde"></div>
     <div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)"></i>Ton code postal</span>${types.map(t=>`<span><i style="background:${TC[t]}"></i>${NT[t]}</span>`).join('')}</div>
