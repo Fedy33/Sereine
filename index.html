@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<title>Sereine</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FBF8F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A1714" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sereine">
+<meta name="description" content="Démarches, aides, garde et soutien pour les futures et jeunes mamans.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>window.SEREINE_SITE=true;</script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: app mobile — en-tête collant, un écran par onglet, barre d'onglets fixe. Carnet crème sous lumière d'après-midi : blanc et beige, encre brune. */
+:root{
+  --bg:#FBF8F3; --surface:#FFFFFF; --ink:#2E2822; --muted:#5A5149; --line:#EEE7DC;
+  --accent:#8A6D4E; --accent-soft:#F4EDE3; --on-accent:#FFFFFF;
+  --hero-a:#F7F0E6; --hero-b:#EADCC8; --hero-line:transparent;
+  --late:#B0473A; --late-soft:#F9EAE6; --soon:#7A5C17; --soon-soft:#F8F0DC; --ok:#46663F; --ok-soft:#EDF3EA;
+  --display:"Fraunces", "Iowan Old Style", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-card:20px; --r-ctl:12px; --field-line:#8F8275; --t-mam:#4A6FA5; --t-micro:#3F7A52; --t-autre:#B9AEA2;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#6E655C;
+  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714;
+  --hero-a:#342A21; --hero-b:#221D18; --hero-line:rgba(211,182,144,.18);
+  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#6E655C;
+  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714;
+  --hero-a:#342A21; --hero-b:#221D18; --hero-line:rgba(211,182,144,.18);
+  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.app{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 calc(104px + env(safe-area-inset-bottom,0px))}
+.app.onb{padding-block:0 32px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding-block:12px 8px}
+.brand{font-family:var(--display);font-weight:500;font-size:24px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand svg{width:26px;height:26px}
+.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;min-height:44px;min-width:44px;padding:0 14px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.iconbtn svg{width:20px;height:20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;font-weight:500;letter-spacing:-.01em}
+h1{font-size:28px;line-height:1.2}
+h2{font-size:28px;line-height:1.2}
+h3{font-size:22px;line-height:1.25}
+.panel{display:flex;flex-direction:column;gap:28px;padding-top:8px}
+.sect{display:flex;flex-direction:column;gap:12px}
+.sect-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.label{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:15px}
+a{color:var(--accent)}
+button{font:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Carte de grossesse */
+.hero{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));border:1px solid var(--hero-line);border-radius:24px;padding:28px;display:flex;gap:20px;align-items:center}
+.hero .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.hero .kicker{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hero .big{font-family:var(--display);font-weight:400;font-size:44px;line-height:1.05;font-variant-numeric:lining-nums}
+.hero .sub{font-size:16px;color:var(--muted)}
+.hero .soft{font-family:var(--display);font-style:italic;font-size:17px;line-height:1.4;margin-top:8px}
+.ring{width:112px;height:112px;flex:none}
+.ring circle{fill:none;stroke-width:3}
+.ring .bgc{stroke:color-mix(in srgb,var(--accent) 18%,transparent)}
+.ring .fg{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.ring text{fill:var(--ink);font-family:var(--display);font-size:30px;text-anchor:middle}
+.ring .rl{fill:var(--muted);font-family:var(--body);font-size:11px;letter-spacing:.04em}
+@media (max-width:360px){.hero{flex-direction:column;align-items:flex-start}}
+
+/* Listes */
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.item{display:flex;gap:14px;padding:14px 16px;border-top:1px solid var(--line);align-items:flex-start}
+.item:first-child{border-top:0}
+.item .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.item .title{font-weight:700}
+.item .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--muted)}
+.item.done .title{text-decoration:line-through;color:var(--muted)}
+.check{appearance:none;width:44px;height:44px;margin:-10px;flex:none;cursor:pointer;border:10px solid transparent;border-radius:17px;background:var(--surface);background-clip:padding-box;box-shadow:inset 0 0 0 2px var(--muted);display:grid;place-items:center}
+.check:checked{background-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.check:checked::after{content:"";width:10px;height:6px;border:2.5px solid var(--on-accent);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+
+/* Statut : un point et du texte calme */
+.st{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.st.late::before{background:var(--late)}
+.st.soon::before{background:var(--soon)}
+.st.ok::before{background:var(--ok)}
+.st.ok{color:var(--ok)}
+.tag{font-size:12px;color:var(--muted);font-weight:400}
+
+details.more summary{cursor:pointer;color:var(--accent);font-size:14px;font-weight:700;list-style:none;min-height:44px;display:flex;align-items:center}
+details.more summary::-webkit-details-marker{display:none}
+.detail{font-size:15px;color:var(--ink);display:flex;flex-direction:column;gap:8px}
+
+/* Bloc « À surveiller » : une ligne par alerte */
+.watch{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.watch button{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 16px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;width:100%}
+.watch button:first-child{border-top:0}
+.watch .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--accent)}
+.watch .dot.late{background:var(--late)} .watch .dot.soon{background:var(--soon)}
+.watch .wt{flex:1;min-width:0;display:flex;flex-direction:column}
+.watch .wt b{font-size:15px}
+.watch .wt span{font-size:15px;color:var(--muted)}
+.watch .chev{color:var(--muted);flex:none}
+
+/* Carte « Cette semaine » */
+.focus{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;display:flex;flex-direction:column;gap:10px}
+.focus .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+
+.note{border-radius:var(--r-card);padding:16px;font-size:15px;display:flex;flex-direction:column;gap:6px;background:var(--accent-soft)}
+.note.bad{background:var(--late-soft)}
+.note b{font-family:var(--display);font-weight:600;font-size:17px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-ctl);padding:12px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--display);font-weight:500;font-size:28px;font-variant-numeric:tabular-nums;line-height:1.1;display:flex;align-items:center;gap:6px}
+.stat.alert b::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--late)}
+.stat span{font-size:14px;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:700}
+.field input,.field select,select.inl{font:inherit;font-weight:400;font-size:16px;min-height:48px;padding:10px 12px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+select.inl{width:auto;min-height:44px;font-size:15px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:0;border-radius:var(--r-ctl);min-height:48px;padding:12px 18px;background:var(--accent);color:var(--on-accent);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.btn.sm{min-height:44px;padding:8px 14px;font-size:15px}
+.btn.wide{width:100%}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.result{font-family:var(--display);font-size:30px;font-weight:500;font-variant-numeric:tabular-nums}
+textarea.tpl{width:100%;min-height:150px;font:inherit;font-size:15px;padding:12px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+
+/* Choix à gros boutons */
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choices button{min-height:64px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-ctl);cursor:pointer;font-weight:700;font-size:15px;padding:8px}
+.choices button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* Aide */
+.call{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+.call:first-child{border-top:0}
+.call .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.call .num{font-family:var(--display);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;user-select:all;letter-spacing:.01em}
+.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.moods button{min-height:72px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-ctl);padding:10px 2px;cursor:pointer;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.moods button .dot{width:22px;height:22px;border-radius:50%}
+.moods button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+
+/* Mes aides */
+.amt{font-family:var(--display);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.25}
+.amt.no{font-family:var(--body);font-size:15px;font-weight:700;color:var(--muted)}
+.hint{font-size:14px;font-weight:400;color:var(--muted)}
+.item .how{font-size:15px;margin:0}
+/* Barre d'onglets */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:66px}
+nav.tabs button{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13.5px;font-weight:500;cursor:pointer;position:relative}
+nav.tabs .ic{width:56px;height:30px;border-radius:15px;display:grid;place-items:center;position:relative}
+nav.tabs svg{width:24px;height:24px}
+nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:700}
+nav.tabs button[aria-current="page"] .ic{background:var(--accent-soft);color:var(--accent)}
+nav.tabs .pip{position:absolute;top:3px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--late);box-shadow:0 0 0 2px var(--surface)}
+
+/* Fenêtre « Mes dates » */
+.sheet{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,#000 45%,transparent);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet .inner{background:var(--bg);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:24px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px;max-height:90%;overflow:auto}
+/* Carte des gardes */
+.nmap{width:100%;max-width:100%;aspect-ratio:1;display:block;background:var(--accent-soft);border-radius:var(--r-card);touch-action:manipulation}
+.nmap .ring,.nmap .rl{pointer-events:none}
+.nmap .ring{fill:none;stroke:var(--field-line);stroke-opacity:.45;stroke-width:1;stroke-dasharray:3 4}
+.nmap .rl{fill:var(--ink);font-size:12px;font-weight:700;font-family:var(--body);paint-order:stroke;stroke:var(--accent-soft);stroke-width:4px;stroke-linejoin:round}
+.nmap .pt{stroke:var(--surface);stroke-width:1.5;cursor:pointer}
+.nmap .pt:focus{outline:none;stroke:var(--ink);stroke-width:3}
+.nmap .sel{stroke:var(--ink);stroke-width:3}
+.pop{font-family:var(--body);font-size:14px;line-height:1.4;color:#2E2822}
+.pop .btn.sm{min-height:36px;padding:4px 10px;font-size:13px}
+#lmap{aspect-ratio:1;z-index:0}
+.leaflet-popup-content a.btn{color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+/* Tour 2 : calme, confort */
+.choices.seg{background:var(--accent-soft);padding:4px;border-radius:14px;gap:4px}
+.choices.seg button{min-height:44px;border:0;background:transparent;color:var(--muted);border-radius:10px}
+.choices.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(46,40,34,.14)}
+.lnk{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:15px;min-height:44px;padding:0 4px;cursor:pointer;display:inline-flex;align-items:center}
+.callbtn{width:48px;height:48px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.callbtn svg{width:22px;height:22px}
+.focus a.small,.item a.small,.detail a,.card a.small{display:inline-flex;align-items:center;min-height:44px}
+.field input,.field select,select.inl,.choices:not(.seg) button{border-color:var(--field-line)}
+.field select,select.inl{appearance:none;-webkit-appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238F8275' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select.inl{border-radius:999px;background-color:var(--accent-soft);border-color:transparent;font-weight:700}
+.hero .kicker{white-space:nowrap}
+.ring{width:96px;height:96px}
+.newrow{display:flex;align-items:center;gap:12px;min-height:72px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);text-align:left;cursor:pointer;width:100%}
+.newrow .tagn{font-size:12px;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 8px;flex:none}
+.newrow .wt{flex:1;min-width:0;display:flex;flex-direction:column}
+.newrow .wt span{font-size:14px;color:var(--muted)}
+.heroA{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));border:1px solid var(--hero-line);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:6px}
+.heroA .bigA{font-family:var(--display);font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums}
+.heroA .midA{font-family:var(--display);font-size:22px}
+@media (prefers-reduced-motion:no-preference){.panel{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}.ring .fg{transition:stroke-dashoffset .8s ease}}
+</style>
+
+<div class="app" id="app">
+  <header class="top" id="topbar">
+    <div class="brand"><svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="none" stroke="var(--accent)" stroke-width="1.5"/><circle cx="13" cy="13" r="4" fill="var(--accent)"/></svg>Sereine</div>
+    <button class="iconbtn" id="openSettings" type="button" aria-label="Mes dates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Mes dates</button>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="tabs" id="tabbar" aria-label="Navigation">
+  <div class="in" id="tabs"></div>
+</nav>
+<p id="sr-status" class="sr" aria-live="polite"></p>
+
+<div class="sheet" id="settings" hidden>
+  <form class="inner" id="settingsForm" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">Mes dates</h2>
+    <p class="muted small" style="margin:0">Tout le calendrier se calcule à partir de ces informations. Elles restent sur ton téléphone.</p>
+    <label class="field">Date prévue d'accouchement
+      <input type="date" id="f-dpa" required></label>
+    <div class="grid2">
+      <label class="field">Bébés attendus
+        <select id="f-nb"><option value="1">1 bébé</option><option value="2">Jumeaux</option><option value="3">Triplés ou plus</option></select></label>
+      <label class="field">Enfants déjà à la maison
+        <select id="f-rank"><option value="0">Aucun</option><option value="1">1</option><option value="2">2 ou plus</option></select></label>
+    </div>
+    <label class="field">Date de naissance (si déjà né·e·s)
+      <input type="date" id="f-birth"></label>
+    <div class="btns">
+      <button class="btn" type="submit">Enregistrer</button>
+      <button class="btn ghost" type="button" id="closeSettings">Fermer</button>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line);width:100%;margin:4px 0">
+    <div class="btns" style="align-items:center"><button class="btn ghost sm" type="button" id="resetAll">Tout effacer</button><span class="small muted" id="resetMsg" aria-live="polite"></span></div>
+  </form>
+</div>
+
+<script>
+(function(){
+document.documentElement.lang='fr';
+const KEY='sereine-v1';
+const DAY=864e5;
+const today=new Date(); today.setHours(0,0,0,0);
+const iso=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const parse=s=>{if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const add=(d,n)=>new Date(d.getTime()+n*DAY);
+const diff=(a,b)=>Math.round((a-b)/DAY);
+const yr=d=>d.getFullYear()!==today.getFullYear()?{year:'numeric'}:{};
+const fmt=d=>d.toLocaleDateString('fr-FR',Object.assign({day:'numeric',month:'short'},yr(d)));
+const fmtL=d=>d.toLocaleDateString('fr-FR',Object.assign({day:'numeric',month:'long'},yr(d)));
+const fmtY=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function defaults(){
+  return {dpa:'', birth:'', example:false, nb:1, rank:0,
+    done:{}, received:{}, asked:{}, nounouCheck:{}, mood:{},
+    nounou:{h:40,w:46,t:4.2,k:0}, garde:[],
+    aides:{sit:'',rev:'',kids:'',brut:''}, reviewed:false, csn:false, cp:'', nn:{}, nnQ:{}, pjm:{}, nnH:{}, nnC:[]};
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){S=defaults()}
+S=Object.assign(defaults(),S); S.nn=S.nn||{}; S.nnQ=S.nnQ||{}; S.pjm=S.pjm||{}; S.nnH=S.nnH||{}; S.nnC=S.nnC||[]; S.aides=Object.assign(defaults().aides,S.aides||{}); if(S.aides.rev==='')S.aides.sit=''; S.asked=S.asked||{}; S.nb=+S.nb||1; S.rank=+S.rank||0;
+/* Anciennes données d'exemple : on repart de l'écran de démarrage */
+if(S.example){S.dpa='';S.example=false;S.garde=(S.garde||[]).filter(g=>!g.ex)}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const ready=()=>!!S.dpa;
+/* Congé maternité (salariée) : 1 bébé 6+10 sem., 3e enfant 8+18, jumeaux 12+22, triplés ou plus 24+22 */
+function conge(){
+  if(S.nb>=3)return {pre:24,post:22};
+  if(S.nb===2)return {pre:12,post:22};
+  if(S.rank>=2)return {pre:8,post:18};
+  return {pre:6,post:10};
+}
+const multi=()=>S.nb>=2;
+const bebes=()=>S.nb===2?'tes jumeaux':S.nb>=3?'tes bébés':'bébé';
+const xN=()=>S.nb>=2?' ×'+S.nb:'';
+
+/* ---------- Démarches ---------- */
+/* Droits estimés d'après « Mes aides » : true, false, ou null si inconnu / trop proche du plafond */
+const PL0={partiel:{b:[37118,44542,53450,62358],m:[49054,56478,65386,74294],s:8908},plein:{b:[31066,37279,44735,52191],m:[41055,47268,54724,62180],s:7456}};
+const plaf0=(t,n,maj)=>{const a=PL0[t][maj?'m':'b'];return n<=4?a[n-1]:a[3]+(n-4)*PL0[t].s};
+function elig(){
+  const A=S.aides; if(!A||!A.sit||A.rev===''||A.rev==='ns')return {prime:null,ab:null};
+  const kids=A.kids===''?S.rank:+A.kids||0; const n=kids+S.nb; const maj=A.sit!=='couple1'; const rev=+A.rev;
+  const pp=plaf0('partiel',n,maj);
+  const st=rev<=pp?true:rev<=pp*1.05?null:false;
+  return {prime:st,ab:st};
+}
+function refs(){
+  const dpa=parse(S.dpa); const start=add(dpa,-280); const B=parse(S.birth)||dpa;
+  return {dpa,start,B,born:!!S.birth};
+}
+function steps(){
+  const {dpa,start,B}=refs(); const c=conge();
+  const extra=multi()?[
+    {id:'multigarde',ph:'g',t:"Demander "+S.nb+" places dans chaque garde",d:add(start,182),org:"Crèches et assistantes maternelles",x:"Précise dès la première demande qu'il faut "+S.nb+" places en même temps. Certaines crèches donnent la priorité aux fratries, d'autres non : demande leur règle."}
+  ]:[];
+  const n9=new Date(B.getFullYear(),B.getMonth()+9,B.getDate());
+  const lim=(B>=new Date(2026,0,1)&&B<new Date(2026,6,1))?new Date(2027,2,31):n9;
+  const EL=elig();
+  return extra.concat([
+    {id:'tisf',ph:'g',t:"Demander une aide à domicile à la Caf",d:add(dpa,-c.pre*7-14),org:"Caf",x:(multi()?"Avec "+(S.nb===2?"des jumeaux":"plusieurs bébés")+", c'est vraiment utile. ":"")+"Pendant la grossesse ou après la naissance, la Caf peut payer une partie d'une aide à la maison : une professionnelle t'aide pour le quotidien et l'organisation. Tu paies selon tes revenus. Regarde d'abord si ta mutuelle la prend en charge. Fais la demande tôt, les délais sont longs.",l:["caf.fr","https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile"]},
+    {id:'secondprev',ph:'g',t:"Le second parent prévient son employeur",d:add(dpa,-31),org:"Employeur du second parent",x:"Au moins 1 mois avant le terme, il ou elle donne la date prévue de naissance à son employeur, pour son congé de "+(multi()?"32":"25")+" jours. Un courrier recommandé évite les malentendus.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
+    {id:'decl',ph:'g',t:"Déclarer ta grossesse",d:add(start,98),org:"Ton médecin ou ta sage-femme",x:"Ton médecin ou ta sage-femme la fait en ligne pendant une consultation, avant la fin de la 14e semaine. C'est important : c'est une condition pour toucher la prime de naissance.",l:["ameli.fr","https://www.ameli.fr"]},
+    {id:'mat',ph:'g',t:"T'inscrire à la maternité",d:add(start,84),org:"Maternité",x:"Dans certaines villes les places partent vite. Appelle dès que la grossesse est confirmée."},
+    {id:'caf',ph:'g',t:"Mettre à jour ton compte Caf",d:add(start,105),org:"Caf",x:"Vérifie ton RIB, ta situation et tes revenus. Un dossier incomplet retarde tous les versements.",l:["caf.fr","https://www.caf.fr"]},
+    {id:'epp',ph:'g',t:"Faire l'entretien prénatal précoce",d:add(start,140),org:"Sage-femme ou médecin",x:"Remboursé à 100 %. C'est le moment de parler de toi : fatigue, organisation, inquiétudes."},
+    {id:'creche',ph:'g',t:"Déposer les demandes de crèche",d:add(start,182),org:"Mairie",x:"Chaque mairie a ses propres dates. Appelle pour connaître la prochaine, puis ajoute chaque demande dans l'onglet Garde.",l:["monenfant.fr","https://monenfant.fr"]},
+    {id:'rpe',ph:'g',t:"Contacter le Relais Petite Enfance",d:add(start,196),org:"Relais Petite Enfance (gratuit)",x:"Ce service gratuit connaît les assistantes maternelles libres près de chez toi et t'aide pour le contrat.",l:["monenfant.fr","https://monenfant.fr"]},
+    {id:'emp',ph:'g',t:"Donner tes dates de congé à ton employeur",d:add(dpa,-c.pre*7-28),org:"Employeur",x:"Demande-lui d'envoyer l'attestation de salaire à l'Assurance maladie dès le début du congé : c'est elle qui déclenche tes indemnités. Garde une trace écrite."},
+    ...(EL.prime===false?[]:[{id:'prime',ph:'g',t:"Vérifier la prime de naissance",d:add(dpa,-53),org:"Caf",x:"Versée au 7e mois si la grossesse a été déclarée à temps"+(multi()?", une prime par bébé":"")+". Signale-la dans l'onglet Argent quand elle arrive."}]),
+    {id:'conge',ph:'g',t:"Début du congé maternité",d:add(dpa,-c.pre*7),org:"Assurance maladie",x:"Pour toi : "+c.pre+" semaines avant le terme et "+c.post+" après, soit "+(c.pre+c.post)+" semaines."+(S.nb===2?" Pour des jumeaux, tu peux avancer jusqu'à 4 semaines du congé d'après la naissance. Ils arrivent souvent avant le terme : prépare tout tôt.":"")},
+    {id:'decln',ph:'n',t:S.nb>=2?"Déclarer les naissances":"Déclarer la naissance",d:add(B,5),org:"Mairie du lieu de naissance",x:"Dans les 5 jours. C'est souvent possible directement à la maternité : demande dès ton arrivée."},
+    {id:'second',ph:'n',t:"Congé du second parent",d:add(B,7),org:"Employeur du second parent",x:"3 jours de congé payés par l'employeur, puis "+(multi()?"32 jours pour "+(S.nb===2?"des jumeaux":"plusieurs bébés"):"25 jours")+". Les 4 premiers jours se prennent tout de suite après les 3 jours. Le reste dans les 6 mois, en 1 ou 2 fois.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
+    {id:'csn',ph:'n',t:"Prévoir le congé de naissance (1 ou 2 mois par parent)",d:add(B,c.post*7-31),org:"Ton employeur et celui du second parent",x:"Nouveau depuis juillet 2026. Chaque parent peut prendre 1 ou 2 mois en plus, après le congé maternité ou paternité. À prendre avant le "+fmtY(lim)+". Préviens ton employeur par écrit 1 mois avant. Pour le second parent, 15 jours suffisent s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance. L'Assurance maladie paie 70 % du salaire net le 1er mois, puis 60 % le 2e. Il ne se cumule pas avec la PreParE ni le chômage. Indépendante ? Demande-le à ta CPAM.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39685"]},
+    {id:'acte',ph:'n',t:"Envoyer l'acte de naissance à la Caf et à l'Assurance maladie",d:add(B,14),org:"Caf et Assurance maladie",x:"Sans lui, les aides et les indemnités peuvent rester bloquées. Demande plusieurs copies à la mairie."},
+    {id:'vitale',ph:'n',t:"Ajouter "+bebes()+" sur ta carte Vitale et ta mutuelle",d:add(B,30),org:"Assurance maladie et mutuelle",x:"Pour que les consultations soient remboursées."},
+    {id:'epn',ph:'n',t:"Faire l'entretien postnatal précoce",d:add(B,56),org:"Sage-femme ou médecin",x:"Entre la 4e et la 8e semaine après la naissance. Il sert à faire le point sur toi : sommeil, moral, douleurs, retour à la maison."},
+    {id:'cmg',ph:'n',t:"Demander l'aide pour la garde",d:add(B,c.post*7),org:"Caf",x:"Le « complément mode de garde » réduit le coût de la nounou ou de la micro-crèche. Pour une assistante maternelle, il ouvre aussi ton compte Pajemploi, le site où tu déclares son salaire.",l:["caf.fr","https://www.caf.fr"]},
+    {id:'fin',ph:'n',t:"Fin du congé maternité",d:add(B,c.post*7),org:"Employeur",x:"Prévois l'adaptation chez la nounou ou en crèche dans les 2 semaines d'avant."}
+  ]);
+}
+function stepState(s){
+  if(S.done[s.id])return ['ok','Fait'];
+  const n=diff(s.d,today);
+  if(n<0)return ['late','À faire vite'];
+  if(n<=14)return ['soon',n===0?"Aujourd'hui":'Dans '+n+' jour'+(n>1?'s':'')];
+  return ['idle','Avant le '+fmt(s.d)];
+}
+
+/* ---------- Versements ---------- */
+function payments(){
+  const {dpa,B}=refs(); const out=[];
+  const EL=elig();
+  if(EL.prime!==false)out.push({id:'p-prime',t:'Prime de naissance'+xN(),org:'Caf',d:add(dpa,-53),grace:10,kind:'caf'});
+  const c=conge(); const startIJ=add(dpa,-c.pre*7); const nIJ=Math.ceil((c.pre+c.post)/2);
+  for(let k=1;k<=nIJ;k++) out.push({id:'p-ij'+k,t:'Indemnités maternité',org:'Assurance maladie',d:add(startIJ,14*k+5),grace:10,kind:'cpam'});
+  if(S.csn)out.push({id:'p-csn',t:'Indemnités congé de naissance (si tu le prends)',org:'Assurance maladie',d:add(B,c.post*7+19),grace:14,kind:'csn'});
+  if(EL.ab!==false)for(let k=0;k<3;k++){const d=new Date(B.getFullYear(),B.getMonth()+2+k,5);out.push({id:'p-ab'+k,t:'Allocation de base'+xN()+' · '+d.toLocaleDateString('fr-FR',{month:'long'}),org:'Caf',d,grace:7,kind:'caf'})}
+  return out.sort((a,b)=>a.d-b.d);
+}
+function toAsk(){return payments().filter(p=>!S.received[p.id]&&p.d<=today&&!(S.asked[p.id]&&diff(today,parse(S.asked[p.id]))<3))}
+function payState(p){
+  if(S.received[p.id])return ['ok','Reçu'];
+  const n=diff(today,p.d);
+  if(n>p.grace)return ['late','En retard'];
+  if(S.asked[p.id])return ['soon','Pas encore reçu'];
+  if(n>=0)return ['soon',"Devrait être arrivé"];
+  if(n>=-14)return ['soon','Bientôt'];
+  return ['idle','Vers le '+fmt(p.d)];
+}
+function askCard(p){
+  const n=diff(today,p.d);
+  return `<div class="focus"><span class="label">Rappel · ${p.org}</span>
+    <h3>${esc(p.t)} : c'est arrivé ?</h3>
+    <span class="small muted">${n===0?"Prévu aujourd'hui":"Prévu le "+fmt(p.d)}. Regarde ton compte bancaire.</span>
+    <div class="btns"><button class="btn" type="button" id="ay-${p.id}" data-ans-yes="${p.id}">Oui, reçu</button><button class="btn ghost" type="button" id="an-${p.id}" data-ans-no="${p.id}">Pas encore</button></div></div>`;
+}
+
+/* ---------- Garde ---------- */
+const STATUSES=['À contacter','Dossier envoyé','Visite prévue',"Liste d'attente",'Acceptée','Refusée'];
+const TYPES=['Crèche','Micro-crèche','Assistante maternelle','Garde à domicile','Autre'];
+const activeGarde=()=>S.garde.filter(g=>g.status!=='Refusée'&&g.status!=='Acceptée');
+let gAdding=false, gType='Crèche', gView='find';
+const gSeg=()=>`<div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Section"><button type="button" id="gv-find" data-gv="find" aria-pressed="${gView==='find'}">Trouver une garde</button><button type="button" id="gv-nounou" data-gv="nounou" aria-pressed="${gView==='nounou'}">Ma nounou</button></div>`;
+const ckRow=(key,id,t,x)=>`<div class="item ${S[key][id]?'done':''}"><input type="checkbox" class="check" id="${key}-${id}" data-ck="${key}" data-ckid="${id}" ${S[key][id]?'checked':''}><div class="body"><label class="title" for="${key}-${id}">${t}</label>${x?`<span class="small muted">${x}</span>`:''}</div></div>`;
+/* Aide de la Caf (CMG) depuis le 1er sept. 2025 : coût × (1 − revenus mensuels × taux d'effort ÷ 4,91 €), coût horaire retenu jusqu'à 8 €, revenus entre 814,02 € et 8 500 € par mois. Frais d'entretien minimum au 1er juin 2026 : 0,435 € par heure, au moins 2,65 € par jour. */
+const TEFF=n=>n>=8?0.000206:n>=4?0.00031:n===3?0.000413:n===2?0.000516:0.000619;
+function nnCalc(){
+  const n=S.nounou, k=+n.k||S.nb, w=Math.min(52,+n.w||0), hm=(+n.h||0)*w/12;
+  const sal=(+n.t||0)*hm*k, base=Math.min(+n.t||0,8)*hm*k;
+  const ent=Math.max(2.65,0.435*(+n.h||0)/5)*5*w/12*k;
+  const A=S.aides, revA=(A.rev===''||A.rev==='ns')?null:+A.rev;
+  if(revA===null)return {sal,ent,cmg:null};
+  const kids=(A.kids===''?S.rank:+A.kids||0)+S.nb;
+  const revM=Math.min(8500,Math.max(814.02,revA/12));
+  const part=Math.min(1,revM*TEFF(kids)/4.91);
+  const cmg=base*(1-part); const reste=sal+ent-cmg;
+  const credit=Math.min(0.5*Math.max(0,reste),1750*k/12);
+  return {sal,ent,cmg,reste,credit};
+}
+function nnResteHTML(){
+  const c=nnCalc();
+  if(c.cmg===null)return `<label class="field">Revenus du foyer en 2024, pour l'année (€)<input type="number" inputmode="numeric" id="nr-rev" min="0" step="100" placeholder="Ex. 42000">
+    <span class="hint">Sur ton avis d'impôt 2025 : la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
+    <p class="small muted" style="margin:0">Salaire ≈ ${eur0(c.sal)} et frais d'entretien ≈ ${eur0(c.ent)} par mois. Indique tes revenus pour voir l'aide de la Caf.</p>`;
+  return `<div class="heroA" style="padding:20px"><span class="label">Ce qu'elle te coûte vraiment</span>
+      <span class="bigA">≈ ${eur0(c.reste)}<span style="font-size:18px"> par mois</span></span>
+      <span class="small">Et ≈ ${eur0(c.reste-c.credit)} après le crédit d'impôt, remboursé l'année suivante.</span></div>
+    <div class="list">
+      <div class="item"><div class="body" style="flex-direction:row;justify-content:space-between"><span>Son salaire</span><b>${eur0(c.sal)}</b></div></div>
+      <div class="item"><div class="body" style="flex-direction:row;justify-content:space-between"><span>Frais d'entretien</span><b>+ ${eur0(c.ent)}</b></div></div>
+      <div class="item"><div class="body" style="flex-direction:row;justify-content:space-between"><span>Aide de la Caf</span><b>− ${eur0(c.cmg)}</b></div></div>
+    </div>
+    <p class="small muted" style="margin:0">Estimation avec les règles de la Caf depuis septembre 2025 : la Caf retient le prix de l'heure jusqu'à 8 €. Frais d'entretien au minimum légal, pour 5 jours par semaine. Repas et couches en plus si c'est elle qui les fournit. Vérifie avec le simulateur de monenfant.fr.</p>`;
+}
+const wdays=d=>{let c=0;const y=d.getFullYear(),m=d.getMonth();for(let i=1;i<=31;i++){const x=new Date(y,m,i);if(x.getMonth()!==m)break;const g=x.getDay();if(g&&g<6)c++}return c};
+function nnMoisHTML(){
+  const n=S.nounou, k=+n.k||S.nb, mk=iso(today).slice(0,7), H=S.nnH[mk]||{plus:'',abs:''};
+  const mens=(+n.t||0)*(+n.h||0)*Math.min(52,+n.w||0)/12*k;
+  const prevues=(+n.h||0)*wdays(today)/5;
+  const plus=+H.plus||0, abs=+H.abs||0;
+  const tot=mens+plus*(+n.t||0)*k-(prevues?mens*abs/prevues:0);
+  return `<div class="grid2">
+      <label class="field">Heures en plus<input type="number" inputmode="decimal" id="nh-plus" min="0" step="0.5" placeholder="0" value="${esc(H.plus)}"></label>
+      <label class="field">Heures où elle était absente<input type="number" inputmode="decimal" id="nh-abs" min="0" step="0.5" placeholder="0" value="${esc(H.abs)}"></label>
+    </div>
+    <div><span class="label">Salaire net de ${today.toLocaleDateString('fr-FR',{month:'long'})} à déclarer</span><div class="result" id="nh-res">≈ ${eur(Math.max(0,tot))}</div></div>
+    <p class="small muted" style="margin:0">Salaire habituel ${eur(mens)}${plus?`, + ${plus} h en plus`:''}${abs?`, − ${abs} h d'absence de sa part`:''}.${k>1?' Heures comptées pour chaque bébé.':''} Si c'est toi qui gardes bébé à la maison, le salaire reste dû. Au-delà de 45 h dans la semaine, les heures sont payées plus cher (au moins 10 % de plus).</p>`;
+}
+function nnCongesHTML(){
+  const L=S.nnC.slice().sort((a,b)=>a.from<b.from?-1:1);
+  const wk=L.reduce((t,c)=>t+Math.max(0,diff(parse(c.to),parse(c.from))+1),0)/7;
+  const sans=Math.max(0,52-Math.min(52,+S.nounou.w||0));
+  const next=L.find(c=>parse(c.to)>=today);
+  return `${next&&diff(parse(next.from),today)<=30?`<div class="note"><b>${parse(next.from)<=today?'Elle est en congé':'Congé dans '+diff(parse(next.from),today)+' jours'}</b><span>Du ${fmtL(parse(next.from))} au ${fmtL(parse(next.to))}. Prévois une solution : famille, autre nounou du Relais Petite Enfance, ou tes propres congés.</span></div>`:''}
+    ${L.length?`<div class="list">${L.map(c=>`<div class="item"><div class="body"><span class="title">Du ${fmt(parse(c.from))} au ${fmt(parse(c.to))}</span><span class="small muted">${Math.round((diff(parse(c.to),parse(c.from))+1)/7*10)/10} semaine(s)</span></div><button class="lnk" type="button" id="cd-${c.id}" data-cdel="${c.id}" aria-label="Retirer ce congé">Retirer</button></div>`).join('')}</div>`:''}
+    <div class="grid2">
+      <label class="field">Du<input type="date" id="nc-from"></label>
+      <label class="field">Au<input type="date" id="nc-to"></label>
+    </div>
+    <button class="btn ghost sm" type="button" id="nc-add" data-cadd="1" style="align-self:flex-start">Ajouter ce congé</button>
+    <p class="small muted" style="margin:0">${Math.round(wk*10)/10} semaine(s) notée(s). Ton contrat prévoit ${sans} semaine(s) sans accueil par an (52 − ${Math.min(52,+S.nounou.w||0)} semaines d'accueil).</p>`;
+}
+function vNounou(){
+  const n=S.nounou; const nk=+n.k||S.nb; const monthly=n.t*n.h*Math.min(52,n.w)/12*nk; const N=S.nn;
+  const mk=iso(today).slice(0,7); const prev=new Date(today.getFullYear(),today.getMonth()-1,1); const pk=iso(prev).slice(0,7);
+  const mName=d=>d.toLocaleDateString('fr-FR',{month:'long'});
+  const started=N.start&&parse(N.start)<=today;
+  const Q=[['h',"Ses horaires, et si elle peut dépasser un peu"],['cg',"Ses semaines de congés, et qui la remplace"],['mal',"Ce qui se passe si bébé est malade"],['rep',"Qui fournit les repas, le lait et les couches"],['sort',"Les sorties : parc, relais, promenades"],['dodo',"Où bébé fait la sieste"],['news',"Comment elle te donne des nouvelles dans la journée"]].concat(multi()?[['jum',"Si elle a déjà gardé des jumeaux"]]:[]);
+  const B=[['agr',"Vérifier son agrément",multi()?"Demande son attestation d'agrément et vérifie qu'elle couvre "+S.nb+" bébés du même âge.":"Demande-lui son attestation d'agrément, délivrée par la PMI de ton département."],['ctr',"Signer un contrat écrit","En 2 exemplaires. Le Relais Petite Enfance donne des modèles gratuits et relit avec toi."],['cg',"Écrire comment sont payés ses congés","C'est la première source de désaccords : mets-le noir sur blanc dans le contrat."],['cmgn',"Demander l'aide pour la garde à la Caf","Elle réduit beaucoup ce qui reste à payer et ouvre ton compte Pajemploi."]];
+  return `<div class="panel">
+    <div class="sect"><h2>Ma nounou</h2><p class="muted" style="margin:0">Tout pour employer une assistante maternelle agréée : son salaire, les questions à lui poser, le contrat et la déclaration chaque mois.</p></div>
+    ${gSeg()}
+    <form class="card" id="nnForm" onsubmit="return false">
+      <span class="label">Ses informations</span>
+      <label class="field">Son prénom et nom<input id="nn-name" autocomplete="off" placeholder="Ex. Sophie Martin" value="${esc(N.name||'')}"></label>
+      <div class="grid2">
+        <label class="field">Son téléphone<input id="nn-tel" type="tel" autocomplete="off" placeholder="06 12 34 56 78" value="${esc(N.tel||'')}"></label>
+        <label class="field">Début de la garde<input id="nn-start" type="date" value="${esc(N.start||'')}"></label>
+      </div>
+      <span class="hint">Ces informations restent sur ton téléphone.</span>
+    </form>
+    ${started?`<section class="sect"><span class="label">Chaque mois</span><div class="list">
+      ${ckRow('pjm',pk,"Salaire de "+mName(prev)+" déclaré sur Pajemploi","À faire au début du mois suivant. Une déclaration en retard retarde l'aide de la Caf.")}
+      ${ckRow('pjm',mk,"Salaire de "+mName(today)+" déclaré sur Pajemploi","Au début du mois prochain.")}
+    </div><a class="small" href="https://www.pajemploi.urssaf.fr" target="_blank" rel="noopener">Aller sur pajemploi.urssaf.fr ↗</a></section>`:''}
+    <section class="sect"><span class="label">Estimer son salaire</span>
+      <form class="card" id="nForm" onsubmit="return false">
+        <div class="grid2">
+          <label class="field">Heures par semaine<input type="number" id="n-h" min="1" max="60" step="1" value="${n.h}"></label>
+          <label class="field">Semaines par an<input type="number" id="n-w" min="1" max="52" step="1" value="${n.w}"></label>
+        </div>
+        <div class="grid2">
+          <label class="field">Prix de l'heure, net (€)<input type="number" id="n-t" min="0" step="0.05" value="${n.t}"></label>
+          <label class="field">Enfants gardés<input type="number" id="n-k" min="1" max="4" step="1" value="${nk}"></label>
+        </div>
+        <div><span class="label">Salaire net par mois</span><div class="result" id="n-res">${monthly.toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}</div>
+        <p class="small muted" style="margin:4px 0 0">Prix de l'heure × heures × semaines ÷ 12, pour chaque enfant gardé.${multi()?' Pour des jumeaux, chaque bébé a en général son propre tarif : demande-lui si elle fait un prix.':''} Sans les frais de repas et d'entretien, et avant l'aide de la Caf qui réduit ce coût.</p>
+        <p class="small" style="margin:8px 0 0" id="n-cap" aria-live="polite">${capMsg(n.t)}</p></div>
+      </form></section>
+    <section class="sect"><span class="label">Reste à payer</span><div class="sect" id="nr-res">${nnResteHTML()}</div></section>
+    ${started?`<section class="sect"><span class="label">Les heures de ce mois</span><form class="card" id="nhForm" onsubmit="return false">${nnMoisHTML()}</form></section>`:''}
+    <section class="sect"><span class="label">Ses congés</span><div class="card" id="ncBox">${nnCongesHTML()}</div></section>
+    <section class="sect"><span class="label">Questions à lui poser au premier rendez-vous</span><div class="list">${Q.map(([id,t])=>ckRow('nnQ',id,t,'')).join('')}</div></section>
+    <section class="sect"><span class="label">Avant de signer</span><div class="list">${B.map(([id,t,x])=>`<div class="item ${S.nounouCheck[id]?'done':''}"><input type="checkbox" class="check" id="nc-${id}" data-nc="${id}" ${S.nounouCheck[id]?'checked':''}><div class="body"><label class="title" for="nc-${id}">${t}</label><span class="small muted">${x}</span></div></div>`).join('')}</div></section>
+    <p class="small muted" style="margin:0">Une question sur le contrat ou le salaire ? Le Relais Petite Enfance de ta ville répond gratuitement.</p>
+  </div>`;
+}
+const relanceDue=()=>S.garde.filter(g=>g.relance&&g.status!=='Refusée'&&g.status!=='Acceptée'&&parse(g.relance)<=today);
+
+/* ---------- Onglets ---------- */
+const sv=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICONS={
+  home:sv('<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/>'),
+  steps:sv('<rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="m8.5 9 1.5 1.5L13 7.5M8.5 15h7"/>'),
+  garde:sv('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/>'),
+  money:sv('<path d="M4 7.5h13.5a2.5 2.5 0 0 1 2.5 2.5v7.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7.5 15 4.5v3"/><circle cx="16" cy="13.75" r="1.25"/>'),
+  care:sv('<path d="M12 19.5s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 2.3c0 5.3-7 9.6-7 9.6z"/>')
+};
+const TABS=[['accueil','Accueil','home'],['demarches','Démarches','steps'],['garde','Garde','garde'],['argent','Argent','money'],['aide','Aide','care']];
+let tab=(location.hash||'').slice(1); if(tab==='soutien')tab='aide'; if(!TABS.some(t=>t[0]===tab))tab='accueil';
+let stepFilter='todo';
+
+function renderTabs(){
+  const lateSteps=steps().filter(s=>stepState(s)[0]==='late').length;
+  const latePay=payments().filter(p=>payState(p)[0]==='late').length;
+  const badges={accueil:toAsk().length,demarches:lateSteps,argent:latePay,garde:relanceDue().length};
+  document.getElementById('tabs').innerHTML=TABS.map(([id,lab,ic])=>
+    `<button type="button" id="tab-${id}" data-tab="${id}" ${tab===id?'aria-current="page"':''}><span class="ic">${ICONS[ic]}${badges[id]?`<span class="pip"></span>`:''}</span>${lab}${badges[id]?`<span class="sr"> (${badges[id]} à voir)</span>`:''}</button>`).join('');
+}
+function go(t){tab=t;try{history.replaceState(null,'','#'+tab)}catch(_){location.hash=tab}render();window.scrollTo(0,0)}
+document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)go(b.dataset.tab)});
+window.addEventListener('hashchange',()=>{let h=location.hash.slice(1);if(h==='soutien')h='aide';if(TABS.some(t=>t[0]===h)&&h!==tab){tab=h;render()}});
+
+/* ---------- Écran de démarrage ---------- */
+let onb={nb:1,dpa:'',birth:'',rank:0};
+function keepOnb(){const g=id=>document.getElementById(id);if(g('o-dpa'))onb.dpa=g('o-dpa').value;if(g('o-ddr'))onb.ddr=g('o-ddr').value;if(g('o-unk'))onb.open=g('o-unk').open}
+function vOnboarding(){
+  return `<div class="panel" style="padding-top:20px">
+    <div class="sect"><span class="label">Bienvenue</span>
+      <h1>Quand ${onb.nb>=2?'doivent naître tes bébés':'doit naître ton bébé'} ?</h1>
+      <p class="muted" style="margin:0">On prépare ton calendrier de démarches, d'aides et de garde à partir de cette date.</p></div>
+    <form class="card" id="onbForm">
+      <label class="field">Date prévue d'accouchement<input type="date" id="o-dpa" value="${onb.dpa}"></label>
+      <details class="more" id="o-unk" ${onb.open?'open':''}><summary>Je ne connais pas ma date</summary>
+        <div class="detail" style="gap:14px">
+          <label class="field">Premier jour de tes dernières règles<input type="date" id="o-ddr" value="${onb.ddr||''}"></label>
+          <div class="field" role="group" aria-labelledby="o-m-l"><span id="o-m-l">Ou : tu es enceinte de combien de mois ?</span>
+            <div class="choices" style="grid-template-columns:repeat(5,1fr)">${[1,2,3,4,5,6,7,8,9].map(m=>`<button type="button" id="o-m-${m}" data-onb-m="${m}" aria-pressed="${onb.m===m}" style="min-height:48px">${m}</button>`).join('')}</div></div>
+          <span class="hint">On calcule une date approximative. Tu pourras la corriger dans « Mes dates » après ta prochaine échographie.</span>
+        </div></details>
+      ${onb.err?'<p class="small" role="alert" style="margin:0;color:var(--late);font-weight:700">Indique ta date, ou ouvre « Je ne connais pas ma date ».</p>':''}
+      <div class="field" role="group" aria-labelledby="o-nb-l"><span id="o-nb-l">Combien de bébés ?</span>
+        <div class="choices">${[[1,'1 bébé'],[2,'Jumeaux'],[3,'Triplés ou plus']].map(([v,l])=>`<button type="button" id="o-nb-${v}" data-onb-nb="${v}" aria-pressed="${onb.nb===v}">${l}</button>`).join('')}</div></div>
+      <details class="more"><summary>Plus de précisions (facultatif)</summary>
+        <div class="detail" style="gap:14px">
+          <label class="field">Enfants déjà à la maison<select id="o-rank"><option value="0">Aucun</option><option value="1">1</option><option value="2">2 ou plus</option></select></label>
+          <label class="field">Bébé déjà né ? Date de naissance<input type="date" id="o-birth"></label>
+        </div></details>
+      <button class="btn wide" type="submit">Commencer</button>
+      <p class="small muted" style="margin:0">Tes informations restent sur ton téléphone.</p>
+    </form>
+  </div>`;
+}
+
+/* ---------- Accueil ---------- */
+function ring(pct,big,lab){
+  const r=52, C=2*Math.PI*r;
+  return `<svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bgc" cx="60" cy="60" r="${r}"/><circle class="fg" cx="60" cy="60" r="${r}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-pct/100)).toFixed(1)}"/><text x="60" y="64">${big}</text><text class="rl" x="60" y="82">${lab}</text></svg>`;
+}
+function vAccueil(){
+  const {dpa,start,born,B}=refs();
+  let hero;
+  if(!born){
+    const days=Math.max(0,diff(today,start)); const sa=Math.floor(days/7);
+    const mois=Math.min(9,Math.max(1,Math.ceil(Math.max(1,days-14)/30.44)));
+    const left=Math.max(0,diff(dpa,today)); const pct=Math.min(100,days/280*100);
+    const who=S.nb===2?'tes jumeaux':S.nb>=3?'tes bébés':'ton bébé';
+    hero=`<section class="hero" aria-label="Avancement de la grossesse">
+      <div class="txt"><span class="kicker">${S.nb===2?'Grossesse gémellaire':S.nb>=3?'Grossesse multiple':'Ta grossesse'}</span>
+        <div class="big">${mois}<sup style="font-size:.45em">e</sup> mois</div>
+        <span class="sub">${sa}<sup>e</sup> semaine<br>Terme le ${fmtL(dpa)}</span>
+        <span class="soft">${left>0?`Encore ${left} jours avant de rencontrer ${who}.`:`C'est pour bientôt. Prends soin de toi.`}</span></div>
+      ${ring(pct,left,'jours')}</section>`;
+  } else {
+    const d=Math.max(0,diff(today,B)); const w=Math.floor(d/7);
+    hero=`<section class="hero"><div class="txt"><span class="kicker">${S.nb>=2?'Tes bébés sont là':'Bébé est là'}</span>
+      <div class="big">${w?w+' semaine'+(w>1?'s':''):d+' jour'+(d>1?'s':'')}</div>
+      <span class="sub">${S.nb>=2?'Nés':'Né·e'} le ${fmtL(B)}</span>
+      <span class="soft">${(()=>{const e=add(B,conge().post*7);return e<today?'Ton congé maternité s\'est terminé le '+fmtL(e)+'.':'Fin du congé le '+fmtL(e)+'.'})()}</span></div></section>`;
+  }
+  const todo=steps().filter(s=>!S.done[s.id]).sort((a,b)=>a.d-b.d);
+  const first=todo[0];
+  const focus=first?(()=>{const [c,l]=stepState(first);return `<section class="sect"><span class="label">Cette semaine</span>
+    <div class="focus"><h3>${esc(first.t)}</h3>
+      <div class="meta"><span class="st ${c}">${l}</span><span>· ${esc(first.org)}</span></div>
+      <p style="margin:0">${esc(first.x)}</p>
+      ${first.l?`<a class="small" href="${first.l[1]}" target="_blank" rel="noopener">Aller sur ${first.l[0]} ↗</a>`:''}
+      <button class="btn wide" type="button" id="done-${first.id}" data-done="${first.id}">C'est fait</button></div></section>`})()
+    :`<section class="sect"><div class="focus"><h3>Tout est fait. Bravo.</h3><p class="muted" style="margin:0">Repose-toi, l'app te préviendra s'il y a du nouveau.</p></div></section>`;
+  const asks=toAsk();
+  const askBlock=asks.length?`<section class="sect">${askCard(asks[0])}</section>`:'';
+  const W=[];
+  const lateSteps=todo.filter(s=>stepState(s)[0]==='late');
+  const latePay=payments().filter(p=>payState(p)[0]==='late');
+  const rel=relanceDue(); const act=activeGarde().length; const acc=S.garde.some(g=>g.status==='Acceptée');
+  if(latePay.length)W.push(['late',latePay.length+' versement'+(latePay.length>1?'s':'')+' en retard',"On t'aide à le réclamer",'argent']);
+  const oa=asks.slice(1).filter(p=>payState(p)[0]!=='late').length;
+  if(oa)W.push(['soon',oa+' autre'+(oa>1?'s':'')+' versement'+(oa>1?'s':'')+' à vérifier','Dis-nous s’ils sont arrivés','argent']);
+  if(lateSteps.length>1)W.push(['late',(lateSteps.length-1)+' autre'+(lateSteps.length>2?'s':'')+' démarche'+(lateSteps.length>2?'s':'')+' à faire vite','Voir la liste','demarches']);
+  {const nc=S.nnC.find(c=>parse(c.to)>=today&&diff(parse(c.from),today)<=21);if(nc)W.push(['soon','Ta nounou est en congé le '+fmt(parse(nc.from)),'Prévois une solution de remplacement','garde'])}
+  if(rel.length)W.push(['soon',rel.length+' relance'+(rel.length>1?'s':'')+' garde',rel.map(g=>g.name).join(', '),'garde']);
+  if(!acc&&act<3)W.push(['',act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':'')+' sur 3 conseillées','Les places sont rares : suis-en au moins 3','garde']);
+  const watch=W.length?`<section class="sect"><span class="label">À surveiller</span><div class="watch">${W.map(([c,t,s,g],i)=>`<button type="button" id="w-${i}" data-go="${g}"><span class="dot ${c}"></span><span class="wt"><b>${esc(t)}</b><span>${esc(s)}</span></span><span class="chev" aria-hidden="true">›</span></button>`).join('')}</div></section>`:'';
+  const endMat=add(B,conge().post*7);
+  const csnCard=(!S.csnHide&&!S.done.csn&&today>=add(endMat,-60)&&diff(today,B)<270)?`<button type="button" class="newrow" id="csn-see" data-go="demarches"><span class="tagn">Nouveau</span><span class="wt"><b>Congé de naissance : 1 ou 2 mois en plus</b><span>À demander à ton employeur 1 mois avant</span></span><span class="chev muted" aria-hidden="true">›</span></button>`:'';
+  return `<div class="panel">${hero}${askBlock}${focus}${csnCard}${watch}
+    <button class="iconbtn" style="align-self:flex-start" type="button" id="seeall" data-go="demarches">Voir toutes les démarches ›</button></div>`;
+}
+
+/* ---------- Démarches ---------- */
+function stepRow(s){
+  const [c,l]=stepState(s);
+  return `<div class="item ${S.done[s.id]?'done':''}">
+    <input type="checkbox" class="check" id="st-${s.id}" data-step="${s.id}" ${S.done[s.id]?'checked':''} aria-label="C'est fait : ${esc(s.t)}">
+    <div class="body"><label class="title" for="st-${s.id}">${esc(s.t)}</label>
+      <div class="meta"><span class="st ${c}">${l}</span><span>· ${esc(s.org)}</span></div>
+      <details class="more"><summary>Comment faire</summary><div class="detail"><span>${esc(s.x)}</span>${s.l?`<a href="${s.l[1]}" target="_blank" rel="noopener">Aller sur ${s.l[0]} ↗</a>`:''}</div></details>
+    </div></div>`;
+}
+function vDemarches(){
+  const all=steps();
+  const list=stepFilter==='todo'?all.filter(s=>!S.done[s.id]):all;
+  const g=list.filter(s=>s.ph==='g').sort((a,b)=>a.d-b.d), n=list.filter(s=>s.ph==='n').sort((a,b)=>a.d-b.d);
+  const doneN=all.filter(s=>S.done[s.id]).length;
+  return `<div class="panel">
+    <div class="sect-head"><h2>Démarches</h2><span class="muted small">${doneN} sur ${all.length} faites</span></div>
+    <div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Afficher"><button type="button" id="sf-todo" data-sf="todo" aria-pressed="${stepFilter==='todo'}" style="min-height:48px">À faire</button><button type="button" id="sf-all" data-sf="all" aria-pressed="${stepFilter==='all'}" style="min-height:48px">Toutes</button></div>
+    <section class="sect"><span class="label">Pendant la grossesse</span><div class="list">${g.map(stepRow).join('')||'<div class="item muted">Tout est fait ici.</div>'}</div></section>
+    <section class="sect"><span class="label">Après la naissance${S.birth?'':' · dates estimées'}</span><div class="list">${n.map(stepRow).join('')||'<div class="item muted">Tout est fait ici.</div>'}</div></section>
+    <p class="small muted" style="margin:0">Congé calculé pour une salariée : ${conge().pre} semaines avant, ${conge().post} après. Indépendante ou au chômage ? Vérifie ta situation sur service-public.fr.</p>
+  </div>`;
+}
+
+/* ---------- Garde ---------- */
+const NEAR={}; let nearType='all', nearShown=[];
+const NT={creche:'Crèche',micro:'Micro-crèche',mam:'Maison d’assistantes maternelles',domicile:'Garde à domicile',rpe:'Relais Petite Enfance',autre:'Accueil petite enfance'};
+const NT2G={creche:'Crèche',micro:'Micro-crèche',mam:'Assistante maternelle',domicile:'Garde à domicile',autre:'Autre'};
+const depOf=cp=>cp.startsWith('97')?cp.slice(0,3):cp.startsWith('20')?(+cp<20200?'2A':'2B'):cp.slice(0,2);
+const km=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return 6371*Math.hypot(x,y)};
+const mapQ=x=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(x[0]+', '+x[1]);
+const mapD=x=>x[4]!=null?'https://www.google.com/maps/dir/?api=1&destination='+x[4]+','+x[5]:mapQ(x);
+async function fillNear(){
+  const box=document.getElementById('near-list'); if(!box)return;
+  const cp=S.cp||''; if(!/^\d{5}$/.test(cp)){box.innerHTML='';return}
+  const dep=depOf(cp);
+  if(!NEAR[dep]){box.innerHTML='<p class="small muted" style="margin:0">Je cherche les lieux autour de '+cp+'…</p>';
+    try{const r=await fetch('g/'+dep+'.json');if(!r.ok)throw 0;NEAR[dep]=await r.json()}catch(e){if(document.getElementById('near-list'))document.getElementById('near-list').innerHTML='<p class="small muted" style="margin:0">La liste n’a pas pu se charger. Utilise « Chercher aussi ailleurs » juste en dessous.</p>';return}}
+  const b2=document.getElementById('near-list'); if(!b2||(S.cp||'')!==cp)return;
+  const L=NEAR[dep];
+  const ctr=a=>a.length?[a.reduce((t,x)=>t+x[4],0)/a.length,a.reduce((t,x)=>t+x[5],0)/a.length]:null;
+  const geo=L.filter(x=>x[4]!=null);
+  const c=ctr(geo.filter(x=>x[2]===cp))||ctr(geo.filter(x=>x[2].slice(0,4)===cp.slice(0,4)))||ctr(geo.filter(x=>x[2].slice(0,3)===cp.slice(0,3)));
+  let A=L.map(x=>[x,c&&x[4]!=null?km(c[0],c[1],x[4],x[5]):(x[2]===cp?0:999)]);
+  const counts={}; A.filter(([x,d])=>d<=12).forEach(([x])=>counts[x[6]]=(counts[x[6]]||0)+1);
+  if(nearType!=='all')A=A.filter(([x])=>x[6]===nearType);
+  A=A.filter(([x,d])=>d<=12).sort((a,b)=>a[1]-b[1]);
+  const tot=A.length; nearShown=A.slice(0,nearMore?60:10).map(a=>a[0]); nearAll=A; nearC=c; if(nearSel>=nearAll.length)nearSel=-1; setTimeout(initLeaf,0);
+  const chips=[['all','Tout']].concat(['creche','micro','mam','domicile','rpe'].filter(t=>counts[t]).map(t=>[t,NT[t].replace('Maison d’assistantes maternelles','Maisons d’assistantes mat.')]));
+  b2.innerHTML=`<div class="btns" role="group" aria-label="Type de garde">${chips.map(([t,l])=>`<button type="button" class="${nearType===t?'btn sm':'btn ghost sm'}" id="nt-${t}" data-nt="${t}" aria-pressed="${nearType===t}">${l}</button>`).join('')}</div>
+    ${tot?`<p class="small muted" style="margin:0">${tot} lieu${tot>1?'x':''} à moins de 12 km, du plus proche au plus loin.</p>
+    <div id="near-map" class="sect">${nearMapHTML()}</div>
+    <span class="label">Liste</span>
+    <div class="list">${nearShown.map((x,i)=>nearItem(x,A[i][1],i)).join('')}</div>
+    ${tot>nearShown.length?`<button class="iconbtn" style="align-self:flex-start" type="button" id="near-more" data-nearmore="1">Voir plus de lieux</button>`:''}`
+    :`<p class="small muted" style="margin:0">Aucun lieu trouvé à moins de 12 km. Essaie le code postal de la ville voisine, ou « Chercher aussi ailleurs ».</p>`}
+    <p class="small muted" style="margin:0">Liste tirée du registre officiel des entreprises (Insee). « Téléphone » ouvre la fiche du lieu sur la carte. Les crèches gérées par la mairie et les assistantes maternelles n’y sont pas toutes : demande aussi la liste à ta mairie et au Relais Petite Enfance.</p>`;
+}
+let nearMore=false, nearR=5, nearAll=[], nearSel=-1, nearC=null;
+const TC={creche:'var(--accent)',micro:'var(--t-micro)',mam:'var(--t-mam)',domicile:'var(--late)',rpe:'var(--ink)',autre:'var(--t-autre)'};
+function nearItem(x,d,key){const fol=S.garde.some(g=>g.name===x[0]);return `<div class="item"><div class="body">
+      <span class="title">${esc(x[0])}</span>
+      <div class="meta"><span>${NT[x[6]]}</span>${d<999?`<span>· ${d<1?'moins de 1 km':d.toFixed(1).replace('.',',')+' km'}</span>`:''}</div>
+      <span class="small muted">${esc(x[1])}</span>
+      <div class="btns" style="margin-top:4px">
+        <a class="btn ghost sm" href="${mapQ(x)}" target="_blank" rel="noopener">Téléphone ↗</a>
+        <a class="btn ghost sm" href="${mapD(x)}" target="_blank" rel="noopener">Itinéraire ↗</a>
+        ${x[6]==='rpe'?'':fol?'<span class="st ok" style="align-self:center">Suivie</span>':`<button class="lnk" type="button" id="nf-${key}" data-follow="${key}">+ Suivre</button>`}
+      </div></div></div>`}
+function followNear(f){const x=f[0]==='a'?(nearAll[+f.slice(1)]||[])[0]:nearShown[+f];if(x){S.garde.push({id:'g'+Date.now(),name:x[0],type:NT2G[x[6]],status:'À contacter',relance:iso(add(today,14))});save();render();say('Ajoutée à tes gardes')}}
+const SITE=()=>!!(window.SEREINE_SITE&&window.L);
+let LM=null;
+function initLeaf(){
+  const el=document.getElementById('lmap'); if(!el||!SITE()||!nearC)return;
+  if(LM){LM.remove();LM=null}
+  const cs=getComputedStyle(document.documentElement), col=t=>cs.getPropertyValue(TC[t].slice(4,-1)).trim()||'#8A6D4E';
+  const dark=matchMedia('(prefers-color-scheme: dark)').matches&&document.documentElement.dataset.theme!=='light';
+  LM=L.map(el,{zoomControl:true,attributionControl:true}).setView(nearC,{2:14,5:13,12:11}[nearR]||13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'rastertiles/voyager')+'/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(LM);
+  const order={autre:0,domicile:1,rpe:2,mam:3,micro:4,creche:5};
+  nearAll.map((a,j)=>[a,j]).filter(([[x]])=>x[4]!=null).sort((a,b)=>order[a[0][0][6]]-order[b[0][0][6]]).forEach(([[x,d],j])=>{
+    L.circleMarker([x[4],x[5]],{radius:x[6]==='autre'?6:8,color:'#fff',weight:2,fillColor:col(x[6]),fillOpacity:1})
+     .bindPopup(`<div class="pop"><b>${esc(x[0])}</b><br><span>${NT[x[6]]} · ${d<1?'moins de 1 km':d.toFixed(1).replace('.',',')+' km'}</span><br><span>${esc(x[1])}</span>
+       <div class="btns" style="margin-top:8px"><a class="btn ghost sm" href="${mapQ(x)}" target="_blank" rel="noopener">Téléphone ↗</a><a class="btn ghost sm" href="${mapD(x)}" target="_blank" rel="noopener">Itinéraire ↗</a>${x[6]==='rpe'||S.garde.some(g=>g.name===x[0])?'':`<button class="lnk" type="button" data-follow="a${j}">+ Suivre</button>`}</div></div>`,{maxWidth:260}).addTo(LM);
+  });
+  LM.on('popupopen',e=>{const el=e.popup.getElement();if(el)el.querySelectorAll('[data-follow]').forEach(b=>b.addEventListener('click',()=>followNear(b.dataset.follow)))});
+  setTimeout(()=>LM&&LM.invalidateSize(),50);
+  L.circleMarker(nearC,{radius:9,color:cs.getPropertyValue('--ink').trim(),weight:3,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(LM);
+  L.circle(nearC,{radius:nearR*1000,color:cs.getPropertyValue('--accent').trim(),weight:1.5,dashArray:'4 6',fill:false,interactive:false}).addTo(LM);
+}
+function nearMapHTML(){
+  if(!nearC)return '<p class="small muted" style="margin:0">Pas de position connue pour ce code postal : la carte n’est pas disponible, la liste reste juste en dessous.</p>';
+  if(SITE()){const ty0=new Set(nearAll.filter(([x,d])=>d<=nearR).map(([x])=>x[6]));const types=['creche','micro','mam','domicile','rpe','autre'].filter(t=>ty0.has(t));
+    return `<div class="choices seg" style="grid-template-columns:repeat(3,1fr)" role="group" aria-label="Zoom de la carte">${[2,5,12].map(r=>`<button type="button" id="nz-${r}" data-nz="${r}" aria-pressed="${nearR===r}">${r} km</button>`).join('')}</div>
+    <div id="lmap" class="nmap" role="region" aria-label="Carte des lieux de garde"></div>
+    <div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)"></i>Ton code postal</span>${types.map(t=>`<span><i style="background:${TC[t]}"></i>${NT[t]}</span>`).join('')}</div>
+    <p class="small muted" style="margin:0">Touche un point pour voir le lieu. Tu peux déplacer et zoomer la carte avec tes doigts.</p>`}
+  const W=340,C=170,Rp=148,sc=Rp/nearR,cos=Math.cos(nearC[0]*Math.PI/180);
+  const order={autre:0,domicile:1,rpe:2,mam:3,micro:4,creche:5};
+  const vis=nearAll.map((a,j)=>[a,j]).filter(([[x,d]])=>x[4]!=null&&d<=nearR).sort((a,b)=>order[a[0][0][6]]-order[b[0][0][6]]);
+  const pos=x=>[C+(x[5]-nearC[1])*111.32*cos*sc,C-(x[4]-nearC[0])*110.57*sc];
+  const dot=([[x,d],j],big)=>{const [px,py]=pos(x);const r=big?9:x[6]==='autre'?4.5:6;
+    return `<circle class="pt${big?' sel':''}" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${r}" fill="${TC[x[6]]}" data-pt="${j}" tabindex="0" role="button" aria-label="${esc(x[0])}, ${d.toFixed(1).replace('.',',')} km"></circle>`};
+  const pts=vis.filter(v=>v[1]!==nearSel).map(v=>dot(v,false)).join('')+(vis.find(v=>v[1]===nearSel)?dot(vis.find(v=>v[1]===nearSel),true):'');
+  const RG={2:[0.5,1,2],5:[1,2,5],12:[3,6,12]}[nearR]||[nearR/4,nearR/2,nearR];
+  const circ=RG.map(r=>`<circle class="ring" cx="${C}" cy="${C}" r="${(r*sc).toFixed(1)}"></circle>`).join('');
+  const labs=RG.map(r=>`<text class="rl" x="${C}" y="${(C+r*sc+4).toFixed(1)}" text-anchor="middle" pointer-events="none">${String(r).replace('.',',')} km</text>`).join('');
+  const rings=circ;
+  const nIn=nearAll.filter(([x,d])=>x[4]!=null&&d<=nearR).length;
+  const ty0=new Set(nearAll.filter(([x,d])=>d<=nearR).map(([x])=>x[6]));const types=['creche','micro','mam','domicile','rpe','autre'].filter(t=>ty0.has(t));
+  const sel=nearSel>=0&&nearAll[nearSel]?nearAll[nearSel]:null;
+  return `<div class="choices seg" style="grid-template-columns:repeat(3,1fr)" role="group" aria-label="Zoom de la carte">${[2,5,12].map(r=>`<button type="button" id="nz-${r}" data-nz="${r}" aria-pressed="${nearR===r}">${r} km</button>`).join('')}</div>
+    <svg class="nmap" viewBox="0 0 ${W} ${W}" role="img" aria-label="Carte des ${nIn} lieux de garde à moins de ${nearR} km">${rings}${pts}
+      <g pointer-events="none"><circle cx="${C}" cy="${C}" r="10" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.5"></circle><circle cx="${C}" cy="${C}" r="4" fill="var(--ink)"></circle></g>${labs}</svg>
+    <div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)"></i>Ton code postal</span>${types.map(t=>`<span><i style="background:${TC[t]}"></i>${NT[t]}</span>`).join('')}</div>
+    ${sel?`<div class="list">${nearItem(sel[0],sel[1],'a'+nearSel)}</div>`:`<p class="small muted" style="margin:0">Touche un point pour voir le lieu. ${nIn} lieu${nIn>1?'x':''} sur la carte.</p>`}`;
+}
+function nearLinks(){
+  const cp=(S.cp||'').trim(); const ok=/^\d{5}$/.test(cp);
+  if(!ok)return '<p class="small muted" style="margin:0">Tape tes 5 chiffres pour voir les gardes autour de toi.</p>';
+  const m=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q+' '+cp);
+  return `<div class="btns">
+    <a class="btn ghost sm" href="https://monenfant.fr" target="_blank" rel="noopener">Chercher sur monenfant.fr ↗</a>
+    <a class="btn ghost sm" href="${m('crèche')}" target="_blank" rel="noopener">Crèches sur la carte ↗</a>
+    <a class="btn ghost sm" href="${m('micro-crèche')}" target="_blank" rel="noopener">Micro-crèches ↗</a>
+    <a class="btn ghost sm" href="${m('relais petite enfance')}" target="_blank" rel="noopener">Relais Petite Enfance ↗</a>
+  </div><p class="small muted" style="margin:8px 0 0">Sur monenfant.fr, tape ${esc(cp)} dans la recherche.</p>`;
+}
+const CAP_AM=8;
+const eur=v=>v.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+const capMsg=t=>t>CAP_AM?`La Caf ne prend en compte le coût de l'heure (salaire, repas et entretien compris) que jusqu'à environ 8 €. Au-dessus, la différence reste pour toi.`:`La Caf prend en compte le coût de l'heure (salaire, repas et entretien compris) jusqu'à environ 8 €. Ajoute les repas et l'entretien pour savoir si tu restes en dessous.`;
+function vGarde(){
+  const act=activeGarde().length; const acc=S.garde.some(g=>g.status==='Acceptée'); const rd=relanceDue().length;
+  const rows=S.garde.map(g=>{
+    const due=g.relance&&parse(g.relance)<=today&&g.status!=='Refusée'&&g.status!=='Acceptée';
+    const c=g.status==='Acceptée'?'ok':g.status==='Refusée'?'late':due?'soon':'idle';
+    return `<div class="item"><div class="body">
+      <div class="title">${esc(g.name)}</div>
+      <div class="meta"><span class="st ${c}">${esc(g.status)}</span><span>· ${esc(g.type)}</span>${g.relance&&c!=='ok'&&c!=='late'?`<span>· ${due?'relance à faire':'relance le '+fmt(parse(g.relance))}</span>`:''}</div>
+      <div class="btns" style="margin-top:6px;align-items:center">
+        <select class="inl" data-gstat="${g.id}" id="gs-${g.id}" aria-label="Statut : ${esc(g.name)}">${STATUSES.map(s=>`<option ${s===g.status?'selected':''}>${s}</option>`).join('')}</select>
+        ${due?`<button class="btn sm" data-grel="${g.id}" id="gr-${g.id}" type="button">J'ai relancé</button>`:''}
+        <button class="btn ghost sm" data-gdel="${g.id}" id="gd-${g.id}" type="button" aria-label="Retirer ${esc(g.name)}">Retirer</button>
+      </div></div></div>`}).join('');
+  const n=S.nounou; const nk=+n.k||S.nb; const monthly=n.t*n.h*Math.min(52,n.w)/12*nk;
+  const summary=acc?'Une place est obtenue. Bravo !'
+    :`${act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':'')}${rd?' · '+rd+' relance'+(rd>1?'s':'')+' à faire':''}. ${act<3?'Vise au moins 3 : les places sont rares.':'C’est bien, continue de relancer.'}`;
+  const GT=[['Crèche','Crèche'],['Micro-crèche','Micro-crèche'],['Assistante maternelle','Nounou agréée'],['Garde à domicile','Nounou à la maison']];
+  const form=gAdding?`<form class="card" id="gForm">
+      <h3>Nouvelle garde</h3>
+      <div class="field" role="group" aria-labelledby="g-type-l"><span id="g-type-l">C'est quoi ?</span>
+        <div class="choices" style="grid-template-columns:1fr 1fr">${GT.map(([v,l])=>`<button type="button" id="gt-${v.replace(/\W+/g,'')}" data-gtype="${v}" aria-pressed="${gType===v}" style="min-height:52px">${l}</button>`).join('')}</div></div>
+      <label class="field">Son nom<input id="g-name" required placeholder="${gType==='Assistante maternelle'||gType==='Garde à domicile'?'Ex. Sophie Martin':'Ex. Crèche Les Petits Pas'}"></label>
+      <p class="small muted" style="margin:0">On te rappellera de la relancer dans 2 semaines.</p>
+      <div class="btns"><button class="btn" type="submit">Ajouter</button><button class="btn ghost" type="button" id="g-cancel" data-gcancel="1">Annuler</button></div>
+    </form>`:`<button class="btn wide" type="button" id="g-add" data-gadd="1">+ Ajouter une crèche ou une nounou</button>`;
+  if(gView==='nounou')return vNounou();
+  return `<div class="panel">
+    <div class="sect"><h2>Trouver une garde</h2><p class="muted" style="margin:0">${summary}</p></div>
+    ${gSeg()}
+    ${form}
+    ${multi()?`<div class="note"><b>${S.nb} places en même temps</b><span>Dis-le dans chaque demande. Une nounou agréée doit avoir le droit d'accueillir ${S.nb} bébés ensemble : demande-le-lui.</span></div>`:''}
+    ${rows?`<section class="sect"><span class="label">Tes gardes</span><div class="list">${rows}</div></section>`:''}
+    <section class="card" aria-labelledby="near-t">
+      <h3 id="near-t">Près de chez toi</h3>
+      <label class="field">Ton code postal<input type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" id="cp" placeholder="Ex. 33000" value="${esc(S.cp||'')}"></label>
+      <div id="near-list" aria-live="polite"></div>
+      <details class="more"><summary>Chercher aussi ailleurs</summary><div id="near-links">${nearLinks()}</div></details>
+      <p class="small muted" style="margin:0">monenfant.fr est le site officiel de la Caf : il liste les crèches, les nounous agréées (assistantes maternelles) et la garde à domicile. Le Relais Petite Enfance, un service gratuit de ta ville, connaît aussi les nounous qui ont de la place. Pour une crèche, la demande se fait à la mairie : demande la date de la prochaine commission, la réunion où les places sont attribuées.</p>
+    </section>
+  </div>`;
+}
+
+/* ---------- Argent ---------- */
+const TPL={
+  cpam:`Bonjour,\n\nJe suis en congé maternité depuis le [date]. Je n'ai pas reçu le versement de mes indemnités journalières attendu vers le [date].\n\nMon employeur a transmis l'attestation de salaire le [date]. Pouvez-vous m'indiquer ce qui bloque et la date prévue du paiement ?\n\nCette attente me met en difficulté financière avec l'arrivée de mon bébé. Si besoin, je souhaite être mise en relation avec le service social de l'Assurance maladie.\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
+  csn:`Bonjour,\n\nJe suis en congé supplémentaire de naissance depuis le [date]. Je n'ai pas reçu les indemnités attendues vers le [date].\n\nMon employeur a transmis ma demande le [date]. Pouvez-vous m'indiquer ce qui bloque et la date prévue du paiement ?\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
+  caf:`Bonjour,\n\nJe n'ai pas reçu [la prime de naissance / l'allocation de base] attendue vers le [date].\n\nMa grossesse a été déclarée le [date] et mon dossier est à jour. Pouvez-vous me dire s'il manque une pièce et quand le versement est prévu ?\n\nMerci,\n[Prénom Nom] — n° allocataire : [numéro]`
+};
+function payRow(p){
+  const [c,l]=payState(p); const got=!!S.received[p.id]; const due=p.d<=today&&!got;
+  return `<div class="item ${got?'done':''}"><div class="body">
+    <span class="title">${esc(p.t)}</span>
+    <div class="meta"><span class="st ${c}">${l}</span><span>· ${p.org}${c!=='idle'?' · '+fmt(p.d):''}</span></div>${p.d>today&&!got?'':''}
+    <div class="btns" style="margin-top:6px">${got
+      ?`<button class="btn ghost sm" type="button" id="pu-${p.id}" data-unpay="${p.id}" aria-label="Annuler : ${esc(p.t)}">Annuler</button>`
+      :p.d>today?'':`<button class="btn ghost sm" type="button" id="pr-${p.id}" data-pay="${p.id}" aria-label="Je l'ai reçu : ${esc(p.t)}">Je l'ai reçu</button>${due&&!S.asked[p.id]?`<button class="btn ghost sm" type="button" id="pn-${p.id}" data-ans-no="${p.id}">Pas encore</button>`:''}`}</div>
+    ${c==='late'?`<details class="more"><summary>Que faire ?</summary><div class="detail">
+      <span><b>1.</b> Regarde les messages de ton espace ${p.kind!=='caf'?'ameli':'Caf'} : il manque souvent un papier${p.kind==='cpam'?" (l'attestation de salaire de ton employeur)":p.kind==='csn'?" (la demande transmise par ton employeur)":''}.</span>
+      <span><b>2.</b> Envoie ce message depuis ton espace en ligne :</span>
+      <textarea class="tpl" id="tpl-${p.id}" aria-label="Message à copier">${TPL[p.kind]}</textarea>
+      <div class="btns" style="align-items:center"><button class="btn sm" type="button" id="cp-btn-${p.id}" data-copy="tpl-${p.id}">Copier le message</button><span class="small muted" id="cp-tpl-${p.id}" aria-live="polite"></span></div>
+      <span><b>3.</b> Du mal à payer tes factures ? Demande le service social de ${p.kind!=='caf'?"l'Assurance maladie":'la Caf'}.</span>
+      <span><b>4.</b> Toujours rien après ta réclamation ? Contacte le médiateur de ta caisse.</span>
+    </div></details>`:''}
+  </div></div>`;
+}
+let argView=null;
+/* Barèmes Caf au 1er avril 2026 (revenus 2024) */
+const PL={partiel:{b:[37118,44542,53450,62358],m:[49054,56478,65386,74294],s:8908},plein:{b:[31066,37279,44735,52191],m:[41055,47268,54724,62180],s:7456}};
+const plaf=(t,n,maj)=>{const a=PL[t][maj?'m':'b'];return n<=4?a[n-1]:a[3]+(n-4)*PL[t].s};
+const AFP={max:[79980,86644,93308],med:[106604,113268,119932]};
+const AFM={2:[152.25,76.13,38.06],3:[347.32,173.66,86.83],4:[542.38,271.19,135.60]}, AFX=[195.07,97.53,48.77];
+const afPl=(tr,n)=>n<=4?AFP[tr][n-2]:AFP[tr][2]+(n-4)*6664;
+const afAmt=(n,i)=>n<=4?AFM[n][i]:AFM[4][i]+(n-4)*AFX[i];
+const eur0=v=>Math.round(v).toLocaleString('fr-FR')+' €';
+function tplBox(id,txt){return `<details class="more"><summary>Préparer le message</summary><div class="detail">
+  <textarea class="tpl" id="tpl-${id}" aria-label="Message à copier">${esc(txt)}</textarea>
+  <div class="btns" style="align-items:center"><button class="btn sm" type="button" id="cp-btn-${id}" data-copy="tpl-${id}">Copier le message</button><span class="small muted" id="cp-tpl-${id}" aria-live="polite"></span></div></div></details>`}
+function aidesResults(){
+  const A=S.aides; const kids=A.kids===''?S.rank:+A.kids||0; const n=kids+S.nb; const maj=A.sit!=='couple1';
+  const rev=(A.rev===''||A.rev==='ns')?null:+A.rev; const brut=A.brut===''?null:+A.brut;
+  const {dpa,B,born}=refs(); const c=conge(); const pat=multi()?32:25;
+  const bb=S.nb===2?'des jumeaux':S.nb>=3?'des triplés':'un bébé';
+  const R=[];
+  const need='<span class="amt no">Choisis ta situation et indique tes revenus plus haut</span>'; const known=!!A.sit&&rev!==null;
+  /* Prime */
+  let a1=need; if(known){const pp=plaf('partiel',n,maj);a1=rev<=pp?`<span class="amt">${eur(1093.08*S.nb)}</span>${S.nb>1?`<span class="small muted">${S.nb} primes de 1 093,08 €</span>`:''}`:rev<=pp*1.05?`<span class="amt no">Juste au-dessus du plafond (${eur0(pp)}) : vérifie avec le simulateur de la Caf</span>`:`<span class="amt no">Pas pour toi : plafond de ${eur0(pp)}</span>`}
+  R.push(['Prime à la naissance',a1,'Versée au 7e mois de grossesse.',"Ton médecin ou ta sage-femme déclare ta grossesse avant la fin du 3e mois. Ensuite, sur caf.fr, demande la prestation d'accueil du jeune enfant et déclare tes revenus.",['caf.fr','https://www.caf.fr'],['caf',`Bonjour,\n\nJ'attends ${bb} pour le ${fmtY(dpa)}. Ma grossesse a été déclarée le [date].\n\nPouvez-vous me confirmer que ma demande de prestation d'accueil du jeune enfant (prime à la naissance et allocation de base) est bien enregistrée, et me dire s'il manque une pièce ?\n\nMerci,\n[Prénom Nom] — n° allocataire : [numéro]`]]);
+  /* Allocation de base */
+  let a2=need; if(known){const ab1=rev<=plaf('plein',n,maj)?198.16:rev<=plaf('partiel',n,maj)?99.09:0;a2=ab1?`<span class="amt">${eur(ab1*S.nb)} par mois</span>${S.nb>1?`<span class="small muted">${S.nb} allocations de ${eur(ab1)}, une par bébé</span>`:''}`:'<span class="amt no">Pas pour toi : revenus au-dessus du plafond</span>'}
+  R.push(['Allocation de base',a2,'Chaque mois, du mois qui suit la naissance jusqu\'aux 3 ans de bébé.'+(multi()?' Pour des naissances multiples, une allocation par bébé.':''),"Rien de plus à faire : c'est la même demande que la prime. Envoie l'acte de naissance à la Caf.",null,null]);
+  /* Allocations familiales */
+  if(n>=2){let a3=need; if(known){const i=rev<=afPl('max',n)?0:rev<=afPl('med',n)?1:2;a3=`<span class="amt">${eur(afAmt(n,i))} par mois</span><span class="small muted">Pour ${n} enfants</span>`}
+    R.push(['Allocations familiales',a3,'Chaque mois, dès que tu as 2 enfants à charge.',"Automatique quand la Caf a l'acte de naissance. Vérifie dans ton espace Caf.",null,null]);}
+  /* Indemnités maternité */
+  let a4='<span class="amt">Jusqu\'à 104,02 € par jour</span><span class="small muted">Indique ton salaire brut pour une estimation</span>';
+  if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));a4=`<span class="amt">≈ ${eur(d)} par jour</span><span class="small muted">Soit ≈ ${eur0(d*(c.pre+c.post)*7)} pour tes ${c.pre+c.post} semaines</span>`}
+  R.push(['Indemnités de congé maternité',a4,'Tous les 14 jours, pendant ton congé (salariée).',"Ton employeur envoie ton attestation de salaire à l'Assurance maladie. Tu n'as rien à demander, mais rappelle-le-lui.",['ameli.fr','https://www.ameli.fr'],null]);
+  /* Congé de naissance */
+  R.push(['Congé de naissance (1 ou 2 mois)','<span class="amt">70 % du salaire net, puis 60 %</span><span class="small muted">Pour chaque parent, dans la limite de 4 005 € par mois</span>','Dans les 9 mois après la naissance.',"Écris à ton employeur 1 mois avant le début. Il transmet lui-même la demande à l'Assurance maladie.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39685'],['csn',`Objet : demande de congé supplémentaire de naissance\n\nMadame, Monsieur,\n\nJe vous informe que je souhaite prendre un congé supplémentaire de naissance [d'un mois / de deux mois], à partir du [date], à la suite de mon congé de maternité.\n\n[Je le prendrai en une seule fois. / Je le prendrai en deux périodes d'un mois : du … au …, puis du … au ….]\n\nMon enfant ${born?'est né le '+fmtY(B):'doit naître le '+fmtY(dpa)}.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]\n\n(À envoyer en recommandé avec accusé de réception, ou à remettre en main propre contre récépissé.)`]]);
+  /* Second parent */
+  R.push(['Congé du second parent',`<span class="amt">${pat} jours + 3 jours</span><span class="small muted">Payés par l'employeur puis l'Assurance maladie, jusqu'à 104,02 € par jour</span>`,'Dans les 6 mois après la naissance.',"Le second parent prévient son employeur au moins 1 mois avant le terme.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F3156'],['pat',`Objet : congé de naissance et congé de paternité et d'accueil de l'enfant\n\nMadame, Monsieur,\n\nLa naissance de ${multi()?'nos enfants':'notre enfant'} est prévue le ${fmtY(dpa)}.\n\nJe prendrai les 3 jours de congé de naissance, puis mon congé de paternité et d'accueil de l'enfant de ${pat} jours : 4 jours tout de suite après, puis [nombre] jours du [date] au [date].\n\nJe vous confirmerai les dates exactes après la naissance.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]`]]);
+  /* PreParE */
+  const dur=A.sit==='seule'?(n<=1?"jusqu'au 1er anniversaire de bébé":"jusqu'aux 3 ans du plus jeune"):(n<=1?"6 mois par parent, avant le 1er anniversaire":"jusqu'à 24 mois par parent, avant les 3 ans du plus jeune");
+  R.push(['PreParE (congé parental)','<span class="amt">459,69 € par mois</span><span class="small muted">Si tu arrêtes de travailler. 297,17 € à mi-temps</span>',dur.charAt(0).toUpperCase()+dur.slice(1)+', moins les mois de congé maternité indemnisés. Il faut avoir cotisé 8 trimestres sur les 2, 4 ou 5 dernières années selon ton nombre d\'enfants.',"Après la fin du congé maternité, envoie à la Caf le formulaire cerfa 12324 (et le 11423 si tu n'es pas encore allocataire).",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F32485'],null]);
+  /* Garde */
+  R.push(["Aide pour la garde (CMG)",'<span class="amt no">Selon les heures et tes revenus</span><span class="small muted">La Caf prend en compte jusqu\'à environ 8 € de l\'heure pour une assistante maternelle (repas et entretien compris)</span>','Chaque mois, pendant la garde.',"Demande-la sur caf.fr dès que la garde commence. Pour une assistante maternelle, ça ouvre ton compte Pajemploi.",['caf.fr','https://www.caf.fr'],null]);
+  R.push(["Crédit d'impôt pour la garde",'<span class="amt">Jusqu\'à 1 750 € par enfant et par an</span><span class="small muted">50 % des frais de crèche ou d\'assistante maternelle, avant ses 6 ans</span>','Au moment de ta déclaration de revenus.',"Déclare les frais dans les cases 7GA à 7GC, après avoir retiré l'aide de la Caf.",['impots.gouv.fr','https://www.impots.gouv.fr'],null]);
+  R.push(["Aide à domicile de la Caf",'<span class="amt no">Tu paies selon tes revenus</span>','Pendant la grossesse ou après la naissance.',"Regarde d'abord ta mutuelle, puis contacte un service d'aide à domicile conventionné par la Caf.",['caf.fr','https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile'],null]);
+  let sum='';
+  if(known){const pp=plaf('partiel',n,maj); const pr=rev<=pp?1093.08*S.nb:0;
+    const ab=(rev<=plaf('plein',n,maj)?198.16:rev<=pp?99.09:0)*S.nb;
+    const af=n>=2?afAmt(n,rev<=afPl('max',n)?0:rev<=afPl('med',n)?1:2):0;
+    const L=[];
+    if(pr)L.push(`<b>${eur0(pr)}</b> à la naissance (prime)`);
+    if(ab||af)L.push(`<b>${eur0(ab+af)} par mois</b> environ après la naissance${ab&&af?' (allocation de base et allocations familiales)':ab?' (allocation de base)':' (allocations familiales)'}`);
+    if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));L.push(`<b>≈ ${eur0(d*(c.pre+c.post)*7)}</b> d'indemnités pendant ton congé maternité`)}
+    L.push('<b>1 ou 2 mois</b> de congé de naissance par parent, payés 70 % puis 60 %');
+    const first=L.shift();
+    sum=`<div class="heroA" aria-live="polite"><span class="label">Pour toi</span>${first?`<span class="midA">${first}</span>`:''}${L.map(x=>`<p style="margin:0">${x}</p>`).join('')}</div>`;
+  } else if(A.rev==='ns'){const pp=plaf('partiel',n,maj), pl=plaf('plein',n,maj);
+    sum=`<div class="heroA"><span class="label">Pour toi, selon tes revenus 2024</span>
+      <p style="margin:0">Sous <b>${eur0(pp)}</b> par an : prime de <b>${eur(1093.08*S.nb)}</b> et allocation de base de <b>${eur(99.09*S.nb)}</b> par mois.</p>
+      <p style="margin:0">Sous <b>${eur0(pl)}</b> par an : allocation de base de <b>${eur(198.16*S.nb)}</b> par mois.</p>
+      <p style="margin:0">Au-dessus de ${eur0(pp)} : pas de prime ni d'allocation de base.</p>
+      <span class="hint">Le chiffre à regarder : « revenu net imposable » sur ton avis d'impôt 2025. En couple, additionne les deux.</span></div>`;
+  } else sum=`<div class="heroA"><span class="label">Pour toi</span><span class="midA">? €</span><span class="small muted">Réponds aux deux questions juste en dessous.</span></div>`;
+  return sum+`<details class="more"><summary>Toutes les aides et comment les demander (${R.length})</summary><div class="list">${R.map(([t,amt,when,how,l,tp])=>`<div class="item"><div class="body">
+    <span class="title">${t}</span>${amt}
+    <span class="small muted">${esc(when)}</span>
+    <p class="how">${esc(how)}</p>
+    ${l?`<a class="small" href="${l[1]}" target="_blank" rel="noopener">Aller sur ${l[0]} ↗</a>`:''}
+    ${tp?tplBox('a-'+tp[0],tp[1]):''}
+  </div></div>`).join('')}</div></details>`;
+}
+let aT=0;
+function updAides(){const r=document.getElementById('a-res');if(!r)return;r.innerHTML=aidesResults();clearTimeout(aT);aT=setTimeout(()=>{const h=r.querySelector('.heroA'),sy=document.getElementById('a-say');if(h&&sy)sy.textContent=Array.from(h.children).map(c=>c.textContent.replace(/\s+/g,' ').trim()).join('. ')},800)}
+function vAides(){
+  const A=S.aides; const ns=A.rev==='ns';
+  return `<p class="sr" aria-live="polite" id="a-say"></p><div id="a-res" class="sect">${aidesResults()}</div>
+    <form class="card" id="aForm" onsubmit="return false">
+      <label class="field">Ta situation<select id="a-sit"><option value="" ${A.sit?'':'selected'} disabled>Choisis ta situation</option>${[['couple2','En couple, nous travaillons tous les deux'],['couple1','En couple, un seul de nous travaille'],['seule','Seule avec mon ou mes enfants']].map(([v,l])=>`<option value="${v}" ${A.sit===v?'selected':''}>${l}</option>`).join('')}</select>
+        <span class="hint">« Tous les deux » : chacun a gagné plus de 6 300 € en 2024.</span></label>
+      <label class="field">Revenus du foyer en 2024, pour l'année (€)<input type="number" inputmode="numeric" id="a-rev" min="0" step="100" placeholder="${ns?'Je ne sais pas':'Ex. 42000'}" value="${ns?'':esc(A.rev)}">
+        <span class="hint">Sur ton avis d'impôt 2025 : la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
+      <button type="button" class="lnk" id="a-ns" data-ans-ns="1" aria-pressed="${ns}">${ns?'✓ Je ne sais pas : on te montre les cas possibles':'Je ne sais pas'}</button>
+      <details class="more"><summary>Plus de précisions (facultatif)</summary><div class="detail">
+        <label class="field">Ton salaire brut par mois<input type="number" inputmode="numeric" id="a-brut" min="0" step="50" placeholder="Ex. 2500" value="${esc(A.brut)}">
+          <span class="hint">Pour estimer tes indemnités de congé maternité.</span></label></div></details>
+    </form>
+    <p class="small muted" style="margin:0">Estimation faite avec les barèmes de la Caf au 1er avril 2026. C'est la Caf qui décide : vérifie avec son simulateur sur caf.fr. Sereine ne peut pas envoyer les demandes à ta place, mais chaque message est prêt : tu n'as qu'à le copier, le compléter et l'envoyer.</p>`;
+}
+function vArgent(){
+  const all0=payments(); const pend0=all0.filter(p=>!S.received[p.id]&&p.d<=today).length;
+  const v=argView||(pend0?'versements':'aides');
+  const seg=`<div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Afficher"><button type="button" id="av-aides" data-av="aides" aria-pressed="${v==='aides'}" style="min-height:48px">Mes aides</button><button type="button" id="av-vers" data-av="versements" aria-pressed="${v==='versements'}" style="min-height:48px">Mes versements</button></div>`;
+  if(v==='aides')return `<div class="panel"><div class="sect"><h2>Ton argent</h2></div>${seg}${vAides()}</div>`;
+  return vVersements(seg);
+}
+let showAllPend=false, bulk=false;
+function vVersements(seg){
+  const all=payments();
+  const pending=all.filter(p=>!S.received[p.id]&&p.d<=today);
+  const next=all.filter(p=>!S.received[p.id]&&p.d>today).slice(0,3);
+  const got=all.filter(p=>S.received[p.id]);
+  return `<div class="panel">
+    <div class="sect"><h2>Ton argent</h2></div>${seg}
+    <div class="sect"><p class="muted" style="margin:0">Touche « Je l'ai reçu » quand un versement arrive sur ton compte. S'il tarde, on t'aide à le réclamer.${multi()?' Prime et allocation de base sont versées pour chaque bébé.':''}</p></div>
+    ${pending.length?(bulk?`<section class="sect"><span class="label">Coche ce que tu as reçu</span>
+      <div class="list">${pending.map(p=>`<div class="item"><input type="checkbox" class="check" id="bk-${p.id}" data-bk="${p.id}" checked><div class="body"><label class="title" for="bk-${p.id}">${esc(p.t)}</label><span class="small muted">${p.org} · ${fmt(p.d)}</span></div></div>`).join('')}</div>
+      <div class="btns"><button class="btn" type="button" id="bk-ok" data-bkok="1">Valider</button><button class="btn ghost" type="button" id="bk-cancel" data-bkcancel="1">Annuler</button></div></section>`
+    :`<section class="sect"><div class="sect-head"><span class="label">À vérifier (${pending.length})</span>${pending.length>1?'<button class="iconbtn" type="button" id="bk-start" data-bkstart="1">J\'ai tout reçu sauf…</button>':''}</div>
+      <div class="list">${(showAllPend?pending:pending.slice(0,3)).map(payRow).join('')}</div>
+      ${pending.length>3&&!showAllPend?`<button class="iconbtn" style="align-self:flex-start" type="button" id="pend-more" data-pendmore="1">Voir les ${pending.length-3} autres</button>`:''}</section>`):''}
+    <section class="sect"><span class="label">Prochains versements</span><div class="list">${next.map(payRow).join('')||'<div class="item muted">Plus aucun versement prévu.</div>'}</div></section>
+    <details class="more"><summary>Tu prends le congé de naissance ?</summary><div class="detail">    <div class="field" role="group" aria-labelledby="csn-l"><span id="csn-l">Tu prends le congé de naissance ?</span>
+      <div class="choices seg" style="grid-template-columns:1fr 1fr"><button type="button" id="csn-y" data-csn="1" aria-pressed="${!!S.csn}" style="min-height:48px">Oui</button><button type="button" id="csn-n" data-csn="0" aria-pressed="${!S.csn}" style="min-height:48px">Pas pour l'instant</button></div></div>
+<span class="hint">Si oui, on ajoute ses indemnités à tes versements.</span></div></details>
+    ${got.length?`<details class="more"><summary>Déjà reçus (${got.length})</summary><div class="list">${got.map(payRow).join('')}</div></details>`:''}
+    <p class="small muted" style="margin:0">Dates estimées : indemnités tous les 14 jours, aides Caf vers le 5 du mois. Les montants dépendent de tes revenus : simule-les sur caf.fr.</p>
+  </div>`;
+}
+
+/* ---------- Aide ---------- */
+const MOODS=[['bien','Ça va','var(--ok)'],['fatigue','Fatiguée','var(--accent)'],['deborde','Débordée','var(--soon)'],['triste','Triste','var(--muted)'],['bout','À bout','var(--late)']];
+const PH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>';
+const callRow=(t,num,tel,s)=>`<div class="call"><div class="body"><span class="title" style="font-weight:700">${t}</span><span class="num">${num}</span><span class="small muted">${s}</span></div><a class="callbtn" href="tel:${tel}" aria-label="Appeler ${t} au ${num}">${PH}</a></div>`;
+function vAide(){
+  const k=iso(today); const m=S.mood[k];
+  const last=Object.keys(S.mood).sort().slice(-7).map(d=>S.mood[d]);
+  const heavy=last.filter(x=>x==='triste'||x==='bout').length;
+  return `<div class="panel">
+    <h2>Besoin d'aide ?</h2>
+    ${m==='bout'?`<div class="note bad"><b>Tu n'as pas à tenir seule.</b><span>Si tu as des idées noires, appelle le 3114, jour et nuit, gratuit. En danger immédiat : le 15.</span></div>`:''}
+    <section class="sect"><span class="label">Urgence</span><div class="list">
+      ${callRow('Urgence médicale','15','15','ou 112 depuis un portable')}
+      ${callRow('Prévention du suicide','3114','3114','24 h/24, 7 j/7, gratuit')}
+    </div></section>
+    <section class="sect"><span class="label">Une question sur tes droits</span><div class="list">
+      ${callRow('Caf','3230','3230','Aides, prime, allocation de base')}
+      ${callRow('Assurance maladie','36 46','3646','Congé maternité, indemnités, carte Vitale')}
+      ${callRow('Allô Parents Bébé','0 800 00 34 56','0800003456','Gratuit · lun.–ven., 10 h–13 h et 14 h–18 h')}
+    </div></section>
+    <section class="sect"><span class="label">Et toi, comment ça va aujourd'hui ?</span>
+      <div class="moods" role="group" aria-label="Mon humeur du jour">${MOODS.map(([id,l,c])=>`<button type="button" id="mood-${id}" data-mood="${id}" aria-pressed="${m===id}"><span class="dot" style="background:${c}"></span>${l}</button>`).join('')}</div>
+      ${heavy>=2&&m!=='bout'?`<div class="note"><b>Plusieurs jours difficiles</b><span>Parles-en cette semaine à ta sage-femme, ton médecin ou la PMI. Après une naissance, c'est fréquent et ça se soigne.</span></div>`:''}
+    </section>
+    <section class="sect"><span class="label">Près de chez toi</span><div class="list">
+      <div class="item"><div class="body"><span class="title">PMI de ton département</span><span class="small muted">Puéricultrices et sages-femmes gratuites, visites à la maison possibles. Le numéro est dans ton carnet de santé ou sur le site de ton département.</span></div></div>
+      ${multi()?`<div class="item"><div class="body"><span class="title">Jumeaux et Plus</span><span class="small muted">Associations de parents de jumeaux et plus : entraide, prêt de matériel, conseils.</span><a class="small" href="https://www.jumeaux-et-plus.fr" target="_blank" rel="noopener">jumeaux-et-plus.fr ↗</a></div></div>`:''}
+      <div class="item"><div class="body"><span class="title">Maman Blues</span><span class="small muted">Association de soutien aux mères en difficulté après la naissance.</span><a class="small" href="https://www.maman-blues.fr" target="_blank" rel="noopener">maman-blues.fr ↗</a></div></div>
+    </div></section>
+    <p class="small muted" style="margin:0">Sereine ne remplace pas un avis médical. Tes réponses restent sur ton téléphone.</p>
+  </div>`;
+}
+
+let rvPay=null, rvErr=false;
+const stillOpen=s=>['csn','cmg','epn','tisf'].includes(s.id)||(s.id==='second'&&diff(today,refs().B)<183);
+const pastSteps=()=>steps().filter(s=>!S.done[s.id]&&s.d<today).sort((a,b)=>a.d-b.d);
+const pastPays=()=>payments().filter(p=>!S.received[p.id]&&p.d<=today);
+const needsReview=()=>!S.reviewed&&(pastSteps().length>0||pastPays().length>0);
+function vReview(){
+  const ps=pastSteps(), pp=pastPays();
+  return `<form class="panel" id="rvForm" style="padding-top:20px">
+    <div class="sect"><span class="label">Avant de commencer</span><h1>Qu'as-tu déjà fait ?</h1>
+      <p class="muted" style="margin:0">Ces démarches avaient une date déjà passée. Coche seulement celles que tu as vraiment faites. Les autres resteront dans ta liste.</p></div>
+    ${ps.length?`<div class="list">${ps.map(s=>`<div class="item"><input type="checkbox" class="check" id="rv-${s.id}" data-rv="${s.id}"><div class="body"><label class="title" for="rv-${s.id}">${esc(s.t)}</label><span class="small muted">${esc(s.org)}</span></div></div>`).join('')}</div>`:''}
+    ${pp.length?`<div class="field" role="group" aria-labelledby="rvp-l"><span id="rvp-l">Les ${pp.length} versement${pp.length>1?'s':''} prévu${pp.length>1?'s':''} avant aujourd'hui, tu les as reçus ?</span>
+      <div class="choices" style="grid-template-columns:1fr 1fr"><button type="button" id="rvp-all" data-rvpay="all" aria-pressed="${rvPay==='all'}">Oui, tous</button><button type="button" id="rvp-one" data-rvpay="one" aria-pressed="${rvPay==='one'}">Je vérifie un par un</button></div></div>`:''}
+    ${rvErr?'<p class="small" role="alert" style="margin:0;color:var(--late);font-weight:700">Dis-nous d\'abord si tu as reçu les versements.</p>':''}
+    <div style="position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:3"><button class="btn wide" type="submit" style="box-shadow:0 6px 18px color-mix(in srgb,#000 18%,transparent)">C'est bon</button></div>
+  </form>`;
+}
+const VIEWS={accueil:vAccueil,demarches:vDemarches,garde:vGarde,argent:vArgent,aide:vAide};
+function render(){
+  const a=document.activeElement; const fid=a&&a.id&&document.getElementById('view').contains(a)?a.id:null;
+  const on=ready(); const rv=on&&needsReview(); const full=on&&!rv;
+  document.getElementById('app').classList.toggle('onb',!full);
+  document.getElementById('tabbar').hidden=!full;
+  document.getElementById('openSettings').hidden=!full;
+  document.getElementById('view').innerHTML=!on?vOnboarding():rv?vReview():VIEWS[tab]();
+  if(full)renderTabs();
+  if(full&&tab==='garde'&&gView==='find')fillNear();
+  if(fid){const el=document.getElementById(fid);if(el)el.focus({preventScroll:true});else{const h=document.querySelector('#view h1,#view h2,#view h3');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}}
+}
+function say(t){const el=document.getElementById('sr-status');el.textContent='';setTimeout(()=>{el.textContent=t},50)}
+
+/* ---------- Événements ---------- */
+const view=document.getElementById('view');
+view.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.step){S.done[t.dataset.step]=t.checked;save();render();say(t.checked?'Marqué comme fait':'Remis à faire')}
+  else if(t.dataset.nc){S.nounouCheck[t.dataset.nc]=t.checked;save();render()}
+  else if(t.dataset.ck){S[t.dataset.ck][t.dataset.ckid]=t.checked;save();render()}
+  else if(t.id==='nn-start'){S.nn.start=t.value;save();render()}
+  else if(t.dataset.gstat){const g=S.garde.find(x=>x.id===t.dataset.gstat);g.status=t.value;save();render()}
+  else if(t.id==='o-dpa'){onb.dpa=t.value}
+  else if(t.id==='a-sit'){S.aides.sit=t.value;save();updAides()}
+});
+view.addEventListener('input',e=>{
+  if(['n-h','n-w','n-t','n-k'].includes(e.target.id)){
+    const h=+document.getElementById('n-h').value||0,w=+document.getElementById('n-w').value||0,t=+document.getElementById('n-t').value||0,k=+document.getElementById('n-k').value||1;
+    S.nounou={h,w,t,k};save();
+    {const r=document.getElementById('nr-res');if(r&&!document.getElementById('nr-rev'))r.innerHTML=nnResteHTML()}
+    document.getElementById('n-res').textContent=(t*h*Math.min(52,w)/12*k).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+    const cap=document.getElementById('n-cap'); if(cap)cap.textContent=capMsg(t);
+  }
+  if(e.target.id==='nr-rev'&&e.target.value!==''){S.aides.rev=e.target.value;save();clearTimeout(aT);aT=setTimeout(()=>{const r=document.getElementById('nr-res');if(r){r.innerHTML=nnResteHTML()}},900)}
+  if(e.target.id==='nh-plus'||e.target.id==='nh-abs'){const mk=iso(today).slice(0,7);S.nnH[mk]=S.nnH[mk]||{plus:'',abs:''};S.nnH[mk][e.target.id.slice(3)]=e.target.value;save();
+    const f=document.getElementById('nhForm');const r=document.getElementById('nh-res');const tmp=document.createElement('div');tmp.innerHTML=nnMoisHTML();r.textContent=tmp.querySelector('#nh-res').textContent;f.lastElementChild.textContent=tmp.lastElementChild.textContent}
+  if(e.target.id==='nn-name'||e.target.id==='nn-tel'){S.nn[e.target.id.slice(3)]=e.target.value;save()}
+  if(e.target.id==='cp'){S.cp=e.target.value.replace(/\D/g,'').slice(0,5);save();nearMore=false;nearType='all';nearSel=-1;const n=document.getElementById('near-links');if(n)n.innerHTML=nearLinks();fillNear()}
+  const AK={'a-rev':'rev','a-kids':'kids','a-brut':'brut'}[e.target.id];
+  if(AK){S.aides[AK]=e.target.value;save();updAides()}
+});
+view.addEventListener('click',e=>{
+  const pt=e.target.closest('[data-pt]'); if(pt){nearSel=+pt.dataset.pt;const m=document.getElementById('near-map');if(m){m.innerHTML=nearMapHTML();const q=m.querySelector('[data-pt="'+nearSel+'"]');if(q)q.focus({preventScroll:true})}return}
+  const b=e.target.closest('button'); if(!b)return;
+  if(b.dataset.go)go(b.dataset.go);
+  else if(b.dataset.onbNb){onb.nb=+b.dataset.onbNb;keepOnb();render()}
+  else if(b.dataset.onbM){onb.m=+b.dataset.onbM;keepOnb();render()}
+  else if(b.dataset.gadd){gAdding=true;render();const i=document.getElementById('g-name');if(i)i.focus()}
+  else if(b.dataset.gcancel){gAdding=false;render()}
+  else if(b.dataset.gtype){gType=b.dataset.gtype;const v=document.getElementById('g-name').value;render();const i=document.getElementById('g-name');i.value=v;i.focus()}
+  else if(b.dataset.done){S.done[b.dataset.done]=true;save();render();say('Marqué comme fait')}
+  else if(b.dataset.sf){stepFilter=b.dataset.sf;render()}
+  else if(b.dataset.av){argView=b.dataset.av;render()}
+  else if(b.dataset.scroll){const el=document.getElementById(b.dataset.scroll);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+  else if(b.dataset.nt){nearType=b.dataset.nt;nearMore=false;nearSel=-1;fillNear()}
+  else if(b.dataset.nearmore){nearMore=true;fillNear()}
+  else if(b.dataset.nz){nearR=+b.dataset.nz;nearSel=-1;const m=document.getElementById('near-map');if(m){m.innerHTML=nearMapHTML();initLeaf()}}
+  else if(b.dataset.follow!==undefined)followNear(b.dataset.follow);
+  else if(b.dataset.cadd){const f=document.getElementById('nc-from').value,t=document.getElementById('nc-to').value;if(!f||!t||t<f)return;S.nnC.push({id:'c'+Date.now(),from:f,to:t});save();render();say('Congé ajouté')}
+  else if(b.dataset.cdel){S.nnC=S.nnC.filter(c=>c.id!==b.dataset.cdel);save();render()}
+  else if(b.dataset.gv){gView=b.dataset.gv;gAdding=false;render()}
+  else if(b.dataset.ansNs){S.aides.rev=S.aides.rev==='ns'?'':'ns';save();render()}
+  else if(b.dataset.csnhide){S.csnHide=true;save();render()}
+  else if(b.dataset.pendmore){showAllPend=true;render()}
+  else if(b.dataset.bkstart){bulk=true;render()}
+  else if(b.dataset.bkcancel){bulk=false;render()}
+  else if(b.dataset.bkok){view.querySelectorAll('[data-bk]').forEach(x=>{if(x.checked)S.received[x.dataset.bk]=true});bulk=false;argView='versements';save();render()}
+  else if(b.dataset.csn!==undefined){S.csn=b.dataset.csn==='1';save();render()}
+  else if(b.dataset.rvpay){rvPay=b.dataset.rvpay;
+    view.querySelectorAll('[data-rvpay]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.rvpay===rvPay)))}
+  else if(b.dataset.grel){const g=S.garde.find(x=>x.id===b.dataset.grel);g.relance=iso(add(today,14));save();render()}
+  else if(b.dataset.gdel){S.garde=S.garde.filter(x=>x.id!==b.dataset.gdel);save();render()}
+  else if(b.dataset.pay){S.received[b.dataset.pay]=true;save();render();say('Versement noté comme reçu')}
+  else if(b.dataset.unpay){delete S.received[b.dataset.unpay];save();render()}
+  else if(b.dataset.ansYes){S.received[b.dataset.ansYes]=true;save();render()}
+  else if(b.dataset.ansNo){S.asked[b.dataset.ansNo]=iso(today);save();render()}
+  else if(b.dataset.mood){S.mood[iso(today)]=b.dataset.mood;save();render()}
+  else if(b.dataset.copy){
+    const ta=document.getElementById(b.dataset.copy), msg=document.getElementById('cp-'+b.dataset.copy);
+    const fallback=()=>{ta.focus();ta.select();msg.textContent='Texte sélectionné : copie-le avec ton téléphone.'};
+    try{navigator.clipboard.writeText(ta.value).then(()=>{msg.textContent='Copié. Colle-le dans ta messagerie en ligne.'},fallback)}catch(_){fallback()}
+  }
+});
+view.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(e.target.id==='gForm'){
+    const name=document.getElementById('g-name').value.trim(); if(!name)return;
+    S.garde.push({id:'g'+Date.now(),name,type:gType,status:'À contacter',relance:iso(add(today,14))});
+    gAdding=false;save();render();
+  } else if(e.target.id==='onbForm'){
+    keepOnb(); let d=onb.dpa;
+    if(!d&&onb.ddr)d=iso(add(parse(onb.ddr),280));
+    if(!d&&onb.m)d=iso(add(today,Math.round((9-onb.m)*30.44+15)));
+    if(!d){onb.err=true;render();return}
+    onb.err=false; S.dpa=d; S.nb=onb.nb; S.rank=+document.getElementById('o-rank').value; S.birth=document.getElementById('o-birth').value||'';
+    S.reviewed=false; save(); tab='accueil'; render(); window.scrollTo(0,0);
+  } else if(e.target.id==='rvForm'){
+    if(pastPays().length&&!rvPay){rvErr=true;render();return}
+    view.querySelectorAll('[data-rv]').forEach(x=>{if(x.checked)S.done[x.dataset.rv]=true});
+    if(rvPay==='all')pastPays().forEach(p=>{S.received[p.id]=true});
+    S.reviewed=true; rvErr=false; rvPay=null; save(); tab='accueil'; render(); window.scrollTo(0,0);
+  }
+});
+
+/* ---------- Mes dates ---------- */
+const sheet=document.getElementById('settings');
+const opener=document.getElementById('openSettings');
+function openSettings(){document.getElementById('f-nb').value=String(S.nb);document.getElementById('f-rank').value=String(S.rank);document.getElementById('f-dpa').value=S.dpa;document.getElementById('f-birth').value=S.birth||'';document.getElementById('resetMsg').textContent='';sheet.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;document.getElementById('f-dpa').focus()}
+function closeSettings(){if(sheet.hidden)return;sheet.hidden=true;document.getElementById('app').inert=false;document.getElementById('tabbar').inert=false;resetArmed=false;document.getElementById('resetAll').textContent='Tout effacer';if(!opener.hidden)opener.focus()}
+opener.addEventListener('click',openSettings);
+document.getElementById('closeSettings').addEventListener('click',closeSettings);
+sheet.addEventListener('click',e=>{if(e.target===sheet)closeSettings()});
+document.getElementById('settingsForm').addEventListener('submit',e=>{e.preventDefault();
+  S.nb=+document.getElementById('f-nb').value;S.rank=+document.getElementById('f-rank').value;
+  S.dpa=document.getElementById('f-dpa').value;S.birth=document.getElementById('f-birth').value;S.reviewed=false;save();closeSettings();render()});
+let resetArmed=false;
+document.getElementById('resetAll').addEventListener('click',e=>{
+  if(!resetArmed){resetArmed=true;e.target.textContent="Oui, tout effacer";document.getElementById('resetMsg').textContent='Toutes tes données seront supprimées.';return}
+  S=defaults();save();onb={nb:1,dpa:'',birth:'',rank:0};closeSettings();render()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();const pt=e.target.closest&&e.target.closest('[data-pt]');if(pt&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pt.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+
+render();
+})();
+</script>
+
+
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});</script>
+</body></html>
