@@ -24,24 +24,24 @@
 /* Layout: app mobile — en-tête collant, un écran par onglet, barre d'onglets fixe. Carnet crème sous lumière d'après-midi : blanc et beige, encre brune. */
 :root{
   --bg:#FBF8F3; --surface:#FFFFFF; --ink:#2E2822; --muted:#5A5149; --line:#EEE7DC;
-  --accent:#8A6D4E; --accent-soft:#F4EDE3; --on-accent:#FFFFFF;
+  --accent:#8A6D4E; --accent-soft:#F4EDE3; --on-accent:#FFFFFF; --accent-ink:#7A5E40;
   --hero-a:#F7F0E6; --hero-b:#EADCC8; --hero-line:transparent;
   --late:#B0473A; --late-soft:#F9EAE6; --soon:#7A5C17; --soon-soft:#F8F0DC; --ok:#46663F; --ok-soft:#EDF3EA;
   --display:"Fraunces", "Iowan Old Style", Georgia, serif;
   --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --r-card:20px; --r-ctl:12px; --field-line:#8F8275; --t-mam:#4A6FA5; --t-micro:#3F7A52; --t-autre:#B9AEA2;
+  --r-card:20px; --r-ctl:12px; --c-sand:#F1E6D6; --c-sage:#E7EDE3; --c-sky:#E6EBF1; --c-rose:#F6E8E2; --field-line:#8F8275; --t-mam:#4A6FA5; --t-micro:#3F7A52; --t-autre:#8A7E72;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#6E655C;
-  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714;
+  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#9A8F84;
+  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714; --accent-ink:#C8AA84;
   --hero-a:#342A21; --hero-b:#221D18; --hero-line:rgba(211,182,144,.18);
-  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; color-scheme:dark}}
+  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; --c-sand:#2E261E; --c-sage:#232A21; --c-sky:#21262D; --c-rose:#2E2321; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#6E655C;
-  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714;
+  --bg:#1A1714; --surface:#221E1A; --ink:#F3EDE5; --muted:#C4BAAE; --line:#332D27; --field-line:#7D7266; --t-mam:#8FB0DC; --t-micro:#8CC79C; --t-autre:#9A8F84;
+  --accent:#C8AA84; --accent-soft:#2D2620; --on-accent:#1A1714; --accent-ink:#C8AA84;
   --hero-a:#342A21; --hero-b:#221D18; --hero-line:rgba(211,182,144,.18);
-  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; color-scheme:dark}
+  --late:#EC9384; --late-soft:#3A221E; --soon:#E2C178; --soon-soft:#2E2718; --ok:#A9C7A2; --ok-soft:#232E21; --c-sand:#2E261E; --c-sage:#232A21; --c-sky:#21262D; --c-rose:#2E2321; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -49,10 +49,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16p
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .app{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 calc(104px + env(safe-area-inset-bottom,0px))}
 .app.onb{padding-block:0 32px}
+header.top .topbtns{display:flex;gap:8px;align-items:center}
+header.top .iconbtn[aria-current="page"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+@media (max-width:374px){header.top .tl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}header.top .iconbtn{padding:0 12px}}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding-block:12px 8px}
 .brand{font-family:var(--display);font-weight:500;font-size:24px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
 .brand svg{width:26px;height:26px}
-.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;min-height:44px;min-width:44px;padding:0 14px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;min-height:44px;min-width:44px;padding:0 14px;font:inherit;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .iconbtn svg{width:20px;height:20px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;font-weight:500;letter-spacing:-.01em}
 h1{font-size:28px;line-height:1.2}
@@ -61,7 +64,7 @@ h3{font-size:22px;line-height:1.25}
 .panel{display:flex;flex-direction:column;gap:28px;padding-top:8px}
 .sect{display:flex;flex-direction:column;gap:12px}
 .sect-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.label{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.label{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .muted{color:var(--muted)}
 .small{font-size:15px}
 a{color:var(--accent)}
@@ -72,7 +75,7 @@ button{font:inherit}
 /* Carte de grossesse */
 .hero{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));border:1px solid var(--hero-line);border-radius:24px;padding:28px;display:flex;gap:20px;align-items:center}
 .hero .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.hero .kicker{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hero .kicker{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .hero .big{font-family:var(--display);font-weight:400;font-size:44px;line-height:1.05;font-variant-numeric:lining-nums}
 .hero .sub{font-size:16px;color:var(--muted)}
 .hero .soft{font-family:var(--display);font-style:italic;font-size:17px;line-height:1.4;margin-top:8px}
@@ -81,7 +84,7 @@ button{font:inherit}
 .ring .bgc{stroke:color-mix(in srgb,var(--accent) 18%,transparent)}
 .ring .fg{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
 .ring text{fill:var(--ink);font-family:var(--display);font-size:30px;text-anchor:middle}
-.ring .rl{fill:var(--muted);font-family:var(--body);font-size:11px;letter-spacing:.04em}
+.ring .rl{fill:var(--muted);font-family:var(--body);font-size:14px;letter-spacing:.04em}
 @media (max-width:360px){.hero{flex-direction:column;align-items:flex-start}}
 
 /* Listes */
@@ -103,9 +106,9 @@ button{font:inherit}
 .st.soon::before{background:var(--soon)}
 .st.ok::before{background:var(--ok)}
 .st.ok{color:var(--ok)}
-.tag{font-size:12px;color:var(--muted);font-weight:400}
+.tag{font-size:14px;color:var(--muted);font-weight:400}
 
-details.more summary{cursor:pointer;color:var(--accent);font-size:14px;font-weight:700;list-style:none;min-height:44px;display:flex;align-items:center}
+details.more summary{cursor:pointer;color:var(--accent);font-size:15px;font-weight:700;list-style:none;min-height:44px;display:flex;align-items:center}
 details.more summary::-webkit-details-marker{display:none}
 .detail{font-size:15px;color:var(--ink);display:flex;flex-direction:column;gap:8px}
 
@@ -122,11 +125,12 @@ details.more summary::-webkit-details-marker{display:none}
 
 /* Carte « Cette semaine » */
 .focus{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;display:flex;flex-direction:column;gap:10px}
-.focus .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.focus .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--muted)}
 
 .note{border-radius:var(--r-card);padding:16px;font-size:15px;display:flex;flex-direction:column;gap:6px;background:var(--accent-soft)}
 .note.bad{background:var(--late-soft)}
 .note b{font-family:var(--display);font-weight:600;font-size:17px}
+.note a{color:var(--accent-ink)}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-ctl);padding:12px;display:flex;flex-direction:column;gap:2px}
@@ -145,7 +149,7 @@ select.inl{width:auto;min-height:44px;font-size:15px}
 .btn.wide{width:100%}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
 .result{font-family:var(--display);font-size:30px;font-weight:500;font-variant-numeric:tabular-nums}
-textarea.tpl{width:100%;min-height:150px;font:inherit;font-size:15px;padding:12px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea.tpl{width:100%;min-height:150px;font:inherit;font-size:15px;padding:12px;border-radius:var(--r-ctl);border:1px solid var(--field-line);background:var(--bg);color:var(--ink);resize:vertical}
 
 /* Choix à gros boutons */
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -169,13 +173,14 @@ textarea.tpl{width:100%;min-height:150px;font:inherit;font-size:15px;padding:12p
 .item .how{font-size:15px;margin:0}
 /* Barre d'onglets */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-nav.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:66px}
-nav.tabs button{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13.5px;font-weight:500;cursor:pointer;position:relative}
-nav.tabs .ic{width:56px;height:30px;border-radius:15px;display:grid;place-items:center;position:relative}
+nav.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:66px}
+nav.tabs button{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;font-weight:500;cursor:pointer;position:relative}
+nav.tabs .ic{width:min(56px,100%);height:30px;border-radius:15px;display:grid;place-items:center;position:relative}
 nav.tabs svg{width:24px;height:24px}
 nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:700}
 nav.tabs button[aria-current="page"] .ic{background:var(--accent-soft);color:var(--accent)}
 nav.tabs .pip{position:absolute;top:3px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--late);box-shadow:0 0 0 2px var(--surface)}
+nav.tabs .pip.soft{background:var(--soon)}
 
 /* Fenêtre « Mes dates » */
 .sheet{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,#000 45%,transparent);display:flex;align-items:flex-end;justify-content:center}
@@ -185,9 +190,12 @@ nav.tabs .pip{position:absolute;top:3px;right:12px;width:8px;height:8px;border-r
 .nmap{width:100%;max-width:100%;aspect-ratio:1;display:block;background:var(--accent-soft);border-radius:var(--r-card);touch-action:manipulation}
 .nmap .ring,.nmap .rl{pointer-events:none}
 .nmap .ring{fill:none;stroke:var(--field-line);stroke-opacity:.45;stroke-width:1;stroke-dasharray:3 4}
-.nmap .rl{fill:var(--ink);font-size:12px;font-weight:700;font-family:var(--body);paint-order:stroke;stroke:var(--accent-soft);stroke-width:4px;stroke-linejoin:round}
+.nmap .rl{fill:var(--ink);font-size:14px;font-weight:700;font-family:var(--body);paint-order:stroke;stroke:var(--accent-soft);stroke-width:4px;stroke-linejoin:round}
 .nmap .pt{stroke:var(--surface);stroke-width:1.5;cursor:pointer}
-.nmap .pt:focus{outline:none;stroke:var(--ink);stroke-width:3}
+.nmap .hit{fill:transparent;cursor:pointer}
+.nmap g[data-pt]:focus{outline:none}
+.nmap g[data-pt]:focus .pt{stroke:var(--ink);stroke-width:3}
+#near-list:empty{display:none}
 .nmap .sel{stroke:var(--ink);stroke-width:3}
 .pop{font-family:var(--body);font-size:14px;line-height:1.4;color:#2E2822}
 .pop .btn.sm{min-height:36px;padding:4px 10px;font-size:13px}
@@ -209,22 +217,75 @@ nav.tabs .pip{position:absolute;top:3px;right:12px;width:8px;height:8px;border-r
 .field input,.field select,select.inl,.choices:not(.seg) button{border-color:var(--field-line)}
 .field select,select.inl{appearance:none;-webkit-appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238F8275' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 select.inl{border-radius:999px;background-color:var(--accent-soft);border-color:transparent;font-weight:700}
-.hero .kicker{white-space:nowrap}
+.hero .kicker{white-space:normal}
 .ring{width:96px;height:96px}
 .newrow{display:flex;align-items:center;gap:12px;min-height:72px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);text-align:left;cursor:pointer;width:100%}
-.newrow .tagn{font-size:12px;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 8px;flex:none}
+.newrow .tagn{font-size:14px;font-weight:700;background:var(--accent-soft);color:var(--accent-ink);border-radius:999px;padding:2px 8px;flex:none}
 .newrow .wt{flex:1;min-width:0;display:flex;flex-direction:column}
-.newrow .wt span{font-size:14px;color:var(--muted)}
+.newrow .wt span{font-size:15px;color:var(--muted)}
 .heroA{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));border:1px solid var(--hero-line);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:6px}
 .heroA .bigA{font-family:var(--display);font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums}
 .heroA .midA{font-family:var(--display);font-size:22px}
+/* Accueil : tout d'un coup d'œil */
+.pill{align-self:flex-start;background:var(--accent-soft);color:var(--accent-ink);border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700}
+.line1{font-size:26px;line-height:1.2;font-weight:400}
+.line1 b{font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:359px){nav.tabs button{font-size:13px;letter-spacing:-.02em}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:118px;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.tile .ic{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;position:relative}
+.tile .ic svg{width:22px;height:22px}
+.tile b{font-size:17px}
+.tile>span:last-child{font-size:15px;color:var(--muted)}
+.tdot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--soon);box-shadow:0 0 0 2px var(--surface)}
+.tdot.late{background:var(--late)}
+/* Leaflet 1.9.4 (carte), styles de base */
+.leaflet-pane, .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-tile-container, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box, .leaflet-image-layer, .leaflet-layer { position: absolute; left: 0; top: 0; } .leaflet-container { overflow: hidden; } .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow { -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-user-drag: none; } .leaflet-tile::selection { background: transparent; } .leaflet-safari .leaflet-tile { image-rendering: -webkit-optimize-contrast; } .leaflet-safari .leaflet-tile-container { width: 1600px; height: 1600px; -webkit-transform-origin: 0 0; } .leaflet-marker-icon, .leaflet-marker-shadow { display: block; } .leaflet-container .leaflet-overlay-pane svg { max-width: none !important; max-height: none !important; } .leaflet-container .leaflet-marker-pane img, .leaflet-container .leaflet-shadow-pane img, .leaflet-container .leaflet-tile-pane img, .leaflet-container img.leaflet-image-layer, .leaflet-container .leaflet-tile { max-width: none !important; max-height: none !important; width: auto; padding: 0; } .leaflet-container img.leaflet-tile { mix-blend-mode: plus-lighter; } .leaflet-container.leaflet-touch-zoom { -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; } .leaflet-container.leaflet-touch-drag { -ms-touch-action: pinch-zoom; touch-action: none; touch-action: pinch-zoom; } .leaflet-container.leaflet-touch-drag.leaflet-touch-zoom { -ms-touch-action: none; touch-action: none; } .leaflet-container { -webkit-tap-highlight-color: transparent; } .leaflet-container a { -webkit-tap-highlight-color: rgba(51, 181, 229, 0.4); } .leaflet-tile { filter: inherit; visibility: hidden; } .leaflet-tile-loaded { visibility: inherit; } .leaflet-zoom-box { width: 0; height: 0; -moz-box-sizing: border-box; box-sizing: border-box; z-index: 800; } .leaflet-overlay-pane svg { -moz-user-select: none; } .leaflet-pane { z-index: 400; } .leaflet-tile-pane { z-index: 200; } .leaflet-overlay-pane { z-index: 400; } .leaflet-shadow-pane { z-index: 500; } .leaflet-marker-pane { z-index: 600; } .leaflet-tooltip-pane { z-index: 650; } .leaflet-popup-pane { z-index: 700; } .leaflet-map-pane canvas { z-index: 100; } .leaflet-map-pane svg { z-index: 200; } .leaflet-vml-shape { width: 1px; height: 1px; } .lvml { behavior: url(#default#VML); display: inline-block; position: absolute; } .leaflet-control { position: relative; z-index: 800; pointer-events: visiblePainted; pointer-events: auto; } .leaflet-top, .leaflet-bottom { position: absolute; z-index: 1000; pointer-events: none; } .leaflet-top { top: 0; } .leaflet-right { right: 0; } .leaflet-bottom { bottom: 0; } .leaflet-left { left: 0; } .leaflet-control { float: left; clear: both; } .leaflet-right .leaflet-control { float: right; } .leaflet-top .leaflet-control { margin-top: 10px; } .leaflet-bottom .leaflet-control { margin-bottom: 10px; } .leaflet-left .leaflet-control { margin-left: 10px; } .leaflet-right .leaflet-control { margin-right: 10px; } .leaflet-fade-anim .leaflet-popup { opacity: 0; -webkit-transition: opacity 0.2s linear; -moz-transition: opacity 0.2s linear; transition: opacity 0.2s linear; } .leaflet-fade-anim .leaflet-map-pane .leaflet-popup { opacity: 1; } .leaflet-zoom-animated { -webkit-transform-origin: 0 0; -ms-transform-origin: 0 0; transform-origin: 0 0; } svg.leaflet-zoom-animated { will-change: transform; } .leaflet-zoom-anim .leaflet-zoom-animated { -webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1); -moz-transition: -moz-transform 0.25s cubic-bezier(0,0,0.25,1); transition: transform 0.25s cubic-bezier(0,0,0.25,1); } .leaflet-zoom-anim .leaflet-tile, .leaflet-pan-anim .leaflet-tile { -webkit-transition: none; -moz-transition: none; transition: none; } .leaflet-zoom-anim .leaflet-zoom-hide { visibility: hidden; } .leaflet-interactive { cursor: pointer; } .leaflet-grab { cursor: -webkit-grab; cursor: -moz-grab; cursor: grab; } .leaflet-crosshair, .leaflet-crosshair .leaflet-interactive { cursor: crosshair; } .leaflet-popup-pane, .leaflet-control { cursor: auto; } .leaflet-dragging .leaflet-grab, .leaflet-dragging .leaflet-grab .leaflet-interactive, .leaflet-dragging .leaflet-marker-draggable { cursor: move; cursor: -webkit-grabbing; cursor: -moz-grabbing; cursor: grabbing; } .leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-image-layer, .leaflet-pane > svg path, .leaflet-tile-container { pointer-events: none; } .leaflet-marker-icon.leaflet-interactive, .leaflet-image-layer.leaflet-interactive, .leaflet-pane > svg path.leaflet-interactive, svg.leaflet-image-layer.leaflet-interactive path { pointer-events: visiblePainted; pointer-events: auto; } .leaflet-container { background: #ddd; outline-offset: 1px; } .leaflet-container a { color: #0078A8; } .leaflet-zoom-box { border: 2px dotted #38f; background: rgba(255,255,255,0.5); } .leaflet-container { font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; font-size: 12px; font-size: 0.75rem; line-height: 1.5; } .leaflet-bar { box-shadow: 0 1px 5px rgba(0,0,0,0.65); border-radius: 4px; } .leaflet-bar a { background-color: #fff; border-bottom: 1px solid #ccc; width: 26px; height: 26px; line-height: 26px; display: block; text-align: center; text-decoration: none; color: black; } .leaflet-bar a, .leaflet-control-layers-toggle { background-position: 50% 50%; background-repeat: no-repeat; display: block; } .leaflet-bar a:hover, .leaflet-bar a:focus { background-color: #f4f4f4; } .leaflet-bar a:first-child { border-top-left-radius: 4px; border-top-right-radius: 4px; } .leaflet-bar a:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom: none; } .leaflet-bar a.leaflet-disabled { cursor: default; background-color: #f4f4f4; color: #bbb; } .leaflet-touch .leaflet-bar a { width: 30px; height: 30px; line-height: 30px; } .leaflet-touch .leaflet-bar a:first-child { border-top-left-radius: 2px; border-top-right-radius: 2px; } .leaflet-touch .leaflet-bar a:last-child { border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; } .leaflet-control-zoom-in, .leaflet-control-zoom-out { font: bold 18px 'Lucida Console', Monaco, monospace; text-indent: 1px; } .leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out { font-size: 22px; } .leaflet-control-layers { box-shadow: 0 1px 5px rgba(0,0,0,0.4); background: #fff; border-radius: 5px; } .leaflet-control-layers-toggle { width: 36px; height: 36px; } .leaflet-retina .leaflet-control-layers-toggle { background-size: 26px 26px; } .leaflet-touch .leaflet-control-layers-toggle { width: 44px; height: 44px; } .leaflet-control-layers .leaflet-control-layers-list, .leaflet-control-layers-expanded .leaflet-control-layers-toggle { display: none; } .leaflet-control-layers-expanded .leaflet-control-layers-list { display: block; position: relative; } .leaflet-control-layers-expanded { padding: 6px 10px 6px 6px; color: #333; background: #fff; } .leaflet-control-layers-scrollbar { overflow-y: scroll; overflow-x: hidden; padding-right: 5px; } .leaflet-control-layers-selector { margin-top: 2px; position: relative; top: 1px; } .leaflet-control-layers label { display: block; font-size: 13px; font-size: 1.08333em; } .leaflet-control-layers-separator { height: 0; border-top: 1px solid #ddd; margin: 5px -10px 5px -6px; } .leaflet-default-icon-path { } .leaflet-container .leaflet-control-attribution { background: #fff; background: rgba(255, 255, 255, 0.8); margin: 0; } .leaflet-control-attribution, .leaflet-control-scale-line { padding: 0 5px; color: #333; line-height: 1.4; } .leaflet-control-attribution a { text-decoration: none; } .leaflet-control-attribution a:hover, .leaflet-control-attribution a:focus { text-decoration: underline; } .leaflet-attribution-flag { display: inline !important; vertical-align: baseline !important; width: 1em; height: 0.6669em; } .leaflet-left .leaflet-control-scale { margin-left: 5px; } .leaflet-bottom .leaflet-control-scale { margin-bottom: 5px; } .leaflet-control-scale-line { border: 2px solid #777; border-top: none; line-height: 1.1; padding: 2px 5px 1px; white-space: nowrap; -moz-box-sizing: border-box; box-sizing: border-box; background: rgba(255, 255, 255, 0.8); text-shadow: 1px 1px #fff; } .leaflet-control-scale-line:not(:first-child) { border-top: 2px solid #777; border-bottom: none; margin-top: -2px; } .leaflet-control-scale-line:not(:first-child):not(:last-child) { border-bottom: 2px solid #777; } .leaflet-touch .leaflet-control-attribution, .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar { box-shadow: none; } .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar { border: 2px solid rgba(0,0,0,0.2); background-clip: padding-box; } .leaflet-popup { position: absolute; text-align: center; margin-bottom: 20px; } .leaflet-popup-content-wrapper { padding: 1px; text-align: left; border-radius: 12px; } .leaflet-popup-content { margin: 13px 24px 13px 20px; line-height: 1.3; font-size: 13px; font-size: 1.08333em; min-height: 1px; } .leaflet-popup-content p { margin: 17px 0; margin: 1.3em 0; } .leaflet-popup-tip-container { width: 40px; height: 20px; position: absolute; left: 50%; margin-top: -1px; margin-left: -20px; overflow: hidden; pointer-events: none; } .leaflet-popup-tip { width: 17px; height: 17px; padding: 1px; margin: -10px auto 0; pointer-events: auto; -webkit-transform: rotate(45deg); -moz-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg); } .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: white; color: #333; box-shadow: 0 3px 14px rgba(0,0,0,0.4); } .leaflet-container a.leaflet-popup-close-button { position: absolute; top: 0; right: 0; border: none; text-align: center; width: 24px; height: 24px; font: 16px/24px Tahoma, Verdana, sans-serif; color: #757575; text-decoration: none; background: transparent; } .leaflet-container a.leaflet-popup-close-button:hover, .leaflet-container a.leaflet-popup-close-button:focus { color: #585858; } .leaflet-popup-scrolled { overflow: auto; } .leaflet-oldie .leaflet-popup-content-wrapper { -ms-zoom: 1; } .leaflet-oldie .leaflet-popup-tip { width: 24px; margin: 0 auto; -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)"; filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678); } .leaflet-oldie .leaflet-control-zoom, .leaflet-oldie .leaflet-control-layers, .leaflet-oldie .leaflet-popup-content-wrapper, .leaflet-oldie .leaflet-popup-tip { border: 1px solid #999; } .leaflet-div-icon { background: #fff; border: 1px solid #666; } .leaflet-tooltip { position: absolute; padding: 6px; background-color: #fff; border: 1px solid #fff; border-radius: 3px; color: #222; white-space: nowrap; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,0.4); } .leaflet-tooltip.leaflet-interactive { cursor: pointer; pointer-events: auto; } .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { position: absolute; pointer-events: none; border: 6px solid transparent; background: transparent; content: ""; } .leaflet-tooltip-bottom { margin-top: 6px; } .leaflet-tooltip-top { margin-top: -6px; } .leaflet-tooltip-bottom:before, .leaflet-tooltip-top:before { left: 50%; margin-left: -6px; } .leaflet-tooltip-top:before { bottom: 0; margin-bottom: -12px; border-top-color: #fff; } .leaflet-tooltip-bottom:before { top: 0; margin-top: -12px; margin-left: -6px; border-bottom-color: #fff; } .leaflet-tooltip-left { margin-left: -6px; } .leaflet-tooltip-right { margin-left: 6px; } .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { top: 50%; margin-top: -6px; } .leaflet-tooltip-left:before { right: 0; margin-right: -12px; border-left-color: #fff; } .leaflet-tooltip-right:before { left: 0; margin-left: -12px; border-right-color: #fff; } @media print { .leaflet-control { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+.phero{border-radius:28px;padding:22px;display:flex;gap:16px;align-items:center;border:1px solid var(--hero-line)}
+.phero .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.phero h2{font-size:26px;line-height:1.15}
+.phero .pi{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--accent)}
+.phero .pi svg{width:28px;height:28px}
+.pbar{height:8px;border-radius:9px;background:color-mix(in srgb,var(--surface) 70%,transparent);overflow:hidden;margin-top:8px}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.tcards{display:flex;flex-direction:column;gap:10px}
+.tcards .item{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);padding:16px}
+.tcards .item.hot{background:var(--c-sand);border-color:transparent}
+.mo{font-family:var(--display);font-size:20px;margin:6px 0 0}
+.fsearch{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;background:var(--surface);border:1px solid var(--field-line);border-radius:999px;color:var(--muted);font:inherit;font-size:16px;cursor:pointer;width:100%;text-align:left}
+.fsearch svg{width:22px;height:22px;color:var(--accent);flex:none}
+.fq{font:inherit;font-size:17px;min-height:52px;padding:12px 16px 12px 46px;border-radius:999px;border:1px solid var(--field-line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A6D4E' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 16px center;color:var(--ink);width:100%}
+.fres{display:flex;flex-direction:column;gap:10px}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;display:flex;flex-direction:column;gap:6px}
+.fcard .fh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.fcard b{font-size:17px}
+.fv{flex:none;font-size:14px;font-weight:700;border-radius:999px;padding:4px 12px;white-space:nowrap}
+.fv.ok{background:var(--ok-soft);color:var(--ok)} .fv.prec{background:var(--soon-soft);color:var(--soon)} .fv.non{background:var(--late-soft);color:var(--late)} .fv.info{background:var(--accent-soft);color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:0 16px;font-size:15px;cursor:pointer}
+.photo-in{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.tiles.big{gap:12px}
+.tiles.big .tile{min-height:190px;border:0;border-radius:24px;padding:18px;gap:4px}
+.tiles.big .tile .ic{background:color-mix(in srgb,var(--surface) 75%,transparent);width:44px;height:44px;margin-bottom:6px}
+.tiles.big .tile b{font-size:19px}
+.tiles.big .tile .tv{margin-top:auto;font-family:var(--display);font-size:28px;line-height:1.1;font-variant-numeric:lining-nums;color:var(--ink)}
+.tiles.big .tile .tvs{font-family:var(--body);font-size:15px;color:var(--muted)}
+.tiles.big .tile .tv svg{width:28px;height:28px;color:var(--accent)}
+.tiles.big .tile>span.tx{font-size:15px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tiles.big .tile .tx i{display:inline-block;vertical-align:middle;margin:-2px 6px 0 0;width:8px;height:8px;border-radius:50%;background:var(--soon)}
+.tiles.big .tile .tx i.late{background:var(--late)}
+.heroH{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));border:1px solid var(--hero-line);border-radius:28px;padding:22px;display:flex;gap:18px;align-items:center}
+.heroH .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.heroH h1{font-size:26px;line-height:1.15}
+@media (max-width:340px){.heroH{flex-direction:column;align-items:flex-start}}
 @media (prefers-reduced-motion:no-preference){.panel{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}.ring .fg{transition:stroke-dashoffset .8s ease}}
 </style>
 
 <div class="app" id="app">
   <header class="top" id="topbar">
     <div class="brand"><svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="none" stroke="var(--accent)" stroke-width="1.5"/><circle cx="13" cy="13" r="4" fill="var(--accent)"/></svg>Sereine</div>
-    <button class="iconbtn" id="openSettings" type="button" aria-label="Mes dates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Mes dates</button>
+    <div class="topbtns"><button class="iconbtn" id="openHelp" type="button" aria-label="Aide et urgences"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19.5s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 2.3c0 5.3-7 9.6-7 9.6z"/></svg><span class="tl">Aide</span></button>
+    <button class="iconbtn" id="openSettings" type="button" aria-label="Mes dates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><span class="tl">Mes dates</span></button></div>
   </header>
   <main id="view"></main>
 </div>
@@ -240,6 +301,9 @@ select.inl{border-radius:999px;background-color:var(--accent-soft);border-color:
     <p class="muted small" style="margin:0">Tout le calendrier se calcule à partir de ces informations. Elles restent sur ton téléphone.</p>
     <label class="field">Date prévue d'accouchement
       <input type="date" id="f-dpa" required></label>
+    <label class="field" id="f-sa-l">Tu en es à combien de semaines ?
+      <input type="number" inputmode="numeric" id="f-sa" min="3" max="42" step="1">
+      <span class="hint">Le chiffre donné par ta sage-femme ou ton médecin. Il corrige le calcul, surtout pour des jumeaux.</span></label>
     <div class="grid2">
       <label class="field">Bébés attendus
         <select id="f-nb"><option value="1">1 bébé</option><option value="2">Jumeaux</option><option value="3">Triplés ou plus</option></select></label>
@@ -254,6 +318,7 @@ select.inl{border-radius:999px;background-color:var(--accent-soft);border-color:
     </div>
     <hr style="border:0;border-top:1px solid var(--line);width:100%;margin:4px 0">
     <div class="btns" style="align-items:center"><button class="btn ghost sm" type="button" id="resetAll">Tout effacer</button><span class="small muted" id="resetMsg" aria-live="polite"></span></div>
+    <button class="lnk" type="button" id="openPrivacy" style="align-self:flex-start">Confidentialité de tes données</button>
   </form>
 </div>
 
@@ -276,16 +341,17 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function defaults(){
   return {dpa:'', birth:'', example:false, nb:1, rank:0,
     done:{}, received:{}, asked:{}, nounouCheck:{}, mood:{},
-    nounou:{h:40,w:46,t:4.2,k:0}, garde:[],
+    nounou:{h:40,w:46,t:4.2,k:0}, garde:[], suivi:{},
     aides:{sit:'',rev:'',kids:'',brut:''}, reviewed:false, csn:false, cp:'', nn:{}, nnQ:{}, pjm:{}, nnH:{}, nnC:[]};
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){S=defaults()}
-S=Object.assign(defaults(),S); S.nn=S.nn||{}; S.nnQ=S.nnQ||{}; S.pjm=S.pjm||{}; S.nnH=S.nnH||{}; S.nnC=S.nnC||[]; S.aides=Object.assign(defaults().aides,S.aides||{}); if(S.aides.rev==='')S.aides.sit=''; S.asked=S.asked||{}; S.nb=+S.nb||1; S.rank=+S.rank||0;
+S=Object.assign(defaults(),S); S.nn=S.nn||{}; S.nnQ=S.nnQ||{}; S.pjm=S.pjm||{}; S.nnH=S.nnH||{}; S.nnC=S.nnC||[]; S.suivi=S.suivi||{}; S.aides=Object.assign(defaults().aides,S.aides||{}); if(S.aides.rev==='')S.aides.sit=''; S.asked=S.asked||{}; S.rvLater=S.rvLater||{}; S.notif=Object.assign({on:false,steps:true,pay:true,garde:true,days:3},S.notif||{}); S.notifSeen=S.notifSeen||{}; S.nb=+S.nb||1; S.rank=+S.rank||0;
 /* Anciennes données d'exemple : on repart de l'écran de démarrage */
 if(S.example){S.dpa='';S.example=false;S.garde=(S.garde||[]).filter(g=>!g.ex)}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const ready=()=>!!S.dpa;
+const saNow=()=>{const {start}=refs();return Math.max(0,Math.floor(diff(today,start)/7))};
 /* Congé maternité (salariée) : 1 bébé 6+10 sem., 3e enfant 8+18, jumeaux 12+22, triplés ou plus 24+22 */
 function conge(){
   if(S.nb>=3)return {pre:24,post:22};
@@ -309,7 +375,7 @@ function elig(){
   return {prime:st,ab:st};
 }
 function refs(){
-  const dpa=parse(S.dpa); const start=add(dpa,-280); const B=parse(S.birth)||dpa;
+  const dpa=parse(S.dpa); const R=S.saRef; const start=(R&&R.on&&+R.w>0)?add(parse(R.on),-Math.round(+R.w*7)):add(dpa,-280); const B=parse(S.birth)||dpa;
   return {dpa,start,B,born:!!S.birth};
 }
 function steps(){
@@ -323,7 +389,7 @@ function steps(){
   return extra.concat([
     {id:'tisf',ph:'g',t:"Demander une aide à domicile à la Caf",d:add(dpa,-c.pre*7-14),org:"Caf",x:(multi()?"Avec "+(S.nb===2?"des jumeaux":"plusieurs bébés")+", c'est vraiment utile. ":"")+"Pendant la grossesse ou après la naissance, la Caf peut payer une partie d'une aide à la maison : une professionnelle t'aide pour le quotidien et l'organisation. Tu paies selon tes revenus. Regarde d'abord si ta mutuelle la prend en charge. Fais la demande tôt, les délais sont longs.",l:["caf.fr","https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile"]},
     {id:'secondprev',ph:'g',t:"Le second parent prévient son employeur",d:add(dpa,-31),org:"Employeur du second parent",x:"Au moins 1 mois avant le terme, il ou elle donne la date prévue de naissance à son employeur, pour son congé de "+(multi()?"32":"25")+" jours. Un courrier recommandé évite les malentendus.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
-    {id:'decl',ph:'g',t:"Déclarer ta grossesse",d:add(start,98),org:"Ton médecin ou ta sage-femme",x:"Ton médecin ou ta sage-femme la fait en ligne pendant une consultation, avant la fin de la 14e semaine. C'est important : c'est une condition pour toucher la prime de naissance.",l:["ameli.fr","https://www.ameli.fr"]},
+    {id:'decl',ph:'g',t:"Déclarer ta grossesse",d:add(start,98),org:"Ton médecin ou ta sage-femme",x:"Ton médecin ou ta sage-femme la fait en ligne pendant une consultation, avant la fin du 3e mois de grossesse (14e semaine). C'est important : c'est une condition pour toucher la prime de naissance.",l:["ameli.fr","https://www.ameli.fr"]},
     {id:'mat',ph:'g',t:"T'inscrire à la maternité",d:add(start,84),org:"Maternité",x:"Dans certaines villes les places partent vite. Appelle dès que la grossesse est confirmée."},
     {id:'caf',ph:'g',t:"Mettre à jour ton compte Caf",d:add(start,105),org:"Caf",x:"Vérifie ton RIB, ta situation et tes revenus. Un dossier incomplet retarde tous les versements.",l:["caf.fr","https://www.caf.fr"]},
     {id:'epp',ph:'g',t:"Faire l'entretien prénatal précoce",d:add(start,140),org:"Sage-femme ou médecin",x:"Remboursé à 100 %. C'est le moment de parler de toi : fatigue, organisation, inquiétudes."},
@@ -334,7 +400,7 @@ function steps(){
     {id:'conge',ph:'g',t:"Début du congé maternité",d:add(dpa,-c.pre*7),org:"Assurance maladie",x:"Pour toi : "+c.pre+" semaines avant le terme et "+c.post+" après, soit "+(c.pre+c.post)+" semaines."+(S.nb===2?" Pour des jumeaux, tu peux avancer jusqu'à 4 semaines du congé d'après la naissance. Ils arrivent souvent avant le terme : prépare tout tôt.":"")},
     {id:'decln',ph:'n',t:S.nb>=2?"Déclarer les naissances":"Déclarer la naissance",d:add(B,5),org:"Mairie du lieu de naissance",x:"Dans les 5 jours. C'est souvent possible directement à la maternité : demande dès ton arrivée."},
     {id:'second',ph:'n',t:"Congé du second parent",d:add(B,7),org:"Employeur du second parent",x:"3 jours de congé payés par l'employeur, puis "+(multi()?"32 jours pour "+(S.nb===2?"des jumeaux":"plusieurs bébés"):"25 jours")+". Les 4 premiers jours se prennent tout de suite après les 3 jours. Le reste dans les 6 mois, en 1 ou 2 fois.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
-    {id:'csn',ph:'n',t:"Prévoir le congé de naissance (1 ou 2 mois par parent)",d:add(B,c.post*7-31),org:"Ton employeur et celui du second parent",x:"Nouveau depuis juillet 2026. Chaque parent peut prendre 1 ou 2 mois en plus, après le congé maternité ou paternité. À prendre avant le "+fmtY(lim)+". Préviens ton employeur par écrit 1 mois avant. Pour le second parent, 15 jours suffisent s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance. L'Assurance maladie paie 70 % du salaire net le 1er mois, puis 60 % le 2e. Il ne se cumule pas avec la PreParE ni le chômage. Indépendante ? Demande-le à ta CPAM.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39685"]},
+    {id:'csn',ph:'n',t:"Prévoir le congé de naissance (1 ou 2 mois par parent)",d:add(B,c.post*7-31),org:"Ton employeur et celui du second parent",x:"Nouveau depuis juillet 2026. Chaque parent peut prendre 1 ou 2 mois en plus, après le congé maternité ou paternité. À prendre avant le "+fmtY(lim)+". Préviens ton employeur par écrit 1 mois avant. Pour le second parent, 15 jours suffisent s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance. L'Assurance maladie paie 70 % du salaire net le 1er mois, puis 60 % le 2e. Il ne se cumule pas avec la PreParE, le chômage ni des indemnités journalières (arrêt maladie par exemple). Pour le même bébé, la Caf arrête aussi l'aide pour la garde pendant ce congé, sauf pour un bébé né avant juillet 2026 déjà en crèche ou chez une assistante maternelle. Signale ce congé à la Caf : ses indemnités comptent dans tes revenus. Indépendante ? Demande-le à ta CPAM.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39685"]},
     {id:'acte',ph:'n',t:"Envoyer l'acte de naissance à la Caf et à l'Assurance maladie",d:add(B,14),org:"Caf et Assurance maladie",x:"Sans lui, les aides et les indemnités peuvent rester bloquées. Demande plusieurs copies à la mairie."},
     {id:'vitale',ph:'n',t:"Ajouter "+bebes()+" sur ta carte Vitale et ta mutuelle",d:add(B,30),org:"Assurance maladie et mutuelle",x:"Pour que les consultations soient remboursées."},
     {id:'epn',ph:'n',t:"Faire l'entretien postnatal précoce",d:add(B,56),org:"Sage-femme ou médecin",x:"Entre la 4e et la 8e semaine après la naissance. Il sert à faire le point sur toi : sommeil, moral, douleurs, retour à la maison."},
@@ -342,10 +408,11 @@ function steps(){
     {id:'fin',ph:'n',t:"Fin du congé maternité",d:add(B,c.post*7),org:"Employeur",x:"Prévois l'adaptation chez la nounou ou en crèche dans les 2 semaines d'avant."}
   ]);
 }
+const URG=['decl','decln'];
 function stepState(s){
   if(S.done[s.id])return ['ok','Fait'];
   const n=diff(s.d,today);
-  if(n<0)return ['late','À faire vite'];
+  if(n<0)return URG.includes(s.id)?['late','À faire vite']:['soon','À faire maintenant'];
   if(n<=14)return ['soon',n===0?"Aujourd'hui":'Dans '+n+' jour'+(n>1?'s':'')];
   return ['idle','Avant le '+fmt(s.d)];
 }
@@ -365,6 +432,7 @@ function toAsk(){return payments().filter(p=>!S.received[p.id]&&p.d<=today&&!(S.
 function payState(p){
   if(S.received[p.id])return ['ok','Reçu'];
   const n=diff(today,p.d);
+  if(S.rvLater&&S.rvLater[p.id]&&parse(S.rvLater[p.id])>=add(p.d,p.grace))return ['soon','À vérifier'];
   if(n>p.grace)return ['late','En retard'];
   if(S.asked[p.id])return ['soon','Pas encore reçu'];
   if(n>=0)return ['soon',"Devrait être arrivé"];
@@ -375,8 +443,9 @@ function askCard(p){
   const n=diff(today,p.d);
   return `<div class="focus"><span class="label">Rappel · ${p.org}</span>
     <h3>${esc(p.t)} : c'est arrivé ?</h3>
-    <span class="small muted">${n===0?"Prévu aujourd'hui":"Prévu le "+fmt(p.d)}. Regarde ton compte bancaire.</span>
-    <div class="btns"><button class="btn" type="button" id="ay-${p.id}" data-ans-yes="${p.id}">Oui, reçu</button><button class="btn ghost" type="button" id="an-${p.id}" data-ans-no="${p.id}">Pas encore</button></div></div>`;
+    <span class="small muted">${n===0?"Prévu aujourd'hui":"Prévu le "+fmtL(p.d)}. Regarde ton compte bancaire.</span>
+    <div class="btns"><button class="btn" type="button" id="ay-${p.id}" data-ans-yes="${p.id}">Oui, reçu</button><button class="btn ghost" type="button" id="an-${p.id}" data-ans-no="${p.id}">Pas encore</button></div>
+    ${toAsk().length>1?`<button class="lnk" type="button" id="ans-all" data-ans-all="1" style="align-self:flex-start">Tout est arrivé (${toAsk().length} versements)</button>`:''}</div>`;
 }
 
 /* ---------- Garde ---------- */
@@ -403,7 +472,7 @@ function nnCalc(){
 }
 function nnResteHTML(){
   const c=nnCalc();
-  if(c.cmg===null)return `<label class="field">Revenus du foyer en 2024, pour l'année (€)<input type="number" inputmode="numeric" id="nr-rev" min="0" step="100" placeholder="Ex. 42000">
+  if(c.cmg===null)return `<label class="field">Combien ton foyer a gagné en 2024 ? (en €, sur l'année)<input type="number" inputmode="numeric" id="nr-rev" min="0" step="100" placeholder="Ex. 42000">
     <span class="hint">Sur ton avis d'impôt 2025 : la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
     <p class="small muted" style="margin:0">Salaire ≈ ${eur0(c.sal)} et frais d'entretien ≈ ${eur0(c.ent)} par mois. Indique tes revenus pour voir l'aide de la Caf.</p>`;
   return `<div class="heroA" style="padding:20px"><span class="label">Ce qu'elle te coûte vraiment</span>
@@ -452,7 +521,7 @@ function vNounou(){
   const Q=[['h',"Ses horaires, et si elle peut dépasser un peu"],['cg',"Ses semaines de congés, et qui la remplace"],['mal',"Ce qui se passe si bébé est malade"],['rep',"Qui fournit les repas, le lait et les couches"],['sort',"Les sorties : parc, relais, promenades"],['dodo',"Où bébé fait la sieste"],['news',"Comment elle te donne des nouvelles dans la journée"]].concat(multi()?[['jum',"Si elle a déjà gardé des jumeaux"]]:[]);
   const B=[['agr',"Vérifier son agrément",multi()?"Demande son attestation d'agrément et vérifie qu'elle couvre "+S.nb+" bébés du même âge.":"Demande-lui son attestation d'agrément, délivrée par la PMI de ton département."],['ctr',"Signer un contrat écrit","En 2 exemplaires. Le Relais Petite Enfance donne des modèles gratuits et relit avec toi."],['cg',"Écrire comment sont payés ses congés","C'est la première source de désaccords : mets-le noir sur blanc dans le contrat."],['cmgn',"Demander l'aide pour la garde à la Caf","Elle réduit beaucoup ce qui reste à payer et ouvre ton compte Pajemploi."]];
   return `<div class="panel">
-    <div class="sect"><h2>Ma nounou</h2><p class="muted" style="margin:0">Tout pour employer une assistante maternelle agréée : son salaire, les questions à lui poser, le contrat et la déclaration chaque mois.</p></div>
+    ${phero('--c-sky','garde','Garde',N.name?esc(N.name.split(' ')[0])+', ta nounou':'Ma nounou','Son salaire, les questions à lui poser, le contrat et la déclaration chaque mois.',null)}
     ${gSeg()}
     <form class="card" id="nnForm" onsubmit="return false">
       <span class="label">Ses informations</span>
@@ -498,47 +567,54 @@ const ICONS={
   steps:sv('<rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="m8.5 9 1.5 1.5L13 7.5M8.5 15h7"/>'),
   garde:sv('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/>'),
   money:sv('<path d="M4 7.5h13.5a2.5 2.5 0 0 1 2.5 2.5v7.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7.5 15 4.5v3"/><circle cx="16" cy="13.75" r="1.25"/>'),
+  plate:sv('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/>'),
   care:sv('<path d="M12 19.5s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 2.3c0 5.3-7 9.6-7 9.6z"/>')
 };
-const TABS=[['accueil','Accueil','home'],['demarches','Démarches','steps'],['garde','Garde','garde'],['argent','Argent','money'],['aide','Aide','care']];
-let tab=(location.hash||'').slice(1); if(tab==='soutien')tab='aide'; if(!TABS.some(t=>t[0]===tab))tab='accueil';
-let stepFilter='todo';
+const TABS=[['accueil','Accueil','home'],['demarches','Démarches','steps'],['garde','Garde','garde'],['argent','Argent','money'],['manger','Assiette','plate']];
+let tab=(location.hash||'').slice(1); if(tab==='soutien')tab='aide'; if(!TABS.some(t=>t[0]===tab)&&tab!=='aide'&&tab!=='suivi')tab='accueil';
+let stepFilter='todo', stepMore=false;
 
 function renderTabs(){
   const lateSteps=steps().filter(s=>stepState(s)[0]==='late').length;
   const latePay=payments().filter(p=>payState(p)[0]==='late').length;
   const badges={accueil:toAsk().length,demarches:lateSteps,argent:latePay,garde:relanceDue().length};
+  const soft={accueil:1,garde:1};
   document.getElementById('tabs').innerHTML=TABS.map(([id,lab,ic])=>
-    `<button type="button" id="tab-${id}" data-tab="${id}" ${tab===id?'aria-current="page"':''}><span class="ic">${ICONS[ic]}${badges[id]?`<span class="pip"></span>`:''}</span>${lab}${badges[id]?`<span class="sr"> (${badges[id]} à voir)</span>`:''}</button>`).join('');
+    `<button type="button" id="tab-${id}" data-tab="${id}" ${tab===id?'aria-current="page"':''}><span class="ic">${ICONS[ic]}${badges[id]?`<span class="pip${soft[id]?' soft':''}"></span>`:''}</span>${lab}${badges[id]?`<span class="sr"> (${badges[id]} à voir)</span>`:''}</button>`).join('');
 }
-function go(t){tab=t;try{history.replaceState(null,'','#'+tab)}catch(_){location.hash=tab}render();window.scrollTo(0,0)}
+function go(t){tab=t;try{history.replaceState(null,'','#'+tab)}catch(_){location.hash=tab}render();window.scrollTo(0,0);const tb=document.getElementById('tab-'+t);if(tb)tb.focus({preventScroll:true});say(t==='aide'?'Aide':t==='suivi'?'Mon suivi':(TABS.find(x=>x[0]===t)||[])[1]||'')}
 document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)go(b.dataset.tab)});
-window.addEventListener('hashchange',()=>{let h=location.hash.slice(1);if(h==='soutien')h='aide';if(TABS.some(t=>t[0]===h)&&h!==tab){tab=h;render()}});
+window.addEventListener('hashchange',()=>{let h=location.hash.slice(1);if(h==='soutien')h='aide';if((TABS.some(t=>t[0]===h)||h==='aide'||h==='suivi')&&h!==tab){tab=h;render()}});
 
 /* ---------- Écran de démarrage ---------- */
-let onb={nb:1,dpa:'',birth:'',rank:0};
-function keepOnb(){const g=id=>document.getElementById(id);if(g('o-dpa'))onb.dpa=g('o-dpa').value;if(g('o-ddr'))onb.ddr=g('o-ddr').value;if(g('o-unk'))onb.open=g('o-unk').open}
+let onb={nb:1,dpa:'',birth:'',rank:0,born:false};
+function keepOnb(){const g=id=>document.getElementById(id);if(g('o-sa'))onb.sa=g('o-sa').value;if(g('o-dpa'))onb.dpa=g('o-dpa').value;if(g('o-ddr'))onb.ddr=g('o-ddr').value;if(g('o-unk'))onb.open=g('o-unk').open}
+function saField(){return `<label class="field">Tu en es à combien de semaines ?${onb.nb>=2?'':' (facultatif)'}<input type="number" inputmode="numeric" id="o-sa" min="3" max="42" step="1" placeholder="Ex. 13" value="${esc(onb.sa||'')}">
+          <span class="hint">Le nombre de semaines donné par ta sage-femme ou ton médecin.${onb.nb>=2?' Avec des jumeaux, la date prévue est souvent plus tôt : ce chiffre rend le calcul juste.':''}</span></label>`}
 function vOnboarding(){
   return `<div class="panel" style="padding-top:20px">
     <div class="sect"><span class="label">Bienvenue</span>
-      <h1>Quand ${onb.nb>=2?'doivent naître tes bébés':'doit naître ton bébé'} ?</h1>
+      <h1>${onb.born?(onb.nb>=2?'Quand sont nés tes bébés ?':'Quand est né ton bébé ?'):(onb.nb>=2?'Quand doivent naître tes bébés ?':'Quand doit naître ton bébé ?')}</h1>
       <p class="muted" style="margin:0">On prépare ton calendrier de démarches, d'aides et de garde à partir de cette date.</p></div>
     <form class="card" id="onbForm">
-      <label class="field">Date prévue d'accouchement<input type="date" id="o-dpa" value="${onb.dpa}"></label>
-      <details class="more" id="o-unk" ${onb.open?'open':''}><summary>Je ne connais pas ma date</summary>
+      <div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Ta situation"><button type="button" id="o-born-0" data-onb-born="0" aria-pressed="${!onb.born}">J'attends un bébé</button><button type="button" id="o-born-1" data-onb-born="1" aria-pressed="${onb.born}">${onb.nb>=2?'Ils sont nés':'Mon bébé est né'}</button></div>
+      <label class="field">${onb.born?'Date de naissance':'Date prévue d\'accouchement'}<input type="date" id="o-dpa" value="${onb.dpa}"${onb.born?` max="${iso(today)}"`:''}></label>
+      ${!onb.born&&onb.nb>=2?saField():''}
+      ${onb.born?'':`<details class="more" id="o-unk" ${onb.open?'open':''}><summary>Je ne connais pas ma date</summary>
         <div class="detail" style="gap:14px">
           <label class="field">Premier jour de tes dernières règles<input type="date" id="o-ddr" value="${onb.ddr||''}"></label>
           <div class="field" role="group" aria-labelledby="o-m-l"><span id="o-m-l">Ou : tu es enceinte de combien de mois ?</span>
             <div class="choices" style="grid-template-columns:repeat(5,1fr)">${[1,2,3,4,5,6,7,8,9].map(m=>`<button type="button" id="o-m-${m}" data-onb-m="${m}" aria-pressed="${onb.m===m}" style="min-height:48px">${m}</button>`).join('')}</div></div>
           <span class="hint">On calcule une date approximative. Tu pourras la corriger dans « Mes dates » après ta prochaine échographie.</span>
-        </div></details>
-      ${onb.err?'<p class="small" role="alert" style="margin:0;color:var(--late);font-weight:700">Indique ta date, ou ouvre « Je ne connais pas ma date ».</p>':''}
+        </div></details>`}
+      ${onb.err?`<p class="small" role="alert" style="margin:0;color:var(--late);font-weight:700">${onb.born?'Indique la date de naissance.':'Indique ta date, ou ouvre « Je ne connais pas ma date ».'}</p>`:''}
       <div class="field" role="group" aria-labelledby="o-nb-l"><span id="o-nb-l">Combien de bébés ?</span>
         <div class="choices">${[[1,'1 bébé'],[2,'Jumeaux'],[3,'Triplés ou plus']].map(([v,l])=>`<button type="button" id="o-nb-${v}" data-onb-nb="${v}" aria-pressed="${onb.nb===v}">${l}</button>`).join('')}</div></div>
       <details class="more"><summary>Plus de précisions (facultatif)</summary>
         <div class="detail" style="gap:14px">
           <label class="field">Enfants déjà à la maison<select id="o-rank"><option value="0">Aucun</option><option value="1">1</option><option value="2">2 ou plus</option></select></label>
-          <label class="field">Bébé déjà né ? Date de naissance<input type="date" id="o-birth"></label>
+          ${!onb.born&&onb.nb<2?saField():''}
+          ${onb.born?'':'<label class="field">Bébé déjà né ? Date de naissance<input type="date" id="o-birth"></label>'}
         </div></details>
       <button class="btn wide" type="submit">Commencer</button>
       <p class="small muted" style="margin:0">Tes informations restent sur ton téléphone.</p>
@@ -553,74 +629,103 @@ function ring(pct,big,lab){
 }
 function vAccueil(){
   const {dpa,start,born,B}=refs();
-  let hero;
+  let pill, sub, big, pct, rN, rL;
   if(!born){
     const days=Math.max(0,diff(today,start)); const sa=Math.floor(days/7);
     const mois=Math.min(9,Math.max(1,Math.ceil(Math.max(1,days-14)/30.44)));
-    const left=Math.max(0,diff(dpa,today)); const pct=Math.min(100,days/280*100);
-    const who=S.nb===2?'tes jumeaux':S.nb>=3?'tes bébés':'ton bébé';
-    hero=`<section class="hero" aria-label="Avancement de la grossesse">
-      <div class="txt"><span class="kicker">${S.nb===2?'Grossesse gémellaire':S.nb>=3?'Grossesse multiple':'Ta grossesse'}</span>
-        <div class="big">${mois}<sup style="font-size:.45em">e</sup> mois</div>
-        <span class="sub">${sa}<sup>e</sup> semaine<br>Terme le ${fmtL(dpa)}</span>
-        <span class="soft">${left>0?`Encore ${left} jours avant de rencontrer ${who}.`:`C'est pour bientôt. Prends soin de toi.`}</span></div>
-      ${ring(pct,left,'jours')}</section>`;
+    const left=Math.max(0,diff(dpa,today));
+    pill=(S.nb===2?'Jumeaux · ':S.nb>=3?'Triplés · ':'')+mois+'e mois · '+sa+' semaine'+(sa>1?'s':'');
+    sub='Naissance prévue le '+fmtL(dpa);
+    big=left>0?'Encore '+left+' jour'+(left>1?'s':''):'C\'est le moment';
+    pct=Math.min(100,days/Math.max(1,diff(dpa,start))*100); rN=sa; rL='SEMAINES';
+    pill=(S.nb===2?'Jumeaux · ':S.nb>=3?'Triplés · ':'')+mois+'e mois';
   } else {
     const d=Math.max(0,diff(today,B)); const w=Math.floor(d/7);
-    hero=`<section class="hero"><div class="txt"><span class="kicker">${S.nb>=2?'Tes bébés sont là':'Bébé est là'}</span>
-      <div class="big">${w?w+' semaine'+(w>1?'s':''):d+' jour'+(d>1?'s':'')}</div>
-      <span class="sub">${S.nb>=2?'Nés':'Né·e'} le ${fmtL(B)}</span>
-      <span class="soft">${(()=>{const e=add(B,conge().post*7);return e<today?'Ton congé maternité s\'est terminé le '+fmtL(e)+'.':'Fin du congé le '+fmtL(e)+'.'})()}</span></div></section>`;
+    pill=(S.nb>=2?'Tes bébés ont ':'Bébé a ')+(w?w+' semaine'+(w>1?'s':''):d+' jour'+(d>1?'s':''));
+    const e=add(B,conge().post*7);
+    sub=(S.nb>=2?'Nés':'Né·e')+' le '+fmtL(B)+' · '+(e<today?'congé maternité terminé le '+fmtL(e):'fin du congé le '+fmtL(e));
+    big=pill; pill=S.nb>=2?'Tes bébés':'Ton bébé';
+    pct=Math.min(100,d/365*100); rN=w||d; rL=w?'SEMAINES':'JOURS';
   }
   const todo=steps().filter(s=>!S.done[s.id]).sort((a,b)=>a.d-b.d);
   const first=todo[0];
-  const focus=first?(()=>{const [c,l]=stepState(first);return `<section class="sect"><span class="label">Cette semaine</span>
+  const focus=first?(()=>{const [c,l]=stepState(first);return `<section class="sect">
     <div class="focus"><h3>${esc(first.t)}</h3>
       <div class="meta"><span class="st ${c}">${l}</span><span>· ${esc(first.org)}</span></div>
       <p style="margin:0">${esc(first.x)}</p>
       ${first.l?`<a class="small" href="${first.l[1]}" target="_blank" rel="noopener">Aller sur ${first.l[0]} ↗</a>`:''}
       <button class="btn wide" type="button" id="done-${first.id}" data-done="${first.id}">C'est fait</button></div></section>`})()
     :`<section class="sect"><div class="focus"><h3>Tout est fait. Bravo.</h3><p class="muted" style="margin:0">Repose-toi, l'app te préviendra s'il y a du nouveau.</p></div></section>`;
+  const bornAsk=!born&&diff(today,dpa)>3?`<section class="sect"><form class="focus" id="bornForm"><h3>${S.nb>=2?'Tes bébés sont nés ?':'Ton bébé est né ?'}</h3>
+      <p class="muted" style="margin:0">Note la date : ton calendrier se met à jour.</p>
+      <label class="field">Date de naissance<input type="date" id="bf-date" max="${iso(today)}" value="${iso(dpa<=today?dpa:today)}"></label>
+      <button class="btn wide" type="submit">Oui, enregistrer</button></form></section>`:'';
   const asks=toAsk();
   const askBlock=asks.length?`<section class="sect">${askCard(asks[0])}</section>`:'';
-  const W=[];
-  const lateSteps=todo.filter(s=>stepState(s)[0]==='late');
-  const latePay=payments().filter(p=>payState(p)[0]==='late');
-  const rel=relanceDue(); const act=activeGarde().length; const acc=S.garde.some(g=>g.status==='Acceptée');
-  if(latePay.length)W.push(['late',latePay.length+' versement'+(latePay.length>1?'s':'')+' en retard',"On t'aide à le réclamer",'argent']);
-  const oa=asks.slice(1).filter(p=>payState(p)[0]!=='late').length;
-  if(oa)W.push(['soon',oa+' autre'+(oa>1?'s':'')+' versement'+(oa>1?'s':'')+' à vérifier','Dis-nous s’ils sont arrivés','argent']);
-  if(lateSteps.length>1)W.push(['late',(lateSteps.length-1)+' autre'+(lateSteps.length>2?'s':'')+' démarche'+(lateSteps.length>2?'s':'')+' à faire vite','Voir la liste','demarches']);
-  {const nc=S.nnC.find(c=>parse(c.to)>=today&&diff(parse(c.from),today)<=21);if(nc)W.push(['soon','Ta nounou est en congé le '+fmt(parse(nc.from)),'Prévois une solution de remplacement','garde'])}
-  if(rel.length)W.push(['soon',rel.length+' relance'+(rel.length>1?'s':'')+' garde',rel.map(g=>g.name).join(', '),'garde']);
-  if(!acc&&act<3)W.push(['',act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':'')+' sur 3 conseillées','Les places sont rares : suis-en au moins 3','garde']);
-  const watch=W.length?`<section class="sect"><span class="label">À surveiller</span><div class="watch">${W.map(([c,t,s,g],i)=>`<button type="button" id="w-${i}" data-go="${g}"><span class="dot ${c}"></span><span class="wt"><b>${esc(t)}</b><span>${esc(s)}</span></span><span class="chev" aria-hidden="true">›</span></button>`).join('')}</div></section>`:'';
+  /* La phrase du haut : combien de choses à faire aujourd'hui */
+  const od=todo.filter(s=>diff(s.d,today)<=0).length;
+  const nowN=od+asks.length;
+  const hello=!first&&!asks.length?'Bonjour. Tout est fait.'
+    :nowN===0?'Bonjour. Rien ne presse aujourd\'hui. Voici ta prochaine étape.'
+    :nowN>3?'Bonjour. On avance une chose à la fois.'
+    :'Bonjour. Aujourd\'hui, tu as <b>'+nowN+' chose'+(nowN>1?'s':'')+'</b> à faire.';
+  /* Les 4 cases : l'essentiel de chaque onglet */
+  const lateSteps=todo.filter(s=>stepState(s)[0]==='late').length;
+  const P=payments(); const latePay=P.filter(p=>payState(p)[0]==='late').length;
+  const pend=P.filter(p=>!S.received[p.id]&&p.d<=today).length; const nextP=P.find(p=>!S.received[p.id]&&p.d>today);
+  const rel=relanceDue().length; const act=activeGarde().length; const acc=S.garde.some(g=>g.status==='Acceptée');
+  const nc=S.nnC.find(c=>parse(c.to)>=today&&diff(parse(c.from),today)<=21);
+  const pl=(n,w)=>n+' '+w+(n>1?'s':'');
+  const V={demarches:!todo.length?'✓':od?String(od):fmt(first.d),argent:latePay?String(latePay):pend?String(pend):nextP?fmt(nextP.d):'—',garde:act?String(act):'+',manger:''};
+  const T=[
+    ['demarches','steps','Démarches',!todo.length?'Tout est fait':(od?od+' à faire maintenant. ':'')+'Prochaine : '+first.t,lateSteps?'late':od?'soon':''],
+    ['argent','money','Argent',latePay?pl(latePay,'versement')+' en retard':pend?pend+' à vérifier':nextP?'Prochain : vers le '+fmt(nextP.d):'Aucun versement prévu',latePay?'late':pend?'soon':''],
+    ['garde','garde','Garde',nc?'Nounou en congé le '+fmt(parse(nc.from)):rel?pl(rel,'relance')+' à faire':acc?'Une place est obtenue':act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':''),nc||rel?'soon':''],
+    ['manger','plate','Assiette','Je peux manger ça ?','']
+  ];
+  const TBG={demarches:'--c-sand',argent:'--c-sage',garde:'--c-sky',manger:'--c-rose'};
+  const TX={demarches:!todo.length?'Tout est fait':first.t,argent:latePay?(latePay>1?'Versements en retard':'Versement en retard'):pend?'À vérifier':nextP?'Prochain versement':'Aucun versement prévu',garde:nc?'Nounou en congé le '+fmt(parse(nc.from)):rel?pl(rel,'relance')+' à faire':acc?'Une place est obtenue':act>1?'Gardes suivies':act?'Garde suivie':'Ajoute une crèche',manger:'Je peux manger ça ?'};
+  const tiles=`<section class="sect" aria-label="Tout ton dossier"><div class="tiles big">${T.map(([g,ic,t,x,dot])=>`<button type="button" class="tile" id="tile-${g}" data-go="${g}" style="background:var(${TBG[g]})"><span class="ic">${ICONS[ic]}</span><b>${t}</b><span class="tx">${dot?`<i class="${dot}" aria-hidden="true"></i>`:''}${esc(TX[g])}</span><span class="tv" aria-hidden="true">${g==='manger'?SRCH:esc(V[g])}${g==='demarches'&&od?'<span class="tvs"> à faire</span>':''}</span><span class="sr">${esc(x)}</span></button>`).join('')}</div></section>`;
   const endMat=add(B,conge().post*7);
   const csnCard=(!S.csnHide&&!S.done.csn&&today>=add(endMat,-60)&&diff(today,B)<270)?`<button type="button" class="newrow" id="csn-see" data-go="demarches"><span class="tagn">Nouveau</span><span class="wt"><b>Congé de naissance : 1 ou 2 mois en plus</b><span>À demander à ton employeur 1 mois avant</span></span><span class="chev muted" aria-hidden="true">›</span></button>`:'';
-  return `<div class="panel">${hero}${askBlock}${focus}${csnCard}${watch}
-    <button class="iconbtn" style="align-self:flex-start" type="button" id="seeall" data-go="demarches">Voir toutes les démarches ›</button></div>`;
+  return `<div class="panel">
+    <section class="sect" style="gap:8px" aria-label="${born?'Ton bébé':'Ta grossesse'}">
+      <div class="heroH">${ring(pct,rN,rL)}<div class="txt"><span class="label">${pill}</span><h1>${big}</h1>${born?`<span class="muted small">${sub}</span>`:`<span class="sr">${sub}</span>`}${!born?'<button type="button" class="lnk" id="suivi-open" data-go="suivi" style="align-self:flex-start;padding:0">Voir mon suivi ›</button>':''}</div></div>
+    </section>
+    ${askBlock}${bornAsk}${tiles}${csnCard}</div>`;
 }
 
 /* ---------- Démarches ---------- */
+const phero=(bg,ic,kick,title,sub,pct)=>`<div class="phero" style="background:linear-gradient(160deg,var(${bg}),color-mix(in srgb,var(${bg}) 70%,var(--hero-b)))"><div class="txt"><span class="label">${kick}</span><h2>${title}</h2>${sub?`<span class="muted">${sub}</span>`:''}${pct!=null?`<div class="pbar" aria-hidden="true"><i style="width:${Math.max(3,Math.round(pct))}%"></i></div>`:''}</div><span class="pi" aria-hidden="true">${ICONS[ic]}</span></div>`;
 function stepRow(s){
   const [c,l]=stepState(s);
-  return `<div class="item ${S.done[s.id]?'done':''}">
+  const hot=!S.done[s.id]&&diff(s.d,today)<=7;
+  return `<div class="item ${S.done[s.id]?'done':''}${hot?' hot':''}">
     <input type="checkbox" class="check" id="st-${s.id}" data-step="${s.id}" ${S.done[s.id]?'checked':''} aria-label="C'est fait : ${esc(s.t)}">
     <div class="body"><label class="title" for="st-${s.id}">${esc(s.t)}</label>
-      <div class="meta"><span class="st ${c}">${l}</span><span>· ${esc(s.org)}</span></div>
+      <div class="meta"><span class="st ${c}">${l}</span><span>· ${esc(s.org)}</span>${s.ph==='n'&&!S.birth&&!S.done[s.id]?'<span>· date estimée</span>':''}</div>
       <details class="more"><summary>Comment faire</summary><div class="detail"><span>${esc(s.x)}</span>${s.l?`<a href="${s.l[1]}" target="_blank" rel="noopener">Aller sur ${s.l[0]} ↗</a>`:''}</div></details>
     </div></div>`;
 }
 function vDemarches(){
   const all=steps();
-  const list=stepFilter==='todo'?all.filter(s=>!S.done[s.id]):all;
-  const g=list.filter(s=>s.ph==='g').sort((a,b)=>a.d-b.d), n=list.filter(s=>s.ph==='n').sort((a,b)=>a.d-b.d);
+  let list=(stepFilter==='todo'?all.filter(s=>!S.done[s.id]):all).slice().sort((a,b)=>a.d-b.d);
+  const todoAll=all.filter(s=>!S.done[s.id]).sort((a,b)=>a.d-b.d);
+  const short=stepFilter==='todo'&&!stepMore&&todoAll.length>3;
+  if(short)list=todoAll.slice(0,3);
   const doneN=all.filter(s=>S.done[s.id]).length;
+  const title=doneN===all.length?'Tout est fait. Bravo':doneN?'Tu avances bien':'On commence doucement';
+  /* Chronologie : maintenant, cette semaine, ce mois-ci, puis mois par mois */
+  const grp=s=>{if(S.done[s.id])return ['zdone','Déjà fait'];const n=diff(s.d,today);if(n<0)return ['a','À faire maintenant'];if(n<=7)return ['b','Cette semaine'];
+    if(s.d.getMonth()===today.getMonth()&&s.d.getFullYear()===today.getFullYear())return ['c','Ce mois-ci'];
+    return ['d'+iso(s.d).slice(0,7),'En '+s.d.toLocaleDateString('fr-FR',Object.assign({month:'long'},yr(s.d)))]};
+  const G=[];list.forEach(s=>{const [k,l]=grp(s);let g=G.find(x=>x.k===k);if(!g){g={k,l,a:[]};G.push(g)}g.a.push(s)});
+  G.sort((a,b)=>a.k<b.k?-1:1);
   return `<div class="panel">
-    <div class="sect-head"><h2>Démarches</h2><span class="muted small">${doneN} sur ${all.length} faites</span></div>
+    ${phero('--c-sand','steps','Démarches',title,(doneN?doneN+' sur '+all.length+' faites':all.length+' démarches en tout')+(short?' · voici les 3 prochaines':''),doneN/all.length*100)}
     <div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Afficher"><button type="button" id="sf-todo" data-sf="todo" aria-pressed="${stepFilter==='todo'}" style="min-height:48px">À faire</button><button type="button" id="sf-all" data-sf="all" aria-pressed="${stepFilter==='all'}" style="min-height:48px">Toutes</button></div>
-    <section class="sect"><span class="label">Pendant la grossesse</span><div class="list">${g.map(stepRow).join('')||'<div class="item muted">Tout est fait ici.</div>'}</div></section>
-    <section class="sect"><span class="label">Après la naissance${S.birth?'':' · dates estimées'}</span><div class="list">${n.map(stepRow).join('')||'<div class="item muted">Tout est fait ici.</div>'}</div></section>
+    ${G.length?G.map(g=>`<section class="sect" style="gap:10px"><h3 class="mo">${g.l}</h3><div class="tcards">${g.a.map(stepRow).join('')}</div></section>`).join(''):'<div class="focus"><h3>Tout est fait. Bravo.</h3></div>'}
+    ${short?`<button class="btn ghost wide" type="button" id="st-more" data-stmore="1">Voir les ${todoAll.length-3} autres</button>`:''}
     <p class="small muted" style="margin:0">Congé calculé pour une salariée : ${conge().pre} semaines avant, ${conge().post} après. Indépendante ou au chômage ? Vérifie ta situation sur service-public.fr.</p>
   </div>`;
 }
@@ -636,6 +741,7 @@ const mapD=x=>x[4]!=null?'https://www.google.com/maps/dir/?api=1&destination='+x
 async function fillNear(){
   const box=document.getElementById('near-list'); if(!box)return;
   const cp=S.cp||''; if(!/^\d{5}$/.test(cp)){box.innerHTML='';return}
+  loadLeaf();
   const dep=depOf(cp);
   if(!NEAR[dep]){box.innerHTML='<p class="small muted" style="margin:0">Je cherche les lieux autour de '+cp+'…</p>';
     try{const r=await fetch('g/'+dep+'.json');if(!r.ok)throw 0;NEAR[dep]=await r.json()}catch(e){if(document.getElementById('near-list'))document.getElementById('near-list').innerHTML='<p class="small muted" style="margin:0">La liste n’a pas pu se charger. Utilise « Chercher aussi ailleurs » juste en dessous.</p>';return}}
@@ -671,7 +777,12 @@ function nearItem(x,d,key){const fol=S.garde.some(g=>g.name===x[0]);return `<div
         ${x[6]==='rpe'?'':fol?'<span class="st ok" style="align-self:center">Suivie</span>':`<button class="lnk" type="button" id="nf-${key}" data-follow="${key}">+ Suivre</button>`}
       </div></div></div>`}
 function followNear(f){const x=f[0]==='a'?(nearAll[+f.slice(1)]||[])[0]:nearShown[+f];if(x){S.garde.push({id:'g'+Date.now(),name:x[0],type:NT2G[x[6]],status:'À contacter',relance:iso(add(today,14))});save();render();say('Ajoutée à tes gardes')}}
-const SITE=()=>!!(window.SEREINE_SITE&&window.L);
+let leafState=window.SEREINE_SITE?'ok':'idle';
+const SITE=()=>leafState==='ok'&&!!window.L;
+function loadLeaf(){if(leafState!=='idle')return;if(window.L){leafState='ok';return}leafState='loading';
+  const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  sc.onload=()=>{leafState=window.L?'ok':'fail';const m=document.getElementById('near-map');if(m){m.innerHTML=nearMapHTML();initLeaf()}};
+  sc.onerror=()=>{leafState='fail'};document.head.appendChild(sc)}
 let LM=null;
 function initLeaf(){
   const el=document.getElementById('lmap'); if(!el||!SITE()||!nearC)return;
@@ -680,7 +791,10 @@ function initLeaf(){
   const dark=matchMedia('(prefers-color-scheme: dark)').matches&&document.documentElement.dataset.theme!=='light';
   LM=L.map(el,{zoomControl:true,attributionControl:true}).setView(nearC,{2:14,5:13,12:11}[nearR]||13);
   el.classList.toggle('dark-tiles',dark);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(LM);
+  const TL=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(LM);
+  /* Si les fonds de carte ne se chargent pas (connexion, page protégée), on revient à la carte simple */
+  let tOK=false;TL.on('tileload',()=>{tOK=true});
+  setTimeout(()=>{if(!tOK&&LM&&document.getElementById('lmap')){leafState='fail';LM.remove();LM=null;const m=document.getElementById('near-map');if(m)m.innerHTML=nearMapHTML()}},7000);
   const order={autre:0,domicile:1,rpe:2,mam:3,micro:4,creche:5};
   nearAll.map((a,j)=>[a,j]).filter(([[x]])=>x[4]!=null).sort((a,b)=>order[a[0][0][6]]-order[b[0][0][6]]).forEach(([[x,d],j])=>{
     L.circleMarker([x[4],x[5]],{radius:x[6]==='autre'?6:8,color:'#fff',weight:2,fillColor:col(x[6]),fillOpacity:1})
@@ -700,11 +814,12 @@ function nearMapHTML(){
     <div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)"></i>Ton code postal</span>${types.map(t=>`<span><i style="background:${TC[t]}"></i>${NT[t]}</span>`).join('')}</div>
     <p class="small muted" style="margin:0">Touche un point pour voir le lieu. Tu peux déplacer et zoomer la carte avec tes doigts.</p>`}
   const W=340,C=170,Rp=148,sc=Rp/nearR,cos=Math.cos(nearC[0]*Math.PI/180);
+  const leafNote=leafState==='loading'?'<p class="small muted" style="margin:0">La carte avec les rues se charge…</p>':leafState==='fail'?'<p class="small muted" style="margin:0">La carte avec les rues ne peut pas s\'afficher ici. Elle marche sur le site de Sereine.</p>':'';
   const order={autre:0,domicile:1,rpe:2,mam:3,micro:4,creche:5};
   const vis=nearAll.map((a,j)=>[a,j]).filter(([[x,d]])=>x[4]!=null&&d<=nearR).sort((a,b)=>order[a[0][0][6]]-order[b[0][0][6]]);
   const pos=x=>[C+(x[5]-nearC[1])*111.32*cos*sc,C-(x[4]-nearC[0])*110.57*sc];
   const dot=([[x,d],j],big)=>{const [px,py]=pos(x);const r=big?9:x[6]==='autre'?4.5:6;
-    return `<circle class="pt${big?' sel':''}" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${r}" fill="${TC[x[6]]}" data-pt="${j}" tabindex="0" role="button" aria-label="${esc(x[0])}, ${d.toFixed(1).replace('.',',')} km"></circle>`};
+    return `<g data-pt="${j}" tabindex="0" role="button" aria-label="${esc(x[0])}, ${d.toFixed(1).replace('.',',')} km"><circle class="hit" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="25"></circle><circle class="pt${big?' sel':''}" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${r}" fill="${TC[x[6]]}"></circle></g>`};
   const pts=vis.filter(v=>v[1]!==nearSel).map(v=>dot(v,false)).join('')+(vis.find(v=>v[1]===nearSel)?dot(vis.find(v=>v[1]===nearSel),true):'');
   const RG={2:[0.5,1,2],5:[1,2,5],12:[3,6,12]}[nearR]||[nearR/4,nearR/2,nearR];
   const circ=RG.map(r=>`<circle class="ring" cx="${C}" cy="${C}" r="${(r*sc).toFixed(1)}"></circle>`).join('');
@@ -714,10 +829,10 @@ function nearMapHTML(){
   const ty0=new Set(nearAll.filter(([x,d])=>d<=nearR).map(([x])=>x[6]));const types=['creche','micro','mam','domicile','rpe','autre'].filter(t=>ty0.has(t));
   const sel=nearSel>=0&&nearAll[nearSel]?nearAll[nearSel]:null;
   return `<div class="choices seg" style="grid-template-columns:repeat(3,1fr)" role="group" aria-label="Zoom de la carte">${[2,5,12].map(r=>`<button type="button" id="nz-${r}" data-nz="${r}" aria-pressed="${nearR===r}">${r} km</button>`).join('')}</div>
-    <svg class="nmap" viewBox="0 0 ${W} ${W}" role="img" aria-label="Carte des ${nIn} lieux de garde à moins de ${nearR} km">${rings}${pts}
+    <svg class="nmap" viewBox="0 0 ${W} ${W}" role="group" aria-label="Carte des ${nIn} lieux de garde à moins de ${nearR} km">${rings}${pts}
       <g pointer-events="none"><circle cx="${C}" cy="${C}" r="10" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.5"></circle><circle cx="${C}" cy="${C}" r="4" fill="var(--ink)"></circle></g>${labs}</svg>
     <div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)"></i>Ton code postal</span>${types.map(t=>`<span><i style="background:${TC[t]}"></i>${NT[t]}</span>`).join('')}</div>
-    ${sel?`<div class="list">${nearItem(sel[0],sel[1],'a'+nearSel)}</div>`:`<p class="small muted" style="margin:0">Touche un point pour voir le lieu. ${nIn} lieu${nIn>1?'x':''} sur la carte.</p>`}`;
+    ${sel?`<div class="list">${nearItem(sel[0],sel[1],'a'+nearSel)}</div>`:`<p class="small muted" style="margin:0">Touche un point pour voir le lieu. ${nIn} lieu${nIn>1?'x':''} sur la carte.</p>`}${leafNote}`;
 }
 function nearLinks(){
   const cp=(S.cp||'').trim(); const ok=/^\d{5}$/.test(cp);
@@ -748,7 +863,7 @@ function vGarde(){
       </div></div></div>`}).join('');
   const n=S.nounou; const nk=+n.k||S.nb; const monthly=n.t*n.h*Math.min(52,n.w)/12*nk;
   const summary=acc?'Une place est obtenue. Bravo !'
-    :`${act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':'')}${rd?' · '+rd+' relance'+(rd>1?'s':'')+' à faire':''}. ${act<3?'Vise au moins 3 : les places sont rares.':'C’est bien, continue de relancer.'}`;
+    :`${act===0?'Aucune garde suivie':act+' garde'+(act>1?'s':'')+' suivie'+(act>1?'s':'')}${rd?' · '+rd+' relance'+(rd>1?'s':'')+' à faire':''}. ${act<3?'Ajoute 3 lieux pour plus de chances.':'C’est bien, continue de relancer.'}`;
   const GT=[['Crèche','Crèche'],['Micro-crèche','Micro-crèche'],['Assistante maternelle','Nounou agréée'],['Garde à domicile','Nounou à la maison']];
   const form=gAdding?`<form class="card" id="gForm">
       <h3>Nouvelle garde</h3>
@@ -757,10 +872,10 @@ function vGarde(){
       <label class="field">Son nom<input id="g-name" required placeholder="${gType==='Assistante maternelle'||gType==='Garde à domicile'?'Ex. Sophie Martin':'Ex. Crèche Les Petits Pas'}"></label>
       <p class="small muted" style="margin:0">On te rappellera de la relancer dans 2 semaines.</p>
       <div class="btns"><button class="btn" type="submit">Ajouter</button><button class="btn ghost" type="button" id="g-cancel" data-gcancel="1">Annuler</button></div>
-    </form>`:`<button class="btn wide" type="button" id="g-add" data-gadd="1">+ Ajouter une crèche ou une nounou</button>`;
+    </form>`:`<button class="btn ghost wide" type="button" id="g-add" data-gadd="1">+ Ajouter une crèche ou une nounou</button>`;
   if(gView==='nounou')return vNounou();
   return `<div class="panel">
-    <div class="sect"><h2>Trouver une garde</h2><p class="muted" style="margin:0">${summary}</p></div>
+    ${phero('--c-sky','garde','Garde',acc?'Une place est trouvée':act?'Tu cherches, c\'est bien':'Trouvons une garde',summary,null)}
     ${gSeg()}
     ${form}
     ${multi()?`<div class="note"><b>${S.nb} places en même temps</b><span>Dis-le dans chaque demande. Une nounou agréée doit avoir le droit d'accueillir ${S.nb} bébés ensemble : demande-le-lui.</span></div>`:''}
@@ -770,7 +885,7 @@ function vGarde(){
       <label class="field">Ton code postal<input type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" id="cp" placeholder="Ex. 33000" value="${esc(S.cp||'')}"></label>
       <div id="near-list" aria-live="polite"></div>
       <details class="more"><summary>Chercher aussi ailleurs</summary><div id="near-links">${nearLinks()}</div></details>
-      <p class="small muted" style="margin:0">monenfant.fr est le site officiel de la Caf : il liste les crèches, les nounous agréées (assistantes maternelles) et la garde à domicile. Le Relais Petite Enfance, un service gratuit de ta ville, connaît aussi les nounous qui ont de la place. Pour une crèche, la demande se fait à la mairie : demande la date de la prochaine commission, la réunion où les places sont attribuées.</p>
+      <details class="more"><summary>Comment trouver une place ?</summary><p class="detail" style="margin:0">monenfant.fr est le site officiel de la Caf : il liste les crèches, les nounous agréées (assistantes maternelles) et la garde à domicile. Le Relais Petite Enfance, un service gratuit de ta ville, connaît aussi les nounous qui ont de la place. Pour une crèche, la demande se fait à la mairie : demande la date de la prochaine commission, la réunion où les places sont attribuées.</p></details>
     </section>
   </div>`;
 }
@@ -832,14 +947,14 @@ function aidesResults(){
   if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));a4=`<span class="amt">≈ ${eur(d)} par jour</span><span class="small muted">Soit ≈ ${eur0(d*(c.pre+c.post)*7)} pour tes ${c.pre+c.post} semaines</span>`}
   R.push(['Indemnités de congé maternité',a4,'Tous les 14 jours, pendant ton congé (salariée).',"Ton employeur envoie ton attestation de salaire à l'Assurance maladie. Tu n'as rien à demander, mais rappelle-le-lui.",['ameli.fr','https://www.ameli.fr'],null]);
   /* Congé de naissance */
-  R.push(['Congé de naissance (1 ou 2 mois)','<span class="amt">70 % du salaire net, puis 60 %</span><span class="small muted">Pour chaque parent, dans la limite de 4 005 € par mois</span>','Dans les 9 mois après la naissance.',"Écris à ton employeur 1 mois avant le début. Il transmet lui-même la demande à l'Assurance maladie.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39685'],['csn',`Objet : demande de congé supplémentaire de naissance\n\nMadame, Monsieur,\n\nJe vous informe que je souhaite prendre un congé supplémentaire de naissance [d'un mois / de deux mois], à partir du [date], à la suite de mon congé de maternité.\n\n[Je le prendrai en une seule fois. / Je le prendrai en deux périodes d'un mois : du … au …, puis du … au ….]\n\nMon enfant ${born?'est né le '+fmtY(B):'doit naître le '+fmtY(dpa)}.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]\n\n(À envoyer en recommandé avec accusé de réception, ou à remettre en main propre contre récépissé.)`]]);
+  R.push(['Congé de naissance (1 ou 2 mois)','<span class="amt">70 % du salaire net, puis 60 %</span><span class="small muted">Pour chaque parent, dans la limite de 4 005 € par mois</span>','Dans les 9 mois après la naissance.',"Écris à ton employeur 1 mois avant le début. Il transmet lui-même la demande à l'Assurance maladie. Signale aussi ce congé à la Caf : pour le même bébé, l'aide pour la garde s'arrête pendant ce congé (sauf bébé né avant juillet 2026 déjà gardé).",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39685'],['csn',`Objet : demande de congé supplémentaire de naissance\n\nMadame, Monsieur,\n\nJe vous informe que je souhaite prendre un congé supplémentaire de naissance [d'un mois / de deux mois], à partir du [date], à la suite de mon congé de maternité.\n\n[Je le prendrai en une seule fois. / Je le prendrai en deux périodes d'un mois : du … au …, puis du … au ….]\n\nMon enfant ${born?'est né le '+fmtY(B):'doit naître le '+fmtY(dpa)}.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]\n\n(À envoyer en recommandé avec accusé de réception, ou à remettre en main propre contre récépissé.)`]]);
   /* Second parent */
   R.push(['Congé du second parent',`<span class="amt">${pat} jours + 3 jours</span><span class="small muted">Payés par l'employeur puis l'Assurance maladie, jusqu'à 104,02 € par jour</span>`,'Dans les 6 mois après la naissance.',"Le second parent prévient son employeur au moins 1 mois avant le terme.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F3156'],['pat',`Objet : congé de naissance et congé de paternité et d'accueil de l'enfant\n\nMadame, Monsieur,\n\nLa naissance de ${multi()?'nos enfants':'notre enfant'} est prévue le ${fmtY(dpa)}.\n\nJe prendrai les 3 jours de congé de naissance, puis mon congé de paternité et d'accueil de l'enfant de ${pat} jours : 4 jours tout de suite après, puis [nombre] jours du [date] au [date].\n\nJe vous confirmerai les dates exactes après la naissance.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]`]]);
   /* PreParE */
   const dur=A.sit==='seule'?(n<=1?"jusqu'au 1er anniversaire de bébé":"jusqu'aux 3 ans du plus jeune"):(n<=1?"6 mois par parent, avant le 1er anniversaire":"jusqu'à 24 mois par parent, avant les 3 ans du plus jeune");
-  R.push(['PreParE (congé parental)','<span class="amt">459,69 € par mois</span><span class="small muted">Si tu arrêtes de travailler. 297,17 € à mi-temps</span>',dur.charAt(0).toUpperCase()+dur.slice(1)+', moins les mois de congé maternité indemnisés. Il faut avoir cotisé 8 trimestres sur les 2, 4 ou 5 dernières années selon ton nombre d\'enfants.',"Après la fin du congé maternité, envoie à la Caf le formulaire cerfa 12324 (et le 11423 si tu n'es pas encore allocataire).",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F32485'],null]);
+  R.push(['Congé parental payé (PreParE)','<span class="amt">459,69 € par mois</span><span class="small muted">Si tu arrêtes de travailler. 297,17 € à mi-temps</span>',dur.charAt(0).toUpperCase()+dur.slice(1)+', moins les mois de congé maternité indemnisés. Il faut avoir cotisé 8 trimestres sur les 2, 4 ou 5 dernières années selon ton nombre d\'enfants.',"Après la fin du congé maternité, envoie à la Caf le formulaire de demande (cerfa 12324, sur caf.fr), et aussi le cerfa 11423 si tu n'es pas encore allocataire.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F32485'],null]);
   /* Garde */
-  R.push(["Aide pour la garde (CMG)",'<span class="amt no">Selon les heures et tes revenus</span><span class="small muted">La Caf prend en compte jusqu\'à environ 8 € de l\'heure pour une assistante maternelle (repas et entretien compris)</span>','Chaque mois, pendant la garde.',"Demande-la sur caf.fr dès que la garde commence. Pour une assistante maternelle, ça ouvre ton compte Pajemploi.",['caf.fr','https://www.caf.fr'],null]);
+  R.push(["Aide pour payer la garde (CMG)",'<span class="amt no">Selon les heures et tes revenus</span><span class="small muted">La Caf prend en compte jusqu\'à environ 8 € de l\'heure pour une assistante maternelle (repas et entretien compris)</span>','Chaque mois, pendant la garde.',"Demande-la sur caf.fr dès que la garde commence. Pour une assistante maternelle, ça ouvre ton compte Pajemploi.",['caf.fr','https://www.caf.fr'],null]);
   R.push(["Crédit d'impôt pour la garde",'<span class="amt">Jusqu\'à 1 750 € par enfant et par an</span><span class="small muted">50 % des frais de crèche ou d\'assistante maternelle, avant ses 6 ans</span>','Au moment de ta déclaration de revenus.',"Déclare les frais dans les cases 7GA à 7GC, après avoir retiré l'aide de la Caf.",['impots.gouv.fr','https://www.impots.gouv.fr'],null]);
   R.push(["Aide à domicile de la Caf",'<span class="amt no">Tu paies selon tes revenus</span>','Pendant la grossesse ou après la naissance.',"Regarde d'abord ta mutuelle, puis contacte un service d'aide à domicile conventionné par la Caf.",['caf.fr','https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile'],null]);
   let sum='';
@@ -859,7 +974,7 @@ function aidesResults(){
       <p style="margin:0">Sous <b>${eur0(pl)}</b> par an : allocation de base de <b>${eur(198.16*S.nb)}</b> par mois.</p>
       <p style="margin:0">Au-dessus de ${eur0(pp)} : pas de prime ni d'allocation de base.</p>
       <span class="hint">Le chiffre à regarder : « revenu net imposable » sur ton avis d'impôt 2025. En couple, additionne les deux.</span></div>`;
-  } else sum=`<div class="heroA"><span class="label">Pour toi</span><span class="midA">? €</span><span class="small muted">Réponds aux deux questions juste en dessous.</span></div>`;
+  } else sum=`<div class="note"><b>Combien pour toi ?</b><span>Réponds à 2 questions juste en dessous pour voir combien tu peux toucher.</span></div>`;
   return sum+`<details class="more"><summary>Toutes les aides et comment les demander (${R.length})</summary><div class="list">${R.map(([t,amt,when,how,l,tp])=>`<div class="item"><div class="body">
     <span class="title">${t}</span>${amt}
     <span class="small muted">${esc(when)}</span>
@@ -875,10 +990,10 @@ function vAides(){
   return `<p class="sr" aria-live="polite" id="a-say"></p><div id="a-res" class="sect">${aidesResults()}</div>
     <form class="card" id="aForm" onsubmit="return false">
       <label class="field">Ta situation<select id="a-sit"><option value="" ${A.sit?'':'selected'} disabled>Choisis ta situation</option>${[['couple2','En couple, nous travaillons tous les deux'],['couple1','En couple, un seul de nous travaille'],['seule','Seule avec mon ou mes enfants']].map(([v,l])=>`<option value="${v}" ${A.sit===v?'selected':''}>${l}</option>`).join('')}</select>
-        <span class="hint">« Tous les deux » : chacun a gagné plus de 6 300 € en 2024.</span></label>
-      <label class="field">Revenus du foyer en 2024, pour l'année (€)<input type="number" inputmode="numeric" id="a-rev" min="0" step="100" placeholder="${ns?'Je ne sais pas':'Ex. 42000'}" value="${ns?'':esc(A.rev)}">
-        <span class="hint">Sur ton avis d'impôt 2025 : la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
-      <button type="button" class="lnk" id="a-ns" data-ans-ns="1" aria-pressed="${ns}">${ns?'✓ Je ne sais pas : on te montre les cas possibles':'Je ne sais pas'}</button>
+        <span class="hint">« Tous les deux » : chacun a gagné au moins 6 306 € en 2024.</span></label>
+      <label class="field">Combien ton foyer a gagné en 2024 ? (en €, sur l'année)<input type="number" inputmode="numeric" id="a-rev" min="0" step="100" placeholder="${ns?'Je ne sais pas':'Ex. 42000'}" value="${ns?'':esc(A.rev)}">
+        <span class="hint">Le chiffre est sur ton avis d'impôt 2025, à la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
+      <button type="button" class="btn ghost sm" style="align-self:flex-start" id="a-ns" data-ans-ns="1" aria-pressed="${ns}">${ns?'✓ Je ne sais pas : on te montre les cas possibles':'Je ne sais pas'}</button>
       <details class="more"><summary>Plus de précisions (facultatif)</summary><div class="detail">
         <label class="field">Ton salaire brut par mois<input type="number" inputmode="numeric" id="a-brut" min="0" step="50" placeholder="Ex. 2500" value="${esc(A.brut)}">
           <span class="hint">Pour estimer tes indemnités de congé maternité.</span></label></div></details>
@@ -889,7 +1004,7 @@ function vArgent(){
   const all0=payments(); const pend0=all0.filter(p=>!S.received[p.id]&&p.d<=today).length;
   const v=argView||(pend0?'versements':'aides');
   const seg=`<div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Afficher"><button type="button" id="av-aides" data-av="aides" aria-pressed="${v==='aides'}" style="min-height:48px">Mes aides</button><button type="button" id="av-vers" data-av="versements" aria-pressed="${v==='versements'}" style="min-height:48px">Mes versements</button></div>`;
-  if(v==='aides')return `<div class="panel"><div class="sect"><h2>Ton argent</h2></div>${seg}${vAides()}</div>`;
+  if(v==='aides')return `<div class="panel">${phero('--c-sage','money','Argent','Ton argent','Ce que tu peux toucher, et comment le demander.',null)}${seg}${vAides()}</div>`;
   return vVersements(seg);
 }
 let showAllPend=false, bulk=false;
@@ -899,12 +1014,13 @@ function vVersements(seg){
   const next=all.filter(p=>!S.received[p.id]&&p.d>today).slice(0,3);
   const got=all.filter(p=>S.received[p.id]);
   return `<div class="panel">
-    <div class="sect"><h2>Ton argent</h2></div>${seg}
+    ${phero('--c-sage','money','Argent',pending.length?'À vérifier':'Tout est à jour',pending.length?pending.length+' versement'+(pending.length>1?'s':'')+' prévu'+(pending.length>1?'s':'')+' : regarde ton compte':got.length+' versement'+(got.length>1?'s':'')+' reçu'+(got.length>1?'s':''),null)}${seg}
     <div class="sect"><p class="muted" style="margin:0">Touche « Je l'ai reçu » quand un versement arrive sur ton compte. S'il tarde, on t'aide à le réclamer.${multi()?' Prime et allocation de base sont versées pour chaque bébé.':''}</p></div>
     ${pending.length?(bulk?`<section class="sect"><span class="label">Coche ce que tu as reçu</span>
       <div class="list">${pending.map(p=>`<div class="item"><input type="checkbox" class="check" id="bk-${p.id}" data-bk="${p.id}" checked><div class="body"><label class="title" for="bk-${p.id}">${esc(p.t)}</label><span class="small muted">${p.org} · ${fmt(p.d)}</span></div></div>`).join('')}</div>
       <div class="btns"><button class="btn" type="button" id="bk-ok" data-bkok="1">Valider</button><button class="btn ghost" type="button" id="bk-cancel" data-bkcancel="1">Annuler</button></div></section>`
-    :`<section class="sect"><div class="sect-head"><span class="label">À vérifier (${pending.length})</span>${pending.length>1?'<button class="iconbtn" type="button" id="bk-start" data-bkstart="1">J\'ai tout reçu sauf…</button>':''}</div>
+    :`<section class="sect"><div class="sect-head"><span class="label">À vérifier (${pending.length})</span>${pending.length>1?'<button class="iconbtn" type="button" id="bk-start" data-bkstart="1">Seulement certains</button>':''}</div>
+      ${pending.length>1?`<button class="btn wide" type="button" id="pend-all" data-pendall="1">Oui, tout est arrivé (${pending.length})</button>`:''}
       <div class="list">${(showAllPend?pending:pending.slice(0,3)).map(payRow).join('')}</div>
       ${pending.length>3&&!showAllPend?`<button class="iconbtn" style="align-self:flex-start" type="button" id="pend-more" data-pendmore="1">Voir les ${pending.length-3} autres</button>`:''}</section>`):''}
     <section class="sect"><span class="label">Prochains versements</span><div class="list">${next.map(payRow).join('')||'<div class="item muted">Plus aucun versement prévu.</div>'}</div></section>
@@ -913,6 +1029,252 @@ function vVersements(seg){
 <span class="hint">Si oui, on ajoute ses indemnités à tes versements.</span></div></details>
     ${got.length?`<details class="more"><summary>Déjà reçus (${got.length})</summary><div class="list">${got.map(payRow).join('')}</div></details>`:''}
     <p class="small muted" style="margin:0">Dates estimées : indemnités tous les 14 jours, aides Caf vers le 5 du mois. Les montants dépendent de tes revenus : simule-les sur caf.fr.</p>
+  </div>`;
+}
+
+/* ---------- Rappels : calculés sur le téléphone. Le site les montre à l'ouverture ; l'app iPhone pourra les programmer avec window.SereineRappels. ---------- */
+function reminders(){
+  const N=S.notif, dB=+N.days||3, out=[];
+  if(N.steps)steps().filter(s=>!S.done[s.id]&&s.d>=today).forEach(s=>{const w=add(s.d,-dB);out.push({id:'s-'+s.id+'-'+iso(s.d),when:w<today?today:w,title:s.t,body:(diff(s.d,today)===0?"C'est aujourd'hui":"À faire avant le "+fmtL(s.d))+' · '+s.org})});
+  if(N.pay)payments().filter(p=>!S.received[p.id]&&add(p.d,1)>=today).forEach(p=>out.push({id:'p-'+p.id,when:add(p.d,1),title:p.t+" : c'est arrivé ?",body:'Prévu le '+fmtL(p.d)+'. Regarde ton compte, puis note-le dans Sereine.'}));
+  if(N.garde)S.garde.filter(g=>g.relance&&g.status!=='Refusée'&&g.status!=='Acceptée'&&parse(g.relance)>=today).forEach(g=>out.push({id:'g-'+g.id+'-'+g.relance,when:parse(g.relance),title:'Relancer '+g.name,body:"Un petit appel ou un mail pour garder ta demande en tête de liste."}));
+  return out.sort((a,b)=>a.when-b.when);
+}
+const notifOK=()=>{try{return 'Notification' in window&&Notification.permission==='granted'}catch(_){return false}};
+function notifyDue(){
+  if(!S.notif.on||!notifOK())return;
+  const due=reminders().filter(r=>r.when<=today&&!S.notifSeen[r.id]).slice(0,3);
+  due.forEach(r=>{S.notifSeen[r.id]=iso(today);
+    const o={body:r.body,tag:r.id,icon:'icon-192.png'};
+    try{const sw=navigator.serviceWorker;(sw?sw.getRegistration():Promise.resolve(null)).then(g=>g?g.showNotification(r.title,o):new Notification(r.title,o)).catch(()=>{})}catch(_){}});
+  if(due.length)save();
+}
+window.SereineRappels={actifs:()=>!!S.notif.on,liste:()=>reminders().map(r=>({id:r.id,date:iso(r.when),heure:'09:00',titre:r.title,texte:r.body}))};
+let notifMsg='';
+function vRappels(){
+  const N=S.notif, next=reminders().slice(0,3);
+  const ck=(k,t)=>`<div class="item"><input type="checkbox" class="check" id="nf-${k}" data-nf="${k}" ${N[k]?'checked':''}><div class="body"><label class="title" for="nf-${k}">${t}</label></div></div>`;
+  return `<section class="sect" id="rappels"><span class="label">Mes rappels</span>
+    <div class="card" style="gap:12px">
+      <p style="margin:0">Sereine te prévient avant chaque date importante, pour que tu n'aies pas à y penser.</p>
+      <button class="btn ${N.on?'ghost ':''}wide" type="button" id="nf-toggle" data-nftoggle="1" aria-pressed="${N.on}">${N.on?'Rappels activés · les couper':'Activer mes rappels'}</button>
+      <p class="small" id="nf-msg" aria-live="polite" style="margin:0">${notifMsg}</p>
+      ${N.on?`<div class="list">${ck('steps','Mes démarches')}${ck('pay','Mes versements')}${ck('garde','Mes relances de garde')}</div>
+      <div class="field" role="group" aria-labelledby="nd-l"><span id="nd-l">Me prévenir pour les démarches</span>
+        <div class="choices seg" style="grid-template-columns:repeat(3,1fr)">${[[1,'1 jour avant'],[3,'3 jours avant'],[7,'1 semaine avant']].map(([d,l])=>`<button type="button" id="nd-${d}" data-nd="${d}" aria-pressed="${(+N.days||3)===d}">${l}</button>`).join('')}</div></div>
+      ${next.length?`<span class="label" style="margin-top:4px">Tes prochains rappels</span><div class="list">${next.map(r=>`<div class="item"><div class="body"><span class="title">${esc(r.title)}</span><span class="small muted">${diff(r.when,today)===0?"Aujourd'hui":'Le '+fmtL(r.when)}</span></div></div>`).join('')}</div>`:'<p class="small muted" style="margin:0">Aucun rappel prévu pour l\'instant.</p>'}`:''}
+      <p class="small muted" style="margin:0">Sur le site, tes rappels s'affichent quand tu ouvres Sereine. Dans l'app iPhone, bientôt, ils arriveront même quand l'app est fermée.</p>
+    </div></section>`;
+}
+function vConfid(){
+  return `<details class="more" id="confidentialite"><summary>Confidentialité de tes données</summary><div class="detail">
+    <p style="margin:0"><b>Tes données restent sur ton téléphone.</b> Tes dates, tes démarches cochées, tes versements, ta garde, ta nounou, ton humeur et tes revenus si tu les indiques sont gardés uniquement sur ton téléphone. Sereine n'a pas de serveur qui les reçoit. Personne d'autre ne les voit.</p>
+    <p style="margin:0"><b>Pas de publicité, pas de pistage, pas de revente.</b> Sereine ne crée pas de compte et ne mesure pas ce que tu fais dans l'app.</p>
+    <p style="margin:0"><b>Ce qui passe par internet.</b> Pour s'afficher, l'app charge ses polices d'écriture chez Google Fonts. Sur le site, elle charge aussi la carte chez OpenStreetMap et un outil de carte chez Cloudflare. Ces services voient l'adresse internet de ton téléphone, comme pour n'importe quel site. Quand tu tapes ton code postal, l'app télécharge la liste des gardes de ton département : l'hébergeur du site (GitHub) voit donc le numéro du département, pas ton code postal. Si tu cherches un produit par son code-barres, seuls ses chiffres sont envoyés à Open Food Facts, et l'outil qui lit le code-barres peut être chargé depuis jsDelivr. La photo reste sur ton téléphone. Les liens vers caf.fr, ameli.fr ou service-public.fr ouvrent ces sites, qui ont leurs propres règles.</p>
+    <p style="margin:0"><b>Rappels.</b> Si tu les actives, ils sont calculés et affichés par ton téléphone. Rien n'est envoyé ailleurs.</p>
+    <p style="margin:0"><b>Tout effacer.</b> Dans « Mes dates », le bouton « Tout effacer » supprime toutes tes données, tout de suite. Supprimer l'app ou les données du site le fait aussi.</p>
+    <p style="margin:0"><b>Contact.</b> Une question sur tes données : [adresse e-mail de contact à ajouter].</p>
+    <p class="small muted" style="margin:0">Mise à jour le 14 novembre 2026.</p>
+  </div></details>`;
+}
+
+/* ---------- Mails des aides : un dossier « Sereine » dans la boîte mail de la maman (l'app ne lit jamais les mails) ---------- */
+const MAILS='caf.fr OR ameli.fr OR assurance-maladie.fr OR urssaf.fr OR service-public.fr OR service-public.gouv.fr OR msa.fr';
+function vMails(){
+  const st=(t,x)=>`<li style="margin:0 0 8px">${x?`<b>${t}</b> ${x}`:t}</li>`;
+  return `<section class="sect" id="mails"><span class="label">Tes mails Caf et ameli au même endroit</span>
+    <div class="card" style="gap:10px">
+      <p style="margin:0">Range tout seul les mails de la Caf, d'ameli, de Pajemploi et de service-public dans un dossier « Sereine ». Tu ne rates plus rien, et le reste ne t'encombre pas.</p>
+      <p class="small muted" style="margin:0">Ça se règle une seule fois, dans ta boîte mail. Sereine ne lit jamais tes mails.</p>
+      <details class="more"><summary>J'ai une adresse Gmail</summary><div class="detail">
+        <span>À faire sur un ordinateur (l'app Gmail du téléphone ne le permet pas).</span>
+        <ol style="margin:0;padding-left:20px">
+          ${st('Ouvre Gmail et touche','le petit bouton de réglages, à droite de la barre de recherche en haut.')}
+          ${st('Dans la case « De », colle cette liste :','')}
+        </ol>
+        <textarea class="tpl" id="tpl-mails-g" aria-label="Liste à coller dans la case De" style="min-height:96px">${MAILS}</textarea>
+        <div class="btns" style="align-items:center"><button class="btn sm" type="button" id="cp-btn-mails-g" data-copy="tpl-mails-g">Copier la liste</button><span class="small muted" id="cp-tpl-mails-g" aria-live="polite"></span></div>
+        <ol start="3" style="margin:0;padding-left:20px">
+          ${st('Touche','« Créer un filtre ».')}
+          ${st('Coche','« Appliquer le libellé », puis choisis « Nouveau libellé » et écris Sereine.')}
+          ${st('Coche aussi','« Ne jamais envoyer dans le spam », puis touche « Créer un filtre ».')}
+        </ol>
+        <span>Ensuite, dans l'app Gmail de ton téléphone, ouvre le menu à gauche et touche « Sereine ».</span></div></details>
+      <details class="more"><summary>J'ai une adresse Outlook ou Hotmail</summary><div class="detail">
+        <span>À faire sur un ordinateur, sur outlook.com.</span>
+        <ol style="margin:0;padding-left:20px">
+          ${st('Crée un dossier','« Sereine » dans la colonne de gauche.')}
+          ${st('Ouvre les réglages','(la roue dentée en haut à droite), puis « Courrier » et « Règles ».')}
+          ${st('Ajoute une nouvelle règle','nommée Sereine. Condition : l\'adresse de l\'expéditeur contient caf.fr. Ajoute aussi ameli.fr, assurance-maladie.fr et urssaf.fr.')}
+          ${st('Action :','« Déplacer vers » le dossier Sereine. Enregistre.')}
+        </ol></div></details>
+      <details class="more"><summary>J'utilise l'app Mail de l'iPhone</summary><div class="detail">
+        <ol style="margin:0;padding-left:20px">
+          ${st('Ouvre un mail','de la Caf ou d\'ameli.')}
+          ${st('Touche le nom de l\'expéditeur','en haut du mail.')}
+          ${st('Touche','« Ajouter aux VIP ».')}
+        </ol>
+        <span>Fais-le une fois pour chaque organisme. Tous leurs mails arrivent ensuite dans la boîte « VIP » de l'app Mail.</span></div></details>
+    </div></section>`;
+}
+
+/* ---------- Je peux manger ça ? (repères officiels Santé publique France, sante.fr) ---------- */
+const FSRC={a:['sante.fr','https://www.sante.fr/node/7070507'],b:['sante.fr','https://www.sante.fr/listeriose-pendant-la-grossesse-quels-aliments-eviter'],c:['sante.fr','https://www.sante.fr/node/800433']};
+const FOOD=[
+ ['Comté, emmental, gruyère, beaufort, parmesan','comte emmental gruyere beaufort parmesan pate pressee cuite','ok',"Oui : ce sont des fromages à pâte pressée cuite. Enlève la croûte.",'a'],
+ ['Camembert, brie, munster, pont-l\'évêque','camembert brie munster pont l eveque pate molle','non',"À éviter pendant la grossesse : fromage à pâte molle, risque de listériose. Même pasteurisé.",'a'],
+ ['Reblochon, morbier','reblochon morbier','non',"À éviter : pâte pressée non cuite à affinage court, risque de listériose. Même pasteurisé.",'a'],
+ ['Fromage au lait cru','lait cru fromage au lait cru','non',"À éviter pendant 9 mois : risque de listériose.",'a'],
+ ['Lait cru','lait cru','non',"À éviter, ainsi que les produits faits avec : risque de listériose.",'a'],
+ ['Fromage râpé en sachet','rape sachet fromage rape','prec',"À éviter en sachet. Achète le fromage en morceau et râpe-le toi-même.",'a'],
+ ['Croûte de fromage','croute','prec',"Enlève la croûte de tous les fromages : elle peut être contaminée.",'a'],
+ ['« Fromage » végétal','fromage vegetal vegan substitut','non',"Déconseillé : risque de listériose.",'a'],
+ ['Jambon blanc, jambon cuit','jambon blanc jambon cuit jambon de paris','non',"À éviter : charcuterie vendue déjà cuite et gardée au froid, risque de listériose.",'a'],
+ ['Rillettes, pâté, foie gras, produits en gelée','rillettes pate terrine foie gras gelee','non',"À éviter : risque de listériose.",'b'],
+ ['Saucisson sec, jambon sec','saucisson sec jambon sec jambon cru','non',"À éviter : charcuterie sèche, risque de salmonellose.",'a'],
+ ['Saucisses, boudin noir','saucisse saucisses boudin','prec',"Oui s'ils sont bien cuits par toi : préfère les charcuteries à cuire soi-même.",'a'],
+ ['Viande bien cuite','viande bien cuite poulet porc veau agneau boeuf steak roti','ok',"Oui, si elle est bien cuite : plus de rouge à cœur.",'a'],
+ ['Steak saignant, tartare, carpaccio','saignant tartare carpaccio viande crue','non',"À éviter : viande crue ou pas assez cuite, risque de toxoplasmose.",'a'],
+ ['Gibier fumé ou mariné','gibier fume marine','non',"À éviter, sauf s'il est bien cuit : risque de toxoplasmose.",'a'],
+ ['Foie et produits à base de foie','foie de veau foie de volaille foie','prec',"À limiter autant que possible : très riche en vitamine A.",'c'],
+ ['Sushi, sashimi, poisson cru','sushi sashimi maki poisson cru','non',"À éviter : poisson cru, risque de listériose. La congélation ne suffit pas.",'a'],
+ ['Tarama','tarama','non',"À éviter : risque de listériose.",'a'],
+ ['Saumon fumé, poisson fumé ou mariné','saumon fume poisson fume truite fumee poisson marine','non',"À éviter : risque de listériose.",'a'],
+ ['Huîtres, coquillages crus','huitre huitres coquillages crus','non',"À éviter crus : risque de listériose.",'a'],
+ ['Crevettes décortiquées déjà cuites','crevettes decortiquees crustaces cuits','non',"À éviter quand elles sont vendues déjà cuites et décortiquées. Achète-les crues et cuis-les toi-même.",'a'],
+ ['Crustacés cuits à la maison','crevettes crues crustaces','ok',"Oui, achetés crus et bien cuits chez toi.",'a'],
+ ['Thon (même en boîte)','thon conserve de thon','prec',"À limiter : il peut contenir des polluants.",'a'],
+ ['Bar, dorade, lotte, raie, anguille','bar dorade lotte raie anguille','prec',"À limiter : ils peuvent contenir des polluants.",'a'],
+ ['Espadon, marlin, requin, lamproie, saumonette','espadon marlin requin lamproie saumonette siki','non',"À éviter : trop de polluants.",'a'],
+ ['Saumon, cabillaud, sardine… bien cuits','saumon cuit cabillaud morue colin merlu lieu sardine maquereau hareng truite merlan anchois sole poisson cuit','ok',"Oui, bien cuits et non fumés.",'a'],
+ ['Œuf à la coque, mollet, au plat','oeuf a la coque oeuf mollet oeuf au plat oeuf cru','non',"À éviter : œuf pas assez cuit, risque de salmonellose.",'a'],
+ ['Mayonnaise, mousse au chocolat, tiramisu faits maison','mayonnaise maison mousse au chocolat tiramisu oeufs crus','non',"À éviter faits maison avec des œufs crus : risque de salmonellose. Les versions industrielles sont a priori sans risque.",'a'],
+ ['Crudités, salade, herbes fraîches','salade crudites legumes crus fruits fraise pomme poire raisin tomate carotte concombre herbes','prec',"Oui, bien lavées pour enlever toute la terre. Si tu ne sais pas comment elles ont été lavées (au restaurant par exemple), préfère-les cuites.",'a'],
+ ['Graines germées','graines germees graines de soja','non',"À éviter : risque de listériose.",'b'],
+ ['Lait de soja, tofu, desserts au soja','soja lait de soja tofu boisson soja','non',"À éviter pendant la grossesse et l'allaitement : contient des phytoestrogènes.",'a'],
+ ['Sauce soja','sauce soja','ok',"Oui, de temps en temps : elle en contient peu.",'a'],
+ ['Alcool','alcool vin biere champagne cidre aperitif cocktail','non',"À éviter totalement, comme toutes les boissons alcoolisées.",'a'],
+ ['Plats et desserts à l\'alcool','plat a l alcool dessert a l alcool boeuf bourguignon coq au vin baba au rhum','non',"À éviter, même cuits longtemps.",'a'],
+ ['Café','cafe expresso cappuccino','prec',"Pas plus de 3 tasses par jour.",'c'],
+ ['Thé','the','prec',"Il contient de la caféine, deux fois moins que le café : à compter avec le café.",'c'],
+ ['Sodas, boissons énergisantes','coca cola soda boisson energisante','prec',"Ils contiennent de la caféine : à compter avec le café.",'c'],
+ ['Produits enrichis en phytostérols','phytosterols margarine','non',"Déconseillés pendant la grossesse.",'c'],
+ ['Compléments alimentaires','complement alimentaire complements vitamines','prec',"Pas sans en parler à ton médecin ou ta sage-femme.",'c'],
+ ['Restes et plats cuisinés','restes plat cuisine','prec',"Réchauffe-les bien, mange-les tout de suite, et pas plus de 3 jours au frigo.",'a']
+];
+const nrm=t=>String(t||'').toLowerCase().replace(/œ/g,'oe').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
+const FIDX=FOOD.map(f=>[' '+nrm(f[0]+' '+f[1])+' ',f]);
+const FSTOP=new Set(['de','du','des','la','le','les','au','aux','un','une','et','a','en','avec','sans','ou','fait','faite','maison','bio']);
+function foodFind(q,max){q=nrm(q);if(q.length<2)return [];const w=q.split(' ').filter(x=>x.length>2&&!FSTOP.has(x));
+  const ex=(t,x)=>t.includes(' '+x+' ')||t.includes(' '+x+'s ')||(x.endsWith('s')&&t.includes(' '+x.slice(0,-1)+' '));
+  let sc=FIDX.map(([t,f])=>{let n=0,e=false;if(t.includes(' '+q+' '))n+=10;w.forEach(x=>{if(ex(t,x)){n+=4;e=true}else if(x.length>3&&t.includes(' '+x))n+=3});return [n,f,e]}).filter(a=>a[0]>=3);
+  if(sc.some(a=>a[2]))sc=sc.filter(a=>a[2]);
+  return sc.sort((a,b)=>b[0]-a[0]).slice(0,max||5).map(a=>a[1])}
+const FV={ok:'Oui',prec:'Avec précaution',non:'À éviter',info:'À vérifier'};
+const fCard=f=>`<div class="fcard"><div class="fh"><b>${esc(f[0])}</b><span class="fv ${f[2]}">${FV[f[2]]}</span></div><span>${esc(f[3])}</span>${f[4]?`<a class="small" href="${FSRC[f[4]][1]}" target="_blank" rel="noopener">Source : ${FSRC[f[4]][0]} ↗</a>`:''}</div>`;
+let foodQ='', bcHTML='';
+function foodResHTML(){
+  if(nrm(foodQ).length<2)return `<span class="label">Souvent demandés</span><div class="chips">${['Café','Camembert','Sushi','Saumon fumé','Jambon blanc','Œuf à la coque','Thon','Tiramisu'].map(x=>`<button type="button" data-fq="${x}">${x}</button>`).join('')}</div>`;
+  const r=foodFind(foodQ,4);
+  if(!r.length)return `<div class="fcard"><div class="fh"><b>${esc(foodQ)}</b><span class="fv info">${FV.info}</span></div><span>Je ne l'ai pas dans ma liste. Demande à ta sage-femme, ton médecin ou ton pharmacien.</span><span class="small muted">Les grands repères : viande et poisson bien cuits, pas de lait cru, pas d'alcool.</span></div>`;
+  return r.map(fCard).join('');
+}
+/* Code-barres : lu sur la photo, dans le téléphone. Seuls les chiffres partent vers Open Food Facts. */
+const ALC=['alcool','biere','rhum','liqueur','cognac','calvados','kirsch','armagnac','whisky','vodka','porto','marsala','cidre','champagne','amaretto'];
+function bcAnalyse(P){
+  const name=P.product_name_fr||P.product_name||'Ce produit';
+  const ing=nrm(P.ingredients_text_fr||P.ingredients_text||''), meta=(P.categories_tags||[]).concat(P.labels_tags||[]).join(' ');
+  const out=[]; const has=w=>(' '+ing+' ').includes(' '+w+' ');
+  if(has('lait cru')||/raw-milk/.test(meta))out.push(['Lait cru','non',"Fait avec du lait cru : risque de listériose."]);
+  const al=ALC.filter(has); if(/ vins? (?!de$)/.test(' '+ing.replace(/vinaigre de vin/g,'')+' ')&&!al.length)al.push('vin');
+  if(al.length)out.push(['Alcool','non',"Contient de l'alcool ("+al[0]+") : à éviter, même cuit."]);
+  if(/soy-milk|soy-yogurt|tofu|soy-dessert|soy-drink|soy-based/.test(meta))out.push(['Soja','non',"Produit au soja : contient des phytoestrogènes."]);
+  if(has('phytosterols')||has('phytosterol'))out.push(['Phytostérols','non',"Enrichi en phytostérols : déconseillé."]);
+  if(/(saumon|truite|haddock|hareng|poisson)s? fumes?/.test(ing+' '+nrm(name)))out.push(['Poisson fumé','non',"Poisson fumé : risque de listériose."]);
+  ['espadon','requin','marlin'].forEach(w=>{if(has(w))out.push([w,'non',"Trop de polluants : à éviter."])});
+  foodFind(name,2).forEach(f=>{if(f[2]!=='ok'&&!/maison/.test(f[0])&&!out.some(o=>o[0]===f[0]))out.push([f[0],f[2],f[3]])});
+  const worst=out.some(o=>o[1]==='non')?'non':out.length?'prec':'info';
+  return `<div class="fcard"><div class="fh"><b>${esc(name)}</b><span class="fv ${worst}">${FV[worst]}</span></div>
+    ${out.length?out.map(o=>`<span><b style="font-size:15px">${esc(o[0])}</b> · ${esc(o[2])}</span>`).join(''):`<span>Je n'ai rien trouvé dans ses ingrédients qui soit sur la liste des aliments à éviter.</span><span class="small muted">Vérifie quand même l'étiquette : lait cru, cuisson, date limite. Pour un fromage ou une charcuterie, cherche aussi son nom plus haut.</span>`}
+    ${ing?'':'<span class="small muted">Ses ingrédients ne sont pas connus : cherche son nom plus haut.</span>'}
+    <span class="small muted">Produit : Open Food Facts. Repères : <a href="${FSRC.a[1]}" target="_blank" rel="noopener">sante.fr ↗</a></span></div>`;
+}
+function bcShow(h){bcHTML=h;const b=document.getElementById('bc-res');if(b)b.innerHTML=h}
+async function bcLookup(code){
+  code=String(code||'').replace(/\D/g,'');
+  if(code.length<8){bcShow('<p class="small" role="alert" style="margin:0">Un code-barres a 8 ou 13 chiffres. Vérifie-le.</p>');return}
+  bcShow('<p class="small muted" style="margin:0">Je cherche le produit '+code+'…</p>');
+  try{const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json?fields=product_name,product_name_fr,ingredients_text_fr,ingredients_text,categories_tags,labels_tags');
+    const j=await r.json();
+    if(!j||j.status!==1||!j.product){bcShow(`<div class="fcard"><b>Produit inconnu (${code})</b><span>Je ne le trouve pas. Tape plutôt son nom dans la recherche.</span></div>`);return}
+    bcShow(bcAnalyse(j.product));say('Résultat affiché')
+  }catch(e){bcShow('<div class="fcard"><b>Recherche impossible</b><span>Je n\'arrive pas à chercher ce produit. Vérifie ta connexion, ou tape son nom dans la recherche.</span></div>')}
+}
+let ZX=null;
+function loadZX(){if(ZX)return ZX;ZX=new Promise((ok,ko)=>{if(window.ZXing)return ok(window.ZXing);const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=()=>ok(window.ZXing);s.onerror=()=>{ZX=null;ko()};document.head.appendChild(s)});return ZX}
+async function bcFromPhoto(file){
+  if(!file)return; bcShow('<p class="small muted" style="margin:0">Je lis le code-barres…</p>');
+  let code=null;
+  try{if('BarcodeDetector' in window){const img=await createImageBitmap(file);const r=await new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']}).detect(img);if(r[0])code=r[0].rawValue}}catch(_){}
+  if(!code){const url=URL.createObjectURL(file);try{const Z=await loadZX();const h=new Map();h.set(Z.DecodeHintType.TRY_HARDER,true);const res=await new Z.BrowserMultiFormatReader(h).decodeFromImageUrl(url);code=res&&res.getText()}catch(_){}URL.revokeObjectURL(url)}
+  if(!code){bcShow('<div class="fcard"><b>Je n\'arrive pas à lire le code-barres</b><span>Reprends la photo de plus près, bien à plat, avec de la lumière. Ou tape ses chiffres juste au-dessus.</span></div>');return}
+  const i=document.getElementById('bc-code');if(i)i.value=code; bcLookup(code);
+}
+const SRCH=sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>');
+function vManger(){
+  return `<div class="panel">
+    ${phero('--c-rose','plate','Assiette','Je peux manger ça ?','Tape un aliment ou un plat. Réponses tirées des conseils officiels de Santé publique France.',null)}
+    <label class="sr" for="food-q">Aliment ou plat</label>
+    <input type="search" class="fq" id="food-q" placeholder="Ex. camembert, sushi, café" autocomplete="off" enterkeyhint="search" value="${esc(foodQ)}">
+    <div class="fres" id="food-res" aria-live="polite">${foodResHTML()}</div>
+    <section class="card" aria-labelledby="bc-t" style="gap:12px">
+      <h3 id="bc-t">Un produit du magasin ?</h3>
+      <p class="small muted" style="margin:0">Prends en photo son code-barres : l'app lit ses ingrédients et te signale ceux à éviter.</p>
+      <button type="button" class="btn wide" id="bc-snap" data-bcphoto="1">Photographier le code-barres</button><input type="file" accept="image/*" capture="environment" id="bc-photo" class="photo-in" tabindex="-1">
+      <div class="grid2" style="align-items:end;grid-template-columns:minmax(0,1fr) auto"><label class="field">Ou tape ses chiffres<input type="text" inputmode="numeric" id="bc-code" autocomplete="off" placeholder="Ex. 3017620422003"></label><button type="button" class="btn ghost" id="bc-go" data-bcgo="1">Chercher</button></div>
+      <div class="fres" id="bc-res" aria-live="polite">${bcHTML}</div>
+      <p class="small muted" style="margin:0">La photo reste sur ton téléphone. Seuls les chiffres du code-barres sont envoyés à Open Food Facts, une base de produits libre.</p>
+    </section>
+    <p class="small muted" style="margin:0">Sereine ne remplace pas un avis médical. Pour une question sur ta situation, demande à ta sage-femme ou à ton médecin.</p>
+  </div>`;
+}
+
+
+/* ---------- Mon suivi : calendrier officiel des examens (service-public.fr R41832, A15640) ---------- */
+const SUIVI=[
+ [3,'c1',"1re consultation prénatale","Avant la fin du 3e mois : examen complet, prise de sang, et déclaration de grossesse."],
+ [3,'e1',"1re échographie","L'échographie de datation. Remboursée à 70 %."],
+ [4,'c2',"2e consultation prénatale",""],
+ [4,'done:epp',"Entretien prénatal précoce","Obligatoire, après la déclaration de grossesse. Remboursé à 100 %. C'est le moment de parler de toi."],
+ [4,'dent',"Examen bucco-dentaire","Possible dès le 4e mois, remboursé à 100 % jusqu'à 6 mois après la naissance."],
+ [5,'c3',"3e consultation prénatale","Avec une prise de sang."],
+ [5,'e2',"2e échographie","Elle regarde la croissance et la morphologie de bébé. Remboursée à 70 %."],
+ [6,'c4',"4e consultation prénatale","Avec une prise de sang."],
+ [6,'i:100',"Remboursement à 100 %","Dès le 1er jour du 6e mois, tous tes frais médicaux remboursables sont pris en charge à 100 %, jusqu'à 12 jours après la naissance."],
+ [7,'c5',"5e consultation prénatale",""],
+ [7,'e3',"3e échographie","Elle regarde le placenta et la position de bébé. Prise en charge à 100 %."],
+ [7,'i:prep',"Préparation à la naissance","Les séances commencent souvent au 7e mois. Remboursées à 100 % avec une sage-femme ou un médecin. Tu y as droit dès la déclaration de grossesse."],
+ [8,'c6',"6e consultation prénatale",""],
+ [8,'anes',"Consultation avec l'anesthésiste","Obligatoire au 8e mois, même si tu ne prévois pas de péridurale."],
+ [9,'c7',"7e consultation prénatale","La dernière avant la naissance."]
+];
+function suivRow(m,id,t,x,hot){
+  if(id.startsWith('i:'))return `<div class="item${hot?' hot':''}"><div class="body"><span class="title">${t}</span><span class="small muted">${x}</span></div></div>`;
+  const [k,i]=id.includes(':')?id.split(':'):['suivi',id]; const on=!!S[k][i];
+  return `<div class="item ${on?'done':''}${hot&&!on?' hot':''}"><input type="checkbox" class="check" id="${k}-${i}" data-ck="${k}" data-ckid="${i}" ${on?'checked':''}><div class="body"><label class="title" for="${k}-${i}">${t}</label>${x?`<span class="small muted">${x}</span>`:''}</div></div>`;
+}
+function vSuivi(){
+  const {start}=refs(); const days=Math.max(0,diff(today,start)); const mois=Math.min(9,Math.max(1,Math.ceil(Math.max(1,days-14)/30.44)));
+  const months=[...new Set(SUIVI.map(r=>r[0]))];
+  const block=(m,hot)=>`<section class="sect" style="gap:10px"><h3 class="mo">${m===mois?'Ce mois-ci · ':''}${m}e mois</h3><div class="tcards">${SUIVI.filter(r=>r[0]===m).map(r=>suivRow(...r,hot)).join('')}</div></section>`;
+  const past=months.filter(m=>m<mois), next=months.filter(m=>m>=mois);
+  const open=SUIVI.filter(r=>r[0]<mois&&!r[1].startsWith('i:')).filter(r=>{const [k,i]=r[1].includes(':')?r[1].split(':'):['suivi',r[1]];return !S[k][i]}).length;
+  return `<div class="panel">
+    <button type="button" class="lnk" data-go="accueil" style="align-self:flex-start">‹ Accueil</button>
+    ${phero('--c-sand','steps','Mon suivi',mois+'e mois de grossesse','Les rendez-vous officiels, mois par mois. Coche-les quand c\'est fait.',null)}
+    ${past.length?`<details class="more"><summary>Les mois passés${open?' · '+open+' à cocher si c\'est fait':''}</summary><div class="sect" style="gap:16px">${past.map(m=>block(m,false)).join('')}</div></details>`:''}
+    ${next.map(m=>block(m,m===mois)).join('')}
+    <p class="small muted" style="margin:0">Calendrier officiel du suivi de grossesse (service-public.fr). Ta sage-femme ou ton médecin peut l'adapter, par exemple pour des jumeaux : suis toujours ses rendez-vous.</p>
   </div>`;
 }
 
@@ -925,7 +1287,7 @@ function vAide(){
   const last=Object.keys(S.mood).sort().slice(-7).map(d=>S.mood[d]);
   const heavy=last.filter(x=>x==='triste'||x==='bout').length;
   return `<div class="panel">
-    <h2>Besoin d'aide ?</h2>
+    ${phero('--c-rose','care','Aide','Tu n\'es pas seule','Des personnes sont là pour t\'écouter et t\'aider.',null)}
     ${m==='bout'?`<div class="note bad"><b>Tu n'as pas à tenir seule.</b><span>Si tu as des idées noires, appelle le 3114, jour et nuit, gratuit. En danger immédiat : le 15.</span></div>`:''}
     <section class="sect"><span class="label">Urgence</span><div class="list">
       ${callRow('Urgence médicale','15','15','ou 112 depuis un portable')}
@@ -936,6 +1298,7 @@ function vAide(){
       ${callRow('Assurance maladie','36 46','3646','Congé maternité, indemnités, carte Vitale')}
       ${callRow('Allô Parents Bébé','0 800 00 34 56','0800003456','Gratuit · lun.–ven., 10 h–13 h et 14 h–18 h')}
     </div></section>
+    ${vMails()}
     <section class="sect"><span class="label">Et toi, comment ça va aujourd'hui ?</span>
       <div class="moods" role="group" aria-label="Mon humeur du jour">${MOODS.map(([id,l,c])=>`<button type="button" id="mood-${id}" data-mood="${id}" aria-pressed="${m===id}"><span class="dot" style="background:${c}"></span>${l}</button>`).join('')}</div>
       ${heavy>=2&&m!=='bout'?`<div class="note"><b>Plusieurs jours difficiles</b><span>Parles-en cette semaine à ta sage-femme, ton médecin ou la PMI. Après une naissance, c'est fréquent et ça se soigne.</span></div>`:''}
@@ -945,11 +1308,13 @@ function vAide(){
       ${multi()?`<div class="item"><div class="body"><span class="title">Jumeaux et Plus</span><span class="small muted">Associations de parents de jumeaux et plus : entraide, prêt de matériel, conseils.</span><a class="small" href="https://www.jumeaux-et-plus.fr" target="_blank" rel="noopener">jumeaux-et-plus.fr ↗</a></div></div>`:''}
       <div class="item"><div class="body"><span class="title">Maman Blues</span><span class="small muted">Association de soutien aux mères en difficulté après la naissance.</span><a class="small" href="https://www.maman-blues.fr" target="_blank" rel="noopener">maman-blues.fr ↗</a></div></div>
     </div></section>
+    ${vRappels()}
+    ${vConfid()}
     <p class="small muted" style="margin:0">Sereine ne remplace pas un avis médical. Tes réponses restent sur ton téléphone.</p>
   </div>`;
 }
 
-let rvPay=null, rvErr=false;
+let rvPay=null, rvSteps=null, autoG=[];
 const stillOpen=s=>['csn','cmg','epn','tisf'].includes(s.id)||(s.id==='second'&&diff(today,refs().B)<183);
 const pastSteps=()=>steps().filter(s=>!S.done[s.id]&&s.d<today).sort((a,b)=>a.d-b.d);
 const pastPays=()=>payments().filter(p=>!S.received[p.id]&&p.d<=today);
@@ -958,22 +1323,27 @@ function vReview(){
   const ps=pastSteps(), pp=pastPays();
   return `<form class="panel" id="rvForm" style="padding-top:20px">
     <div class="sect"><span class="label">Avant de commencer</span><h1>Qu'as-tu déjà fait ?</h1>
-      <p class="muted" style="margin:0">Ces démarches avaient une date déjà passée. Coche seulement celles que tu as vraiment faites. Les autres resteront dans ta liste.</p></div>
-    ${ps.length?`<div class="list">${ps.map(s=>`<div class="item"><input type="checkbox" class="check" id="rv-${s.id}" data-rv="${s.id}"><div class="body"><label class="title" for="rv-${s.id}">${esc(s.t)}</label><span class="small muted">${esc(s.org)}</span></div></div>`).join('')}</div>`:''}
+      <p class="muted" style="margin:0">Certaines démarches avaient une date déjà passée. Réponds, puis touche « C'est bon ».</p></div>
     ${pp.length?`<div class="field" role="group" aria-labelledby="rvp-l"><span id="rvp-l">Les ${pp.length} versement${pp.length>1?'s':''} prévu${pp.length>1?'s':''} avant aujourd'hui, tu les as reçus ?</span>
-      <div class="choices" style="grid-template-columns:1fr 1fr"><button type="button" id="rvp-all" data-rvpay="all" aria-pressed="${rvPay==='all'}">Oui, tous</button><button type="button" id="rvp-one" data-rvpay="one" aria-pressed="${rvPay==='one'}">Je vérifie un par un</button></div></div>`:''}
-    ${rvErr?'<p class="small" role="alert" style="margin:0;color:var(--late);font-weight:700">Dis-nous d\'abord si tu as reçu les versements.</p>':''}
+      <div class="choices" style="grid-template-columns:1fr 1fr"><button type="button" id="rvp-all" data-rvpay="all" aria-pressed="${rvPay==='all'}">Oui, tout est arrivé</button><button type="button" id="rvp-one" data-rvpay="one" aria-pressed="${rvPay==='one'}">Pas sûre, je vérifierai</button></div></div>`:''}
+    ${ps.length?`<div class="field" role="group" aria-labelledby="rvs-l"><span id="rvs-l">${ps.length>1?'Ces '+ps.length+' démarches, tu les as déjà faites ?':'Cette démarche, tu l\'as déjà faite ?'}</span>
+      <div class="choices" style="grid-template-columns:1fr 1fr"><button type="button" id="rvs-all" data-rvsteps="all" aria-pressed="${rvSteps==='all'}">Oui, j'ai fait tout ça</button><button type="button" id="rvs-one" data-rvsteps="one" aria-pressed="${rvSteps==='one'}">Je coche une par une</button></div>
+      ${rvSteps==='all'?'<span class="hint">Tu pourras en remettre une à faire dans l\'onglet Démarches.</span>':''}</div>`:''}
+    ${ps.length&&rvSteps==='one'?`<p class="small muted" style="margin:0">Coche celles que tu as faites. Les autres resteront dans ta liste.</p><div class="list">${ps.map(s=>`<div class="item"><input type="checkbox" class="check" id="rv-${s.id}" data-rv="${s.id}"><div class="body"><label class="title" for="rv-${s.id}">${esc(s.t)}</label><span class="small muted">${esc(s.org)}</span></div></div>`).join('')}</div>`:''}
+    ${autoG.length?`<details class="more"><summary>Démarches de grossesse, déjà cochées pour toi (${autoG.length})</summary><p class="small muted" style="margin:0">Décoche celles que tu n'as pas faites : elles resteront dans ta liste.</p><div class="list">${autoG.map(id=>steps().find(s=>s.id===id)).filter(Boolean).map(s=>`<div class="item"><input type="checkbox" class="check" id="rvg-${s.id}" data-rvg="${s.id}" checked><div class="body"><label class="title" for="rvg-${s.id}">${esc(s.t)}</label><span class="small muted">${esc(s.org)}</span></div></div>`).join('')}</div></details>`:''}
     <div style="position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:3"><button class="btn wide" type="submit" style="box-shadow:0 6px 18px color-mix(in srgb,#000 18%,transparent)">C'est bon</button></div>
   </form>`;
 }
-const VIEWS={accueil:vAccueil,demarches:vDemarches,garde:vGarde,argent:vArgent,aide:vAide};
+const VIEWS={suivi:vSuivi,accueil:vAccueil,demarches:vDemarches,garde:vGarde,argent:vArgent,aide:vAide,manger:vManger};
 function render(){
   const a=document.activeElement; const fid=a&&a.id&&document.getElementById('view').contains(a)?a.id:null;
   const on=ready(); const rv=on&&needsReview(); const full=on&&!rv;
   document.getElementById('app').classList.toggle('onb',!full);
   document.getElementById('tabbar').hidden=!full;
   document.getElementById('openSettings').hidden=!full;
-  document.getElementById('view').innerHTML=!on?vOnboarding():rv?vReview():VIEWS[tab]();
+  document.getElementById('openHelp').hidden=!full;
+  document.getElementById('openHelp').setAttribute('aria-current',tab==='aide'&&full?'page':'false');
+  document.getElementById('view').innerHTML=!on?vOnboarding():rv?vReview():(tab!=='accueil'&&tab!=='aide'&&tab!=='suivi'?`<h1 class="sr">${(TABS.find(x=>x[0]===tab)||[])[1]||''}</h1>`:'')+VIEWS[tab]();
   if(full)renderTabs();
   if(full&&tab==='garde'&&gView==='find')fillNear();
   if(fid){const el=document.getElementById(fid);if(el)el.focus({preventScroll:true});else{const h=document.querySelector('#view h1,#view h2,#view h3');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}}
@@ -988,8 +1358,10 @@ view.addEventListener('change',e=>{
   else if(t.dataset.nc){S.nounouCheck[t.dataset.nc]=t.checked;save();render()}
   else if(t.dataset.ck){S[t.dataset.ck][t.dataset.ckid]=t.checked;save();render()}
   else if(t.id==='nn-start'){S.nn.start=t.value;save();render()}
+  else if(t.dataset.nf){S.notif[t.dataset.nf]=t.checked;save();render()}
   else if(t.dataset.gstat){const g=S.garde.find(x=>x.id===t.dataset.gstat);g.status=t.value;save();render()}
   else if(t.id==='o-dpa'){onb.dpa=t.value}
+  else if(t.id==='bc-photo'){bcFromPhoto(t.files&&t.files[0]);t.value=''}
   else if(t.id==='a-sit'){S.aides.sit=t.value;save();updAides()}
 });
 view.addEventListener('input',e=>{
@@ -1003,6 +1375,7 @@ view.addEventListener('input',e=>{
   if(e.target.id==='nr-rev'&&e.target.value!==''){S.aides.rev=e.target.value;save();clearTimeout(aT);aT=setTimeout(()=>{const r=document.getElementById('nr-res');if(r){r.innerHTML=nnResteHTML()}},900)}
   if(e.target.id==='nh-plus'||e.target.id==='nh-abs'){const mk=iso(today).slice(0,7);S.nnH[mk]=S.nnH[mk]||{plus:'',abs:''};S.nnH[mk][e.target.id.slice(3)]=e.target.value;save();
     const f=document.getElementById('nhForm');const r=document.getElementById('nh-res');const tmp=document.createElement('div');tmp.innerHTML=nnMoisHTML();r.textContent=tmp.querySelector('#nh-res').textContent;f.lastElementChild.textContent=tmp.lastElementChild.textContent}
+  if(e.target.id==='food-q'){foodQ=e.target.value;const r=document.getElementById('food-res');if(r)r.innerHTML=foodResHTML()}
   if(e.target.id==='nn-name'||e.target.id==='nn-tel'){S.nn[e.target.id.slice(3)]=e.target.value;save()}
   if(e.target.id==='cp'){S.cp=e.target.value.replace(/\D/g,'').slice(0,5);save();nearMore=false;nearType='all';nearSel=-1;const n=document.getElementById('near-links');if(n)n.innerHTML=nearLinks();fillNear()}
   const AK={'a-rev':'rev','a-kids':'kids','a-brut':'brut'}[e.target.id];
@@ -1012,13 +1385,19 @@ view.addEventListener('click',e=>{
   const pt=e.target.closest('[data-pt]'); if(pt){nearSel=+pt.dataset.pt;const m=document.getElementById('near-map');if(m){m.innerHTML=nearMapHTML();const q=m.querySelector('[data-pt="'+nearSel+'"]');if(q)q.focus({preventScroll:true})}return}
   const b=e.target.closest('button'); if(!b)return;
   if(b.dataset.go)go(b.dataset.go);
+  else if(b.dataset.fq){foodQ=b.dataset.fq;const i=document.getElementById('food-q');if(i){i.value=foodQ;i.focus({preventScroll:true})}const r=document.getElementById('food-res');if(r)r.innerHTML=foodResHTML()}
+  else if(b.dataset.bcgo){bcLookup(document.getElementById('bc-code').value)}
+  else if(b.dataset.bcphoto){const f=document.getElementById('bc-photo');if(f)f.click()}
   else if(b.dataset.onbNb){onb.nb=+b.dataset.onbNb;keepOnb();render()}
   else if(b.dataset.onbM){onb.m=+b.dataset.onbM;keepOnb();render()}
+  else if(b.dataset.fixsa){openSettings();const f=document.getElementById('f-sa');if(f){f.focus();f.select&&f.select()}}
+  else if(b.dataset.onbBorn){keepOnb();onb.born=b.dataset.onbBorn==='1';onb.err=false;render()}
   else if(b.dataset.gadd){gAdding=true;render();const i=document.getElementById('g-name');if(i)i.focus()}
   else if(b.dataset.gcancel){gAdding=false;render()}
   else if(b.dataset.gtype){gType=b.dataset.gtype;const v=document.getElementById('g-name').value;render();const i=document.getElementById('g-name');i.value=v;i.focus()}
   else if(b.dataset.done){S.done[b.dataset.done]=true;save();render();say('Marqué comme fait')}
-  else if(b.dataset.sf){stepFilter=b.dataset.sf;render()}
+  else if(b.dataset.sf){stepFilter=b.dataset.sf;stepMore=false;render()}
+  else if(b.dataset.stmore){stepMore=true;render();const h=document.querySelector('#view h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
   else if(b.dataset.av){argView=b.dataset.av;render()}
   else if(b.dataset.scroll){const el=document.getElementById(b.dataset.scroll);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
   else if(b.dataset.nt){nearType=b.dataset.nt;nearMore=false;nearSel=-1;fillNear()}
@@ -1031,10 +1410,12 @@ view.addEventListener('click',e=>{
   else if(b.dataset.ansNs){S.aides.rev=S.aides.rev==='ns'?'':'ns';save();render()}
   else if(b.dataset.csnhide){S.csnHide=true;save();render()}
   else if(b.dataset.pendmore){showAllPend=true;render()}
+  else if(b.dataset.pendall){const L=payments().filter(p=>!S.received[p.id]&&p.d<=today);L.forEach(p=>{S.received[p.id]=true});argView='versements';save();render();say(L.length+' versements notés comme reçus')}
   else if(b.dataset.bkstart){bulk=true;render()}
   else if(b.dataset.bkcancel){bulk=false;render()}
   else if(b.dataset.bkok){view.querySelectorAll('[data-bk]').forEach(x=>{if(x.checked)S.received[x.dataset.bk]=true});bulk=false;argView='versements';save();render()}
   else if(b.dataset.csn!==undefined){S.csn=b.dataset.csn==='1';save();render()}
+  else if(b.dataset.rvsteps){rvSteps=b.dataset.rvsteps;render();const x=document.getElementById(rvSteps==='all'?'rvs-all':'rvs-one');if(x)x.focus({preventScroll:true})}
   else if(b.dataset.rvpay){rvPay=b.dataset.rvpay;
     view.querySelectorAll('[data-rvpay]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.rvpay===rvPay)))}
   else if(b.dataset.grel){const g=S.garde.find(x=>x.id===b.dataset.grel);g.relance=iso(add(today,14));save();render()}
@@ -1042,8 +1423,16 @@ view.addEventListener('click',e=>{
   else if(b.dataset.pay){S.received[b.dataset.pay]=true;save();render();say('Versement noté comme reçu')}
   else if(b.dataset.unpay){delete S.received[b.dataset.unpay];save();render()}
   else if(b.dataset.ansYes){S.received[b.dataset.ansYes]=true;save();render()}
+  else if(b.dataset.ansAll){const L=toAsk();L.forEach(p=>{S.received[p.id]=true});save();render();say(L.length+' versements notés comme reçus')}
   else if(b.dataset.ansNo){S.asked[b.dataset.ansNo]=iso(today);save();render()}
   else if(b.dataset.mood){S.mood[iso(today)]=b.dataset.mood;save();render()}
+  else if(b.dataset.nftoggle){
+    if(S.notif.on){S.notif.on=false;notifMsg='Rappels coupés.';save();render();return}
+    S.notif.on=true;save();
+    let fired=false;const done=st=>{if(fired)return;fired=true;notifMsg=st==='granted'?"C'est activé. Tu seras prévenue avant chaque date.":"Ton téléphone ne permet pas les notifications ici. Tes rappels restent visibles dans Sereine, et ils marcheront dans l'app iPhone.";save();render();notifyDue();const f=document.getElementById('nf-toggle');if(f)f.focus({preventScroll:true})};
+    try{if(!('Notification' in window))return done('none');if(Notification.permission!=='default')return done(Notification.permission);const r=Notification.requestPermission(done);if(r&&r.then)r.then(done,()=>done('denied'))}catch(_){done('denied')}
+  }
+  else if(b.dataset.nd){S.notif.days=+b.dataset.nd;save();render()}
   else if(b.dataset.copy){
     const ta=document.getElementById(b.dataset.copy), msg=document.getElementById('cp-'+b.dataset.copy);
     const fallback=()=>{ta.focus();ta.select();msg.textContent='Texte sélectionné : copie-le avec ton téléphone.'};
@@ -1058,39 +1447,57 @@ view.addEventListener('submit',e=>{
     gAdding=false;save();render();
   } else if(e.target.id==='onbForm'){
     keepOnb(); let d=onb.dpa;
-    if(!d&&onb.ddr)d=iso(add(parse(onb.ddr),280));
-    if(!d&&onb.m)d=iso(add(today,Math.round((9-onb.m)*30.44+15)));
+    if(!d&&!onb.born&&onb.ddr)d=iso(add(parse(onb.ddr),280));
+    const saV=onb.born?NaN:parseInt(onb.sa,10); const saOk=saV>=3&&saV<=42;
+    if(!d&&saOk)d=iso(add(today,(40-saV)*7));
+    if(!d&&!onb.born&&onb.m)d=iso(add(today,Math.round((9-onb.m)*30.44+15)));
     if(!d){onb.err=true;render();return}
-    onb.err=false; S.dpa=d; S.nb=onb.nb; S.rank=+document.getElementById('o-rank').value; S.birth=document.getElementById('o-birth').value||'';
+    const ob=document.getElementById('o-birth');
+    onb.err=false; S.dpa=d; S.nb=onb.nb; S.rank=+document.getElementById('o-rank').value; S.birth=onb.born?d:(ob&&ob.value||''); if(saOk)S.saRef={w:saV,on:iso(today)}; else delete S.saRef;
+    autoG=[]; if(onb.born){steps().filter(s=>s.ph==='g'&&s.d<parse(d)&&!stillOpen(s)&&!S.done[s.id]).forEach(s=>{S.done[s.id]=true;autoG.push(s.id)})}
     S.reviewed=false; save(); tab='accueil'; render(); window.scrollTo(0,0);
+  } else if(e.target.id==='bornForm'){
+    const v=document.getElementById('bf-date').value; if(!v)return;
+    S.birth=v; save(); render(); window.scrollTo(0,0); say('Date de naissance enregistrée');
   } else if(e.target.id==='rvForm'){
-    if(pastPays().length&&!rvPay){rvErr=true;render();return}
-    view.querySelectorAll('[data-rv]').forEach(x=>{if(x.checked)S.done[x.dataset.rv]=true});
+    if(rvSteps==='all')pastSteps().forEach(s=>{S.done[s.id]=true});
+    else view.querySelectorAll('[data-rv]').forEach(x=>{if(x.checked)S.done[x.dataset.rv]=true});
+    view.querySelectorAll('[data-rvg]').forEach(x=>{if(!x.checked)delete S.done[x.dataset.rvg]});
     if(rvPay==='all')pastPays().forEach(p=>{S.received[p.id]=true});
-    S.reviewed=true; rvErr=false; rvPay=null; save(); tab='accueil'; render(); window.scrollTo(0,0);
+    else pastPays().forEach(p=>{S.rvLater[p.id]=iso(today)});
+    S.reviewed=true; rvPay=null; rvSteps=null; autoG=[]; save(); tab='accueil'; render(); window.scrollTo(0,0);
   }
 });
 
 /* ---------- Mes dates ---------- */
 const sheet=document.getElementById('settings');
 const opener=document.getElementById('openSettings');
-function openSettings(){document.getElementById('f-nb').value=String(S.nb);document.getElementById('f-rank').value=String(S.rank);document.getElementById('f-dpa').value=S.dpa;document.getElementById('f-birth').value=S.birth||'';document.getElementById('resetMsg').textContent='';sheet.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;document.getElementById('f-dpa').focus()}
+function openSettings(){document.getElementById('f-nb').value=String(S.nb);document.getElementById('f-rank').value=String(S.rank);document.getElementById('f-dpa').value=S.dpa;document.getElementById('f-birth').value=S.birth||'';document.getElementById('f-sa-l').hidden=!!S.birth;document.getElementById('f-sa').value=S.birth?'':String(saNow());document.getElementById('f-sa').dataset.was=document.getElementById('f-sa').value;document.getElementById('resetMsg').textContent='';sheet.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;document.getElementById('f-dpa').focus()}
 function closeSettings(){if(sheet.hidden)return;sheet.hidden=true;document.getElementById('app').inert=false;document.getElementById('tabbar').inert=false;resetArmed=false;document.getElementById('resetAll').textContent='Tout effacer';if(!opener.hidden)opener.focus()}
 opener.addEventListener('click',openSettings);
+document.getElementById('openHelp').addEventListener('click',()=>go('aide'));
 document.getElementById('closeSettings').addEventListener('click',closeSettings);
+document.getElementById('openPrivacy').addEventListener('click',()=>{closeSettings();go('aide');const d=document.getElementById('confidentialite');if(d){d.open=true;d.scrollIntoView({block:'start'});const sm=d.querySelector('summary');if(sm)sm.focus({preventScroll:true})}});
 sheet.addEventListener('click',e=>{if(e.target===sheet)closeSettings()});
 document.getElementById('settingsForm').addEventListener('submit',e=>{e.preventDefault();
   S.nb=+document.getElementById('f-nb').value;S.rank=+document.getElementById('f-rank').value;
+  const fsa=document.getElementById('f-sa'), sv2=parseInt(fsa.value,10);
+  if(fsa.value==='')delete S.saRef; else if(fsa.value!==fsa.dataset.was&&sv2>=3&&sv2<=42)S.saRef={w:sv2,on:iso(today)};
   S.dpa=document.getElementById('f-dpa').value;S.birth=document.getElementById('f-birth').value;S.reviewed=false;save();closeSettings();render()});
 let resetArmed=false;
 document.getElementById('resetAll').addEventListener('click',e=>{
   if(!resetArmed){resetArmed=true;e.target.textContent="Oui, tout effacer";document.getElementById('resetMsg').textContent='Toutes tes données seront supprimées.';return}
-  S=defaults();save();onb={nb:1,dpa:'',birth:'',rank:0};closeSettings();render()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();const pt=e.target.closest&&e.target.closest('[data-pt]');if(pt&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pt.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+  S=defaults();save();onb={nb:1,dpa:'',birth:'',rank:0,born:false};closeSettings();render()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();if(e.key==='Enter'&&e.target.id==='bc-code'){e.preventDefault();bcLookup(e.target.value)}const pt=e.target.closest&&e.target.closest('[data-pt]');if(pt&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pt.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 
 render();
+notifyDue();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')notifyDue()});
 })();
 </script>
+
+
+
 
 
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});</script>
