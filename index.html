@@ -18,6 +18,7 @@
 <script>window.SEREINE_SITE=true;</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head><body>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
@@ -210,6 +211,10 @@ nav.tabs .pip.soft{background:var(--soon)}
 .choices.seg{background:var(--accent-soft);padding:4px;border-radius:14px;gap:4px}
 .choices.seg button{min-height:44px;border:0;background:transparent;color:var(--muted);border-radius:10px}
 .choices.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(46,40,34,.14)}
+/* Mode sombre : le choix sélectionné ressort plus clair que son fond */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .choices.seg{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}:root:not([data-theme="light"]) .choices.seg button[aria-pressed="true"]{background:#3A3129;color:var(--ink);box-shadow:0 0 0 1px rgba(211,182,144,.28)}}
+:root[data-theme="dark"] .choices.seg{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
+:root[data-theme="dark"] .choices.seg button[aria-pressed="true"]{background:#3A3129;color:var(--ink);box-shadow:0 0 0 1px rgba(211,182,144,.28)}
 .lnk{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:15px;min-height:44px;padding:0 4px;cursor:pointer;display:inline-flex;align-items:center}
 .callbtn{width:48px;height:48px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
 .callbtn svg{width:22px;height:22px}
@@ -312,6 +317,12 @@ select.inl{border-radius:999px;background-color:var(--accent-soft);border-color:
     </div>
     <label class="field">Date de naissance (si déjà né·e·s)
       <input type="date" id="f-birth"></label>
+    <label class="field">Ton travail
+      <select id="f-job"></select>
+      <span class="hint">Les congés, les indemnités et les démarches s'adaptent à ton statut.</span></label>
+    <label class="field">Le travail du second parent
+      <select id="f-job2"></select>
+      <span class="hint">Papa ou co-parent : son congé et ses indemnités s'adaptent aussi.</span></label>
     <div class="btns">
       <button class="btn" type="submit">Enregistrer</button>
       <button class="btn ghost" type="button" id="closeSettings">Fermer</button>
@@ -342,7 +353,7 @@ function defaults(){
   return {dpa:'', birth:'', example:false, nb:1, rank:0,
     done:{}, received:{}, asked:{}, nounouCheck:{}, mood:{},
     nounou:{h:40,w:46,t:4.2,k:0}, garde:[], suivi:{},
-    aides:{sit:'',rev:'',kids:'',brut:''}, reviewed:false, csn:false, cp:'', nn:{}, nnQ:{}, pjm:{}, nnH:{}, nnC:[]};
+    aides:{sit:'',rev:'',kids:'',brut:'',brut2:''}, job:'', job2:'', reviewed:false, csn:false, cp:'', nn:{}, nnQ:{}, pjm:{}, nnH:{}, nnC:[]};
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){S=defaults()}
@@ -362,6 +373,45 @@ function conge(){
 const multi=()=>S.nb>=2;
 const bebes=()=>S.nb===2?'tes jumeaux':S.nb>=3?'tes bébés':'bébé';
 const xN=()=>S.nb>=2?' ×'+S.nb:'';
+/* ---------- Ta situation de travail (sources : service-public.fr F2265, F519, F23890, F31233, F39685, F39686, F39693, F32485, F39152 ; francetravail.fr ; MSA, vérifiées le 16/11/2026) ---------- */
+const JOBL=[['sal','Salariée (CDI, CDD, intérim…)'],['fp','Fonctionnaire ou contractuelle du public'],['ind','Indépendante (artisane, commerçante, libérale)'],['micro','Micro-entrepreneuse (auto-entrepreneuse)'],['agri','Agricultrice (MSA)'],['cho','Demandeuse d\'emploi (France Travail)'],['sans','Sans emploi, étudiante ou au foyer']];
+const jobK=()=>JOBL.some(j=>j[0]===S.job)?S.job:'';
+const job=()=>jobK()||'sal';
+const jobName2=()=>{const k=job2K();return k?JOBL2[k].replace(/ \(.*\)$/,'').replace(/^Fonctionnaire ou contractuel·le du public$/,'fonctionnaire').replace(/^Sans emploi.*/,'sans emploi').replace(/^./,c=>c.toLowerCase()):''};
+const jobName=()=>{const j=JOBL.find(x=>x[0]===jobK());return j?j[1].replace(/ \(.*\)$/,''):''};
+const jobOpts=v=>`<option value="" ${v?'':'selected'}>Je ne sais pas encore</option>`+JOBL.map(([k,l])=>`<option value="${k}" ${v===k?'selected':''}>${l}</option>`).join('');
+const IJF=65.84, AFRM=4005;
+const JOBL2={sal:'Salarié·e (CDI, CDD, intérim…)',fp:'Fonctionnaire ou contractuel·le du public',ind:'Indépendant·e (artisan, commerçant, libéral)',micro:'Micro-entrepreneur·se (auto-entrepreneur)',agri:'Agriculteur·rice (MSA)',cho:"Demandeur·se d'emploi (France Travail)",sans:'Sans emploi, étudiant·e ou au foyer'};
+const jobOpts2=v=>`<option value="" ${v?'':'selected'}>Je ne sais pas encore / pas de second parent</option>`+JOBL.map(([k])=>`<option value="${k}" ${v===k?'selected':''}>${JOBL2[k]}</option>`).join('');
+/* Second parent (service-public.fr F3156, F583, F23890 ; MSA ; vérifiées le 16/11/2026) */
+const job2K=()=>JOBL.some(j=>j[0]===S.job2)?S.job2:'';
+const job2=()=>job2K()||'sal';
+const ijSal=b=>Math.min(104.02,Math.max(11.12,Math.min(b,4005)*3/91.25*0.79));
+const pat=()=>multi()?32:25;
+const SEC={
+  sal:{org:"Employeur du second parent",prev:"Au moins 1 mois avant le terme, il ou elle donne la date prévue de naissance à son employeur. Un courrier recommandé évite les malentendus.",
+    x:()=>"3 jours de congé payés par l'employeur, puis "+pat()+" jours payés par l'Assurance maladie (jusqu'à 104,02 € par jour). Les 4 premiers jours se prennent tout de suite après les 3 jours. Le reste dans les 6 mois, en 1 ou 2 fois d'au moins 5 jours. Il faut 6 mois d'affiliation et au moins 150 heures de travail sur les 3 derniers mois.",
+    csn:"70 % de son salaire net le 1er mois, puis 60 %. Il ou elle prévient son employeur 1 mois avant (15 jours s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance).",l:"https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"},
+  fp:{org:"Administration du second parent",prev:"Au moins 1 mois avant le terme, il ou elle fait sa demande à son chef de service, avec une copie du certificat de grossesse. Après la naissance, il ou elle envoie l'acte de naissance dans les 8 jours.",
+    x:()=>"3 jours de congé de naissance, puis "+pat()+" jours. Son salaire complet est maintenu, primes comprises. Les 4 premiers jours se prennent tout de suite après les 3 jours. Le reste dans les 6 mois, en 1 ou 2 fois d'au moins 5 jours.",
+    csn:"70 % de son traitement le 1er mois, puis 60 %. Demande écrite à son administration 1 mois avant.",l:"https://www.service-public.gouv.fr/particuliers/vosdroits/F583"},
+  ind:{org:"Caisse d'assurance maladie du second parent",prev:"Il ou elle organise l'arrêt de son activité : au moins 7 jours d'arrêt pour être indemnisé·e.",
+    x:()=>"Jusqu'à "+pat()+" jours, payés 65,84 € par jour par sa caisse d'assurance maladie. Au moins 7 jours, en 3 fois au plus (d'au moins 5 jours), dans les 6 mois. Si ses revenus sont très faibles (moins de 4 582 € par an en moyenne), l'indemnité baisse à 10 %.",
+    csn:"46,09 € bruts par jour le 1er mois, puis 39,50 €, en arrêtant complètement son activité. Demande en ligne à sa caisse, au plus tard la veille.",l:"https://entreprendre.service-public.gouv.fr/vosdroits/F23890"},
+  micro:{org:"Caisse d'assurance maladie du second parent",prev:"Il ou elle organise l'arrêt de son activité et demande à sa caisse d'assurance maladie le montant auquel il ou elle a droit.",
+    x:()=>"Jusqu'à "+pat()+" jours. Pour un micro-entrepreneur, le montant dépend de son revenu : sa caisse d'assurance maladie le lui dira.",
+    csn:"Les règles des micro-entrepreneurs ne sont pas encore claires sur les sites officiels : à demander à sa caisse.",l:"https://entreprendre.service-public.gouv.fr/vosdroits/F36708"},
+  agri:{org:"MSA",prev:"Au moins 20 jours avant la date prévue de naissance, il ou elle demande son remplacement à la MSA.",
+    x:()=>pat()+" jours, dont 7 jours de suite à commencer dans les 15 jours après la naissance. Le reste dans les 6 mois, en 3 fois au plus. La MSA paie son remplacement sur l'exploitation, ou des indemnités si personne ne peut le ou la remplacer.",
+    csn:"La MSA paie son remplacement, ou des indemnités. Demande au moins 20 jours avant.",l:"https://www.msa.fr"},
+  cho:{org:"France Travail et Assurance maladie",prev:"Il ou elle reste inscrit·e à France Travail pendant le congé. Ses allocations chômage s'arrêtent pendant qu'il ou elle touche les indemnités de l'Assurance maladie.",
+    x:()=>pat()+" jours, dont 4 tout de suite après la naissance. Indemnisé·e s'il ou elle a travaillé comme salarié·e dans les 12 derniers mois : calcul sur ses anciens salaires, jusqu'à 104,02 € par jour. Il ou elle envoie à l'Assurance maladie ses dates, ses derniers bulletins de salaire et l'acte de naissance.",
+    csn:"Possible s'il ou elle touche l'allocation chômage : prévenir France Travail 1 mois avant, puis demander à l'Assurance maladie.",l:"https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"},
+  sans:{org:"Second parent",prev:"Sans emploi, il ou elle n'a pas de congé à demander.",
+    x:()=>"Sans emploi depuis plus de 12 mois, pas d'indemnités de congé. S'il ou elle a travaillé comme salarié·e dans les 12 derniers mois, choisis plutôt « Demandeur·se d'emploi » pour lui ou elle.",
+    csn:"Pas de congé de naissance sans travail ni allocation chômage.",l:"https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"}
+};
+
 
 /* ---------- Démarches ---------- */
 /* Droits estimés d'après « Mes aides » : true, false, ou null si inconnu / trop proche du plafond */
@@ -378,6 +428,24 @@ function refs(){
   const dpa=parse(S.dpa); const R=S.saRef; const start=(R&&R.on&&+R.w>0)?add(parse(R.on),-Math.round(+R.w*7)):add(dpa,-280); const B=parse(S.birth)||dpa;
   return {dpa,start,B,born:!!S.birth};
 }
+const JOBC={sal:'',fp:" Ton administration continue de te payer pendant tout le congé.",ind:" Tu dois arrêter ton activité au moins 8 semaines, dont 6 après la naissance, pour toucher les indemnités.",micro:" Tu dois arrêter ton activité au moins 8 semaines, dont 6 après la naissance, pour toucher les indemnités.",agri:" Tu dois arrêter au moins 8 semaines, dont 6 après la naissance. La MSA paie ton remplacement sur l'exploitation.",cho:" Pendant le congé, tes allocations chômage sont mises en pause, sans être perdues.",sans:" Sans emploi, tu n'as pas d'indemnités, mais tu as droit au même repos et aux aides de la Caf."};
+const CSNO={sal:"Ton employeur et celui du second parent",fp:"Ton administration",ind:"Ta caisse d'assurance maladie",micro:"Ta caisse d'assurance maladie",agri:"MSA",cho:"France Travail et Assurance maladie",sans:"Le second parent"};
+const CSNX={sal:"Préviens ton employeur par écrit 1 mois avant. Pour le second parent, 15 jours suffisent s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance. L'Assurance maladie paie 70 % du salaire net le 1er mois, puis 60 % le 2e.",
+  fp:"Fais ta demande écrite à ton administration 1 mois avant (15 jours si le second parent l'enchaîne avec son congé de paternité). Tu touches 70 % de ton traitement le 1er mois, puis 60 % le 2e.",
+  ind:"Il faut arrêter complètement ton activité et être affiliée depuis 6 mois. Demande-le en ligne à ta caisse d'assurance maladie, au plus tard la veille. Tu touches 46,09 € bruts par jour le 1er mois, puis 39,50 € le 2e (6,58 € par jour si tes revenus sont très faibles).",
+  micro:"Les règles des micro-entrepreneuses ne sont pas encore claires sur les sites officiels : demande à ta caisse d'assurance maladie si tu y as droit.",
+  agri:"Demande-le à la MSA au moins 20 jours avant : elle paie ton remplacement sur l'exploitation, ou des indemnités si personne ne peut te remplacer.",
+  cho:"Si tu touches l'allocation chômage, tu y as droit. Préviens France Travail 1 mois avant, puis fais la demande à l'Assurance maladie. Ton allocation chômage est mise en pause pendant ce congé.",
+  sans:"Il faut travailler ou toucher le chômage pour y avoir droit. Le second parent, s'il travaille, peut le prendre."};
+function jobSteps(dpa,B,c){
+  const d=add(dpa,-c.pre*7-28), j=job();
+  if(j==='sal')return [{id:'emp',ph:'g',t:"Donner tes dates de congé à ton employeur",d,org:"Employeur",x:"Demande-lui d'envoyer l'attestation de salaire à l'Assurance maladie dès le début du congé : c'est elle qui déclenche tes indemnités. Garde une trace écrite. En CDD ou en intérim, tu as droit aux indemnités si tu as travaillé au moins 150 heures sur 3 mois ou 600 heures sur 12 mois."}];
+  if(j==='fp')return [{id:'emp-fp',ph:'g',t:"Prévenir ton administration",d,org:"Ton administration",x:"Envoie-lui ta déclaration de grossesse et tes dates de congé. Le congé est accordé de droit. Contractuelle en CDD : ton congé s'arrête à la fin de ton contrat.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F519"]}];
+  if(j==='ind'||j==='micro')return [{id:'emp-ind',ph:'g',t:"Préparer l'arrêt de ton activité",d,org:"Ta caisse d'assurance maladie",x:"Pour toucher les aides, tu dois avoir payé tes cotisations depuis au moins 6 mois à la date prévue de l'accouchement, et arrêter ton activité au moins 8 semaines. Organise tes clients et ton remplacement tôt."+(j==='micro'?" Comme micro-entrepreneuse, les montants dépendent de ton revenu : demande-les à ta caisse.":""),l:["service-public.fr","https://entreprendre.service-public.gouv.fr/vosdroits/F23890"]}];
+  if(j==='agri')return [{id:'emp-agri',ph:'g',t:"Demander ton remplacement à la MSA",d:add(dpa,-c.pre*7-20),org:"MSA",x:"Au moins 20 jours avant ton arrêt, sur ton espace MSA. Le service de remplacement a 15 jours pour répondre. S'il ne peut pas, tu peux embaucher toi-même : la MSA rembourse le salaire. Si personne ne peut te remplacer, elle te verse 65,84 € bruts par jour.",l:["msa.fr","https://www.msa.fr"]}];
+  if(j==='cho')return [{id:'emp-cho',ph:'g',t:"Déclarer ton congé à France Travail",d,org:"France Travail et Assurance maladie",x:"Déclare-le dans ton espace France Travail, même si tu n'as pas d'indemnités. Envoie à l'Assurance maladie tes derniers bulletins de salaire, ton certificat de travail et ta dernière attestation de paiement France Travail. Tu as droit aux indemnités maternité si tu touches l'allocation chômage, si tu l'as touchée dans les 12 derniers mois, ou si ton dernier emploi salarié s'est arrêté il y a moins de 12 mois.",l:["francetravail.fr","https://www.francetravail.fr/candidat/vos-droits-et-demarches/vos-changements-de-situation/declarer-un-conge-maternite-a-po.html"]}];
+  return [{id:'emp-sans',ph:'g',t:"Vérifier tes droits",d,org:"Caf",x:"Sans emploi, tu n'as pas d'indemnités maternité. Sauf si ton dernier emploi salarié s'est arrêté il y a moins de 12 mois : choisis alors « Demandeuse d'emploi » dans Mes dates. La prime de naissance et l'allocation de base ne dépendent pas du travail. Si tu touches le RSA, il continue pendant le congé.",l:["caf.fr","https://www.caf.fr"]}];
+}
 function steps(){
   const {dpa,start,B}=refs(); const c=conge();
   const extra=multi()?[
@@ -388,24 +456,24 @@ function steps(){
   const EL=elig();
   return extra.concat([
     {id:'tisf',ph:'g',t:"Demander une aide à domicile à la Caf",d:add(dpa,-c.pre*7-14),org:"Caf",x:(multi()?"Avec "+(S.nb===2?"des jumeaux":"plusieurs bébés")+", c'est vraiment utile. ":"")+"Pendant la grossesse ou après la naissance, la Caf peut payer une partie d'une aide à la maison : une professionnelle t'aide pour le quotidien et l'organisation. Tu paies selon tes revenus. Regarde d'abord si ta mutuelle la prend en charge. Fais la demande tôt, les délais sont longs.",l:["caf.fr","https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile"]},
-    {id:'secondprev',ph:'g',t:"Le second parent prévient son employeur",d:add(dpa,-31),org:"Employeur du second parent",x:"Au moins 1 mois avant le terme, il ou elle donne la date prévue de naissance à son employeur, pour son congé de "+(multi()?"32":"25")+" jours. Un courrier recommandé évite les malentendus.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
+    ...(job2()==='sans'?[]:[{id:'secondprev',ph:'g',t:{sal:"Le second parent prévient son employeur",fp:"Le second parent prévient son administration",agri:"Le second parent demande son remplacement à la MSA",cho:"Le second parent prépare son congé",ind:"Le second parent prépare son arrêt",micro:"Le second parent prépare son arrêt"}[job2()],d:add(dpa,job2()==='agri'?-20:-31),org:SEC[job2()].org,x:SEC[job2()].prev+" Son congé : "+pat()+" jours"+(job2()==='sal'||job2()==='fp'?" après 3 jours de congé de naissance":"")+".",l:["service-public.fr",SEC[job2()].l]}]),
     {id:'decl',ph:'g',t:"Déclarer ta grossesse",d:add(start,98),org:"Ton médecin ou ta sage-femme",x:"Ton médecin ou ta sage-femme la fait en ligne pendant une consultation, avant la fin du 3e mois de grossesse (14e semaine). C'est important : c'est une condition pour toucher la prime de naissance.",l:["ameli.fr","https://www.ameli.fr"]},
     {id:'mat',ph:'g',t:"T'inscrire à la maternité",d:add(start,84),org:"Maternité",x:"Dans certaines villes les places partent vite. Appelle dès que la grossesse est confirmée."},
     {id:'caf',ph:'g',t:"Mettre à jour ton compte Caf",d:add(start,105),org:"Caf",x:"Vérifie ton RIB, ta situation et tes revenus. Un dossier incomplet retarde tous les versements.",l:["caf.fr","https://www.caf.fr"]},
     {id:'epp',ph:'g',t:"Faire l'entretien prénatal précoce",d:add(start,140),org:"Sage-femme ou médecin",x:"Remboursé à 100 %. C'est le moment de parler de toi : fatigue, organisation, inquiétudes."},
     {id:'creche',ph:'g',t:"Déposer les demandes de crèche",d:add(start,182),org:"Mairie",x:"Chaque mairie a ses propres dates. Appelle pour connaître la prochaine, puis ajoute chaque demande dans l'onglet Garde.",l:["monenfant.fr","https://monenfant.fr"]},
     {id:'rpe',ph:'g',t:"Contacter le Relais Petite Enfance",d:add(start,196),org:"Relais Petite Enfance (gratuit)",x:"Ce service gratuit connaît les assistantes maternelles libres près de chez toi et t'aide pour le contrat.",l:["monenfant.fr","https://monenfant.fr"]},
-    {id:'emp',ph:'g',t:"Donner tes dates de congé à ton employeur",d:add(dpa,-c.pre*7-28),org:"Employeur",x:"Demande-lui d'envoyer l'attestation de salaire à l'Assurance maladie dès le début du congé : c'est elle qui déclenche tes indemnités. Garde une trace écrite."},
+    ...jobSteps(dpa,B,c),
     ...(EL.prime===false?[]:[{id:'prime',ph:'g',t:"Vérifier la prime de naissance",d:add(dpa,-53),org:"Caf",x:"Versée au 7e mois si la grossesse a été déclarée à temps"+(multi()?", une prime par bébé":"")+". Signale-la dans l'onglet Argent quand elle arrive."}]),
-    {id:'conge',ph:'g',t:"Début du congé maternité",d:add(dpa,-c.pre*7),org:"Assurance maladie",x:"Pour toi : "+c.pre+" semaines avant le terme et "+c.post+" après, soit "+(c.pre+c.post)+" semaines."+(S.nb===2?" Pour des jumeaux, tu peux avancer jusqu'à 4 semaines du congé d'après la naissance. Ils arrivent souvent avant le terme : prépare tout tôt.":"")},
+    {id:'conge',ph:'g',t:"Début du congé maternité",d:add(dpa,-c.pre*7),org:{fp:"Ton administration",agri:"MSA",sans:"Pour toi"}[job()]||"Assurance maladie",x:"Pour toi : "+c.pre+" semaines avant le terme et "+c.post+" après, soit "+(c.pre+c.post)+" semaines."+JOBC[job()]+(S.nb===2?" Pour des jumeaux, tu peux avancer jusqu'à 4 semaines du congé d'après la naissance. Ils arrivent souvent avant le terme : prépare tout tôt.":"")},
     {id:'decln',ph:'n',t:S.nb>=2?"Déclarer les naissances":"Déclarer la naissance",d:add(B,5),org:"Mairie du lieu de naissance",x:"Dans les 5 jours. C'est souvent possible directement à la maternité : demande dès ton arrivée."},
-    {id:'second',ph:'n',t:"Congé du second parent",d:add(B,7),org:"Employeur du second parent",x:"3 jours de congé payés par l'employeur, puis "+(multi()?"32 jours pour "+(S.nb===2?"des jumeaux":"plusieurs bébés"):"25 jours")+". Les 4 premiers jours se prennent tout de suite après les 3 jours. Le reste dans les 6 mois, en 1 ou 2 fois.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F3156"]},
-    {id:'csn',ph:'n',t:"Prévoir le congé de naissance (1 ou 2 mois par parent)",d:add(B,c.post*7-31),org:"Ton employeur et celui du second parent",x:"Nouveau depuis juillet 2026. Chaque parent peut prendre 1 ou 2 mois en plus, après le congé maternité ou paternité. À prendre avant le "+fmtY(lim)+". Préviens ton employeur par écrit 1 mois avant. Pour le second parent, 15 jours suffisent s'il l'enchaîne avec son congé de paternité et le commence dans le mois qui suit la naissance. L'Assurance maladie paie 70 % du salaire net le 1er mois, puis 60 % le 2e. Il ne se cumule pas avec la PreParE, le chômage ni des indemnités journalières (arrêt maladie par exemple). Pour le même bébé, la Caf arrête aussi l'aide pour la garde pendant ce congé, sauf pour un bébé né avant juillet 2026 déjà en crèche ou chez une assistante maternelle. Signale ce congé à la Caf : ses indemnités comptent dans tes revenus. Indépendante ? Demande-le à ta CPAM.",l:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39685"]},
+    {id:'second',ph:'n',t:"Congé du second parent",d:add(B,7),org:SEC[job2()].org,x:SEC[job2()].x()+" Congé de naissance en plus (1 ou 2 mois) : "+SEC[job2()].csn,l:[job2()==='agri'?"msa.fr":"service-public.fr",SEC[job2()].l]},
+    {id:'csn',ph:'n',t:"Prévoir le congé de naissance (1 ou 2 mois par parent)",d:add(B,c.post*7-31),org:CSNO[job()],x:"Nouveau depuis juillet 2026. Chaque parent peut prendre 1 ou 2 mois en plus, après le congé maternité ou paternité. À prendre avant le "+fmtY(lim)+". "+CSNX[job()]+" Il ne se cumule pas avec la PreParE"+(job()==='cho'?"":", le chômage")+" ni des indemnités journalières (arrêt maladie par exemple). Pour le même bébé, la Caf arrête aussi l'aide pour la garde pendant ce congé, sauf pour un bébé né avant juillet 2026 déjà en crèche ou chez une assistante maternelle. Signale ce congé à la Caf : ses indemnités comptent dans tes revenus.",l:job()==='ind'||job()==='micro'?["service-public.fr","https://entreprendre.service-public.gouv.fr/vosdroits/F39686"]:job()==='fp'?["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39693"]:["service-public.fr","https://www.service-public.gouv.fr/particuliers/vosdroits/F39685"]},
     {id:'acte',ph:'n',t:"Envoyer l'acte de naissance à la Caf et à l'Assurance maladie",d:add(B,14),org:"Caf et Assurance maladie",x:"Sans lui, les aides et les indemnités peuvent rester bloquées. Demande plusieurs copies à la mairie."},
     {id:'vitale',ph:'n',t:"Ajouter "+bebes()+" sur ta carte Vitale et ta mutuelle",d:add(B,30),org:"Assurance maladie et mutuelle",x:"Pour que les consultations soient remboursées."},
     {id:'epn',ph:'n',t:"Faire l'entretien postnatal précoce",d:add(B,56),org:"Sage-femme ou médecin",x:"Entre la 4e et la 8e semaine après la naissance. Il sert à faire le point sur toi : sommeil, moral, douleurs, retour à la maison."},
     {id:'cmg',ph:'n',t:"Demander l'aide pour la garde",d:add(B,c.post*7),org:"Caf",x:"Le « complément mode de garde » réduit le coût de la nounou ou de la micro-crèche. Pour une assistante maternelle, il ouvre aussi ton compte Pajemploi, le site où tu déclares son salaire.",l:["caf.fr","https://www.caf.fr"]},
-    {id:'fin',ph:'n',t:"Fin du congé maternité",d:add(B,c.post*7),org:"Employeur",x:"Prévois l'adaptation chez la nounou ou en crèche dans les 2 semaines d'avant."}
+    {id:'fin',ph:'n',t:"Fin du congé maternité",d:add(B,c.post*7),org:{sal:"Employeur",fp:"Ton administration",cho:"France Travail",agri:"MSA"}[job()]||"Pour toi",x:(job()==='cho'?"Réinscris-toi à France Travail dans les 5 jours après la fin du congé : tes allocations chômage reprennent là où elles s'étaient arrêtées. ":"")+"Prévois l'adaptation chez la nounou ou en crèche dans les 2 semaines d'avant."}
   ]);
 }
 const URG=['decl','decln'];
@@ -422,9 +490,11 @@ function payments(){
   const {dpa,B}=refs(); const out=[];
   const EL=elig();
   if(EL.prime!==false)out.push({id:'p-prime',t:'Prime de naissance'+xN(),org:'Caf',d:add(dpa,-53),grace:10,kind:'caf'});
-  const c=conge(); const startIJ=add(dpa,-c.pre*7); const nIJ=Math.ceil((c.pre+c.post)/2);
-  for(let k=1;k<=nIJ;k++) out.push({id:'p-ij'+k,t:'Indemnités maternité',org:'Assurance maladie',d:add(startIJ,14*k+5),grace:10,kind:'cpam'});
-  if(S.csn)out.push({id:'p-csn',t:'Indemnités congé de naissance (si tu le prends)',org:'Assurance maladie',d:add(B,c.post*7+19),grace:14,kind:'csn'});
+  const c=conge(); const startIJ=add(dpa,-c.pre*7); const nIJ=Math.ceil((c.pre+c.post)/2); const j=job();
+  if(j==='sal'||j==='cho')for(let k=1;k<=nIJ;k++) out.push({id:'p-ij'+k,t:'Indemnités maternité',org:'Assurance maladie',d:add(startIJ,14*k+5),grace:10,kind:'cpam'});
+  if(j==='ind'||j==='micro'){out.push({id:'p-afrm1',t:'Allocation de repos maternel · 1re moitié',org:'Assurance maladie',d:add(startIJ,14),grace:10,kind:'ind'});out.push({id:'p-afrm2',t:'Allocation de repos maternel · 2e moitié',org:'Assurance maladie',d:add(startIJ,56+14),grace:10,kind:'ind'})}
+  {const j2=job2(); if(j2==='sal'||j2==='cho'||j2==='ind')out.push({id:'p-pat',t:'Indemnités du second parent (congé de paternité)',org:'Assurance maladie',d:add(B,7+28),grace:14,kind:'pat'});}
+  if(S.csn&&j!=='sans')out.push({id:'p-csn',t:'Indemnités congé de naissance (si tu le prends)',org:j==='fp'?'Ton administration':j==='agri'?'MSA':'Assurance maladie',d:add(B,c.post*7+19),grace:14,kind:'csn'});
   if(EL.ab!==false)for(let k=0;k<3;k++){const d=new Date(B.getFullYear(),B.getMonth()+2+k,5);out.push({id:'p-ab'+k,t:'Allocation de base'+xN()+' · '+d.toLocaleDateString('fr-FR',{month:'long'}),org:'Caf',d,grace:7,kind:'caf'})}
   return out.sort((a,b)=>a.d-b.d);
 }
@@ -582,7 +652,7 @@ function renderTabs(){
   document.getElementById('tabs').innerHTML=TABS.map(([id,lab,ic])=>
     `<button type="button" id="tab-${id}" data-tab="${id}" ${tab===id?'aria-current="page"':''}><span class="ic">${ICONS[ic]}${badges[id]?`<span class="pip${soft[id]?' soft':''}"></span>`:''}</span>${lab}${badges[id]?`<span class="sr"> (${badges[id]} à voir)</span>`:''}</button>`).join('');
 }
-function go(t){tab=t;try{history.replaceState(null,'','#'+tab)}catch(_){location.hash=tab}render();window.scrollTo(0,0);const tb=document.getElementById('tab-'+t);if(tb)tb.focus({preventScroll:true});say(t==='aide'?'Aide':t==='suivi'?'Mon suivi':(TABS.find(x=>x[0]===t)||[])[1]||'')}
+function go(t){scanStop();tab=t;try{history.replaceState(null,'','#'+tab)}catch(_){location.hash=tab}render();window.scrollTo(0,0);const tb=document.getElementById('tab-'+t);if(tb)tb.focus({preventScroll:true});say(t==='aide'?'Aide':t==='suivi'?'Mon suivi':(TABS.find(x=>x[0]===t)||[])[1]||'')}
 document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)go(b.dataset.tab)});
 window.addEventListener('hashchange',()=>{let h=location.hash.slice(1);if(h==='soutien')h='aide';if((TABS.some(t=>t[0]===h)||h==='aide'||h==='suivi')&&h!==tab){tab=h;render()}});
 
@@ -612,6 +682,7 @@ function vOnboarding(){
         <div class="choices">${[[1,'1 bébé'],[2,'Jumeaux'],[3,'Triplés ou plus']].map(([v,l])=>`<button type="button" id="o-nb-${v}" data-onb-nb="${v}" aria-pressed="${onb.nb===v}">${l}</button>`).join('')}</div></div>
       <details class="more"><summary>Plus de précisions (facultatif)</summary>
         <div class="detail" style="gap:14px">
+          <label class="field">Ton travail<select id="o-job">${jobOpts(onb.job||'')}</select></label>
           <label class="field">Enfants déjà à la maison<select id="o-rank"><option value="0">Aucun</option><option value="1">1</option><option value="2">2 ou plus</option></select></label>
           ${!onb.born&&onb.nb<2?saField():''}
           ${onb.born?'':'<label class="field">Bébé déjà né ? Date de naissance<input type="date" id="o-birth"></label>'}
@@ -724,9 +795,10 @@ function vDemarches(){
   return `<div class="panel">
     ${phero('--c-sand','steps','Démarches',title,(doneN?doneN+' sur '+all.length+' faites':all.length+' démarches en tout')+(short?' · voici les 3 prochaines':''),doneN/all.length*100)}
     <div class="choices seg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Afficher"><button type="button" id="sf-todo" data-sf="todo" aria-pressed="${stepFilter==='todo'}" style="min-height:48px">À faire</button><button type="button" id="sf-all" data-sf="all" aria-pressed="${stepFilter==='all'}" style="min-height:48px">Toutes</button></div>
+    ${jobK()?'':`<div class="note"><b>Tu travailles comment ?</b><span>Salariée, fonctionnaire, indépendante, au chômage… Les congés et les aides changent selon ton statut. Pour l'instant, l'app compte comme pour une salariée.</span><button type="button" class="btn sm" data-jobfix="1" style="align-self:flex-start">Choisir mon statut</button></div>`}
     ${G.length?G.map(g=>`<section class="sect" style="gap:10px"><h3 class="mo">${g.l}</h3><div class="tcards">${g.a.map(stepRow).join('')}</div></section>`).join(''):'<div class="focus"><h3>Tout est fait. Bravo.</h3></div>'}
     ${short?`<button class="btn ghost wide" type="button" id="st-more" data-stmore="1">Voir les ${todoAll.length-3} autres</button>`:''}
-    <p class="small muted" style="margin:0">Congé calculé pour une salariée : ${conge().pre} semaines avant, ${conge().post} après. Indépendante ou au chômage ? Vérifie ta situation sur service-public.fr.</p>
+    ${jobK()?`<p class="small muted" style="margin:0">Démarches prévues pour : ${esc(jobName().toLowerCase())}. Congé de ${conge().pre} semaines avant la naissance et ${conge().post} après.</p><button type="button" class="lnk" data-jobfix="1" style="align-self:flex-start;margin-top:-20px">Changer mon statut</button>`:''}
   </div>`;
 }
 
@@ -894,6 +966,8 @@ function vGarde(){
 const TPL={
   cpam:`Bonjour,\n\nJe suis en congé maternité depuis le [date]. Je n'ai pas reçu le versement de mes indemnités journalières attendu vers le [date].\n\nMon employeur a transmis l'attestation de salaire le [date]. Pouvez-vous m'indiquer ce qui bloque et la date prévue du paiement ?\n\nCette attente me met en difficulté financière avec l'arrivée de mon bébé. Si besoin, je souhaite être mise en relation avec le service social de l'Assurance maladie.\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
   csn:`Bonjour,\n\nJe suis en congé supplémentaire de naissance depuis le [date]. Je n'ai pas reçu les indemnités attendues vers le [date].\n\nMon employeur a transmis ma demande le [date]. Pouvez-vous m'indiquer ce qui bloque et la date prévue du paiement ?\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
+  pat:`Bonjour,\n\nJe suis en congé de paternité et d'accueil de l'enfant depuis le [date]. Je n'ai pas reçu les indemnités journalières attendues vers le [date].\n\nPouvez-vous m'indiquer s'il manque une pièce et quand le versement est prévu ?\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
+  ind:`Bonjour,\n\nJe suis travailleuse indépendante, en congé maternité depuis le [date]. J'ai arrêté mon activité le [date].\n\nJe n'ai pas reçu [la 1re / la 2e] moitié de l'allocation forfaitaire de repos maternel, attendue vers le [date]. Pouvez-vous m'indiquer s'il manque une pièce et quand le versement est prévu ?\n\nMerci,\n[Prénom Nom] — n° de sécurité sociale : [numéro]`,
   caf:`Bonjour,\n\nJe n'ai pas reçu [la prime de naissance / l'allocation de base] attendue vers le [date].\n\nMa grossesse a été déclarée le [date] et mon dossier est à jour. Pouvez-vous me dire s'il manque une pièce et quand le versement est prévu ?\n\nMerci,\n[Prénom Nom] — n° allocataire : [numéro]`
 };
 function payRow(p){
@@ -903,9 +977,9 @@ function payRow(p){
     <div class="meta"><span class="st ${c}">${l}</span><span>· ${p.org}${c!=='idle'?' · '+fmt(p.d):''}</span></div>${p.d>today&&!got?'':''}
     <div class="btns" style="margin-top:6px">${got
       ?`<button class="btn ghost sm" type="button" id="pu-${p.id}" data-unpay="${p.id}" aria-label="Annuler : ${esc(p.t)}">Annuler</button>`
-      :p.d>today?'':`<button class="btn ghost sm" type="button" id="pr-${p.id}" data-pay="${p.id}" aria-label="Je l'ai reçu : ${esc(p.t)}">Je l'ai reçu</button>${due&&!S.asked[p.id]?`<button class="btn ghost sm" type="button" id="pn-${p.id}" data-ans-no="${p.id}">Pas encore</button>`:''}`}</div>
+      :`<button class="btn ghost sm" type="button" id="pr-${p.id}" data-pay="${p.id}" aria-label="Je l'ai reçu : ${esc(p.t)}">Je l'ai reçu</button>${due&&!S.asked[p.id]?`<button class="btn ghost sm" type="button" id="pn-${p.id}" data-ans-no="${p.id}">Pas encore</button>`:''}`}</div>
     ${c==='late'?`<details class="more"><summary>Que faire ?</summary><div class="detail">
-      <span><b>1.</b> Regarde les messages de ton espace ${p.kind!=='caf'?'ameli':'Caf'} : il manque souvent un papier${p.kind==='cpam'?" (l'attestation de salaire de ton employeur)":p.kind==='csn'?" (la demande transmise par ton employeur)":''}.</span>
+      <span><b>1.</b> Regarde les messages de ton espace ${p.kind!=='caf'?'ameli':'Caf'} : il manque souvent un papier${p.kind==='pat'?" (l'attestation de salaire ou l'acte de naissance)":p.kind==='ind'?" (l'attestation d'arrêt de ton activité)":p.kind==='cpam'?" (l'attestation de salaire de ton employeur)":p.kind==='csn'?" (la demande transmise par ton employeur)":''}.</span>
       <span><b>2.</b> Envoie ce message depuis ton espace en ligne :</span>
       <textarea class="tpl" id="tpl-${p.id}" aria-label="Message à copier">${TPL[p.kind]}</textarea>
       <div class="btns" style="align-items:center"><button class="btn sm" type="button" id="cp-btn-${p.id}" data-copy="tpl-${p.id}">Copier le message</button><span class="small muted" id="cp-tpl-${p.id}" aria-live="polite"></span></div>
@@ -926,6 +1000,18 @@ const eur0=v=>Math.round(v).toLocaleString('fr-FR')+' €';
 function tplBox(id,txt){return `<details class="more"><summary>Préparer le message</summary><div class="detail">
   <textarea class="tpl" id="tpl-${id}" aria-label="Message à copier">${esc(txt)}</textarea>
   <div class="btns" style="align-items:center"><button class="btn sm" type="button" id="cp-btn-${id}" data-copy="tpl-${id}">Copier le message</button><span class="small muted" id="cp-tpl-${id}" aria-live="polite"></span></div></div></details>`}
+function matCard(brut,c){
+  const wk=c.pre+c.post, j=job();
+  if(j==='fp')return ['Ton salaire pendant le congé maternité','<span class="amt">Ton salaire complet</span><span class="small muted">Traitement, indemnité de résidence et supplément familial versés en entier</span>','Pendant tout ton congé.',"Fonctionnaire : ton administration te paie, sans passer par l'Assurance maladie. Contractuelle : tu gardes aussi ton salaire en entier, ton administration récupère les indemnités. En CDD, le congé s'arrête à la fin du contrat.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F519'],null];
+  if(j==='ind')return ['Aides de congé maternité (indépendante)',`<span class="amt">${eur(AFRM)} + ${eur(IJF)} par jour</span><span class="small muted">Soit ≈ ${eur0(AFRM+IJF*wk*7)} pour tes ${wk} semaines, si tu arrêtes tout ce temps</span>`,"L'allocation est versée en 2 moitiés : au début du congé, puis après 8 semaines. Les indemnités, pour chaque jour d'arrêt.","Il faut avoir payé tes cotisations depuis au moins 6 mois et arrêter au moins 8 semaines, dont 6 après la naissance. Envoie ton arrêt à ta caisse d'assurance maladie. Revenus de moins de 4 582 € par an en moyenne : l'allocation baisse à 400,50 € et les indemnités aussi, demande le montant à ta caisse.",['service-public.fr','https://entreprendre.service-public.gouv.fr/vosdroits/F23890'],null];
+  if(j==='micro')return ['Aides de congé maternité (micro-entreprise)','<span class="amt">Jusqu\'à '+eur(AFRM)+' + '+eur(IJF)+' par jour</span><span class="small muted">Le montant dépend de ton revenu : demande-le à ta caisse d\'assurance maladie</span>',"Une allocation de repos, puis des indemnités pour chaque jour d'arrêt.","Il faut avoir payé tes cotisations depuis au moins 6 mois et arrêter au moins 8 semaines, dont 6 après la naissance. Si ton revenu est faible, les montants baissent beaucoup : ta caisse te dira combien tu touches.",['service-public.fr','https://entreprendre.service-public.gouv.fr/vosdroits/F36708'],null];
+  if(j==='agri')return ['Remplacement pendant ton congé (MSA)','<span class="amt no">La MSA paie ton remplacement</span><span class="small muted">Sinon, '+eur(IJF)+' bruts par jour si personne ne peut te remplacer</span>','Pendant ton congé, au moins 8 semaines.',"Demande-le à la MSA au moins 20 jours avant ton arrêt. Le service de remplacement est payé directement. Si tu embauches toi-même, la MSA rembourse le salaire.",['msa.fr','https://www.msa.fr'],null];
+  if(j==='sans')return ['Indemnités de congé maternité','<span class="amt no">Pas pour toi, sans emploi</span><span class="small muted">Sauf si ton dernier emploi salarié s\'est arrêté il y a moins de 12 mois</span>','—',"Dans ce cas, choisis « Demandeuse d'emploi » dans ta situation. Si tu touches le RSA, il continue pendant le congé. La prime de naissance et l'allocation de base ne dépendent pas du travail.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F2265'],null];
+  let a4='<span class="amt">Jusqu\'à 104,02 € par jour</span><span class="small muted">Indique ton salaire brut pour une estimation</span>';
+  if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));a4=`<span class="amt">≈ ${eur(d)} par jour</span><span class="small muted">Soit ≈ ${eur0(d*wk*7)} pour tes ${wk} semaines</span>`}
+  if(j==='cho')return ['Indemnités de congé maternité',a4,'Tous les 14 jours, pendant ton congé.',"Tu y as droit si tu touches l'allocation chômage, si tu l'as touchée dans les 12 derniers mois, ou si ton dernier emploi salarié s'est arrêté il y a moins de 12 mois. Elles sont calculées sur tes salaires d'avant le chômage. Ton allocation chômage est mise en pause, sans être perdue.",['francetravail.fr','https://www.francetravail.fr/candidat/vos-droits-et-demarches/vos-changements-de-situation/declarer-un-conge-maternite-a-po.html'],null];
+  return ['Indemnités de congé maternité',a4,'Tous les 14 jours, pendant ton congé.',"Ton employeur envoie ton attestation de salaire à l'Assurance maladie. Tu n'as rien à demander, mais rappelle-le-lui.",['ameli.fr','https://www.ameli.fr'],null];
+}
 function aidesResults(){
   const A=S.aides; const kids=A.kids===''?S.rank:+A.kids||0; const n=kids+S.nb; const maj=A.sit!=='couple1';
   const rev=(A.rev===''||A.rev==='ns')?null:+A.rev; const brut=A.brut===''?null:+A.brut;
@@ -943,18 +1029,30 @@ function aidesResults(){
   if(n>=2){let a3=need; if(known){const i=rev<=afPl('max',n)?0:rev<=afPl('med',n)?1:2;a3=`<span class="amt">${eur(afAmt(n,i))} par mois</span><span class="small muted">Pour ${n} enfants</span>`}
     R.push(['Allocations familiales',a3,'Chaque mois, dès que tu as 2 enfants à charge.',"Automatique quand la Caf a l'acte de naissance. Vérifie dans ton espace Caf.",null,null]);}
   /* Indemnités maternité */
-  let a4='<span class="amt">Jusqu\'à 104,02 € par jour</span><span class="small muted">Indique ton salaire brut pour une estimation</span>';
-  if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));a4=`<span class="amt">≈ ${eur(d)} par jour</span><span class="small muted">Soit ≈ ${eur0(d*(c.pre+c.post)*7)} pour tes ${c.pre+c.post} semaines</span>`}
-  R.push(['Indemnités de congé maternité',a4,'Tous les 14 jours, pendant ton congé (salariée).',"Ton employeur envoie ton attestation de salaire à l'Assurance maladie. Tu n'as rien à demander, mais rappelle-le-lui.",['ameli.fr','https://www.ameli.fr'],null]);
+  R.push(matCard(brut,c));
   /* Congé de naissance */
-  R.push(['Congé de naissance (1 ou 2 mois)','<span class="amt">70 % du salaire net, puis 60 %</span><span class="small muted">Pour chaque parent, dans la limite de 4 005 € par mois</span>','Dans les 9 mois après la naissance.',"Écris à ton employeur 1 mois avant le début. Il transmet lui-même la demande à l'Assurance maladie. Signale aussi ce congé à la Caf : pour le même bébé, l'aide pour la garde s'arrête pendant ce congé (sauf bébé né avant juillet 2026 déjà gardé).",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39685'],['csn',`Objet : demande de congé supplémentaire de naissance\n\nMadame, Monsieur,\n\nJe vous informe que je souhaite prendre un congé supplémentaire de naissance [d'un mois / de deux mois], à partir du [date], à la suite de mon congé de maternité.\n\n[Je le prendrai en une seule fois. / Je le prendrai en deux périodes d'un mois : du … au …, puis du … au ….]\n\nMon enfant ${born?'est né le '+fmtY(B):'doit naître le '+fmtY(dpa)}.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]\n\n(À envoyer en recommandé avec accusé de réception, ou à remettre en main propre contre récépissé.)`]]);
+  const CSA={sal:['<span class="amt">70 % du salaire net, puis 60 %</span><span class="small muted">Pour chaque parent, dans la limite de 4 005 € par mois</span>',"Écris à ton employeur 1 mois avant le début. Il transmet lui-même la demande à l'Assurance maladie."],
+    fp:['<span class="amt">70 % de ton traitement, puis 60 %</span><span class="small muted">Ton indemnité de résidence et ton supplément familial restent payés en entier</span>',"Fais ta demande écrite à ton administration 1 mois avant le début."],
+    ind:['<span class="amt">46,09 € par jour, puis 39,50 €</span><span class="small muted">Montants bruts. 6,58 € par jour si tes revenus sont très faibles (moins de 4 582 € par an en moyenne)</span>',"Arrête complètement ton activité. Fais la demande en ligne à ta caisse d'assurance maladie, au plus tard la veille du début, avec une attestation d'arrêt d'activité."],
+    micro:['<span class="amt no">À vérifier avec ta caisse</span><span class="small muted">Les sites officiels ne précisent pas encore les règles des micro-entrepreneuses</span>',"Demande à ta caisse d'assurance maladie si tu y as droit et combien tu toucherais."],
+    agri:['<span class="amt no">Ton remplacement payé par la MSA</span><span class="small muted">Ou des indemnités si personne ne peut te remplacer</span>',"Demande-le à la MSA au moins 20 jours avant le début."],
+    cho:['<span class="amt">70 % puis 60 %</span><span class="small muted">Si tu touches l\'allocation chômage. Elle est mise en pause pendant ce congé</span>',"Préviens France Travail 1 mois avant, puis fais la demande à l'Assurance maladie."],
+    sans:['<span class="amt no">Pas pour toi</span><span class="small muted">Il faut travailler ou toucher le chômage. Le second parent peut le prendre s\'il travaille</span>',"Si le second parent travaille, il prévient son employeur 1 mois avant."]}[job()];
+  R.push(['Congé de naissance (1 ou 2 mois)',CSA[0],'Dans les 9 mois après la naissance.',CSA[1]+" Signale aussi ce congé à la Caf : pour le même bébé, l'aide pour la garde s'arrête pendant ce congé (sauf bébé né avant juillet 2026 déjà gardé).",job()==='ind'||job()==='micro'?['service-public.fr','https://entreprendre.service-public.gouv.fr/vosdroits/F39686']:job()==='fp'?['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39693']:['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39685'],job()==='sal'||job()==='fp'?['csn',`Objet : demande de congé supplémentaire de naissance\n\nMadame, Monsieur,\n\nJe vous informe que je souhaite prendre un congé supplémentaire de naissance [d'un mois / de deux mois], à partir du [date], à la suite de mon congé de maternité.\n\n[Je le prendrai en une seule fois. / Je le prendrai en deux périodes d'un mois : du … au …, puis du … au ….]\n\nMon enfant ${born?'est né le '+fmtY(B):'doit naître le '+fmtY(dpa)}.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]\n\n(À envoyer en recommandé avec accusé de réception, ou à remettre en main propre contre récépissé.)`]:null]);
   /* Second parent */
-  R.push(['Congé du second parent',`<span class="amt">${pat} jours + 3 jours</span><span class="small muted">Payés par l'employeur puis l'Assurance maladie, jusqu'à 104,02 € par jour</span>`,'Dans les 6 mois après la naissance.',"Le second parent prévient son employeur au moins 1 mois avant le terme.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F3156'],['pat',`Objet : congé de naissance et congé de paternité et d'accueil de l'enfant\n\nMadame, Monsieur,\n\nLa naissance de ${multi()?'nos enfants':'notre enfant'} est prévue le ${fmtY(dpa)}.\n\nJe prendrai les 3 jours de congé de naissance, puis mon congé de paternité et d'accueil de l'enfant de ${pat} jours : 4 jours tout de suite après, puis [nombre] jours du [date] au [date].\n\nJe vous confirmerai les dates exactes après la naissance.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]`]]);
+  const j2=job2(), b2=A.brut2===''?null:+A.brut2;
+  const amt2=j2==='sal'||j2==='cho'?(b2?`<span class="amt">≈ ${eur(ijSal(b2))} par jour</span><span class="small muted">Soit ≈ ${eur0(ijSal(b2)*pat)} pour ses ${pat} jours${j2==='sal'?', plus 3 jours payés par son employeur':''}</span>`:`<span class="amt">${pat} jours${j2==='sal'?' + 3 jours':''}</span><span class="small muted">Jusqu'à 104,02 € par jour. Indique son salaire brut plus haut pour une estimation</span>`)
+    :j2==='fp'?`<span class="amt">${pat} jours + 3 jours</span><span class="small muted">Son salaire complet est maintenu</span>`
+    :j2==='ind'?`<span class="amt">${eur(IJF)} par jour</span><span class="small muted">Soit ${eur0(IJF*pat)} pour ses ${pat} jours</span>`
+    :j2==='micro'?`<span class="amt">Jusqu'à ${pat} jours</span><span class="small muted">Le montant dépend de son revenu : à demander à sa caisse</span>`
+    :j2==='agri'?`<span class="amt">${pat} jours</span><span class="small muted">Son remplacement payé par la MSA</span>`
+    :`<span class="amt no">Pas de congé payé</span><span class="small muted">Sans emploi depuis plus de 12 mois</span>`;
+  R.push(['Congé du second parent'+(job2K()?' ('+jobName2()+')':''),amt2,'Dans les 6 mois après la naissance.',SEC[j2].x()+" Congé de naissance : "+SEC[j2].csn,[j2==='agri'?'msa.fr':'service-public.fr',SEC[j2].l],j2==='sal'||j2==='fp'?['pat',`Objet : congé de naissance et congé de paternité et d'accueil de l'enfant\n\nMadame, Monsieur,\n\nLa naissance de ${multi()?'nos enfants':'notre enfant'} est prévue le ${fmtY(dpa)}.\n\nJe prendrai les 3 jours de congé de naissance, puis mon congé de paternité et d'accueil de l'enfant de ${pat} jours : 4 jours tout de suite après, puis [nombre] jours du [date] au [date].\n\nJe vous confirmerai les dates exactes après la naissance.\n\nJe vous prie d'agréer, Madame, Monsieur, mes salutations distinguées.\n\n[Prénom Nom]`]:null]);
   /* PreParE */
   const dur=A.sit==='seule'?(n<=1?"jusqu'au 1er anniversaire de bébé":"jusqu'aux 3 ans du plus jeune"):(n<=1?"6 mois par parent, avant le 1er anniversaire":"jusqu'à 24 mois par parent, avant les 3 ans du plus jeune");
-  R.push(['Congé parental payé (PreParE)','<span class="amt">459,69 € par mois</span><span class="small muted">Si tu arrêtes de travailler. 297,17 € à mi-temps</span>',dur.charAt(0).toUpperCase()+dur.slice(1)+', moins les mois de congé maternité indemnisés. Il faut avoir cotisé 8 trimestres sur les 2, 4 ou 5 dernières années selon ton nombre d\'enfants.',"Après la fin du congé maternité, envoie à la Caf le formulaire de demande (cerfa 12324, sur caf.fr), et aussi le cerfa 11423 si tu n'es pas encore allocataire.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F32485'],null]);
+  R.push(['Congé parental payé (PreParE)','<span class="amt">459,69 € par mois</span><span class="small muted">Si tu arrêtes de travailler. 297,17 € à mi-temps</span>',dur.charAt(0).toUpperCase()+dur.slice(1)+', moins les mois de congé maternité indemnisés. Il faut avoir cotisé 8 trimestres sur les 2, 4 ou 5 dernières années selon ton nombre d\'enfants.'+(job()==='cho'?' Pour un 1er enfant, les mois de chômage indemnisé ne comptent pas dans ces trimestres. Tes allocations chômage sont mises en pause pendant la PreParE.':job()==='sans'?' Sans emploi depuis longtemps, tu n\'y as en général pas droit.':''),"Après la fin du congé maternité, envoie à la Caf le formulaire de demande (cerfa 12324, sur caf.fr), et aussi le cerfa 11423 si tu n'es pas encore allocataire.",['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F32485'],null]);
   /* Garde */
-  R.push(["Aide pour payer la garde (CMG)",'<span class="amt no">Selon les heures et tes revenus</span><span class="small muted">La Caf prend en compte jusqu\'à environ 8 € de l\'heure pour une assistante maternelle (repas et entretien compris)</span>','Chaque mois, pendant la garde.',"Demande-la sur caf.fr dès que la garde commence. Pour une assistante maternelle, ça ouvre ton compte Pajemploi.",['caf.fr','https://www.caf.fr'],null]);
+  R.push(["Aide pour payer la garde (CMG)",'<span class="amt no">Selon les heures et tes revenus</span><span class="small muted">La Caf prend en compte jusqu\'à environ 8 € de l\'heure pour une assistante maternelle (repas et entretien compris)</span>','Chaque mois, pendant la garde.',"Demande-la sur caf.fr dès que la garde commence. Pour une assistante maternelle, ça ouvre ton compte Pajemploi."+(job()==='cho'?" Le chômage indemnisé compte comme un travail pour y avoir droit.":job()==='sans'?" Il faut en principe travailler. Exceptions : étudiante, RSA avec inscription à France Travail, AAH ou ASS. Vérifie ta situation sur service-public.fr.":""),job()==='sans'?['service-public.fr','https://www.service-public.gouv.fr/particuliers/vosdroits/F39152']:['caf.fr','https://www.caf.fr'],null]);
   R.push(["Crédit d'impôt pour la garde",'<span class="amt">Jusqu\'à 1 750 € par enfant et par an</span><span class="small muted">50 % des frais de crèche ou d\'assistante maternelle, avant ses 6 ans</span>','Au moment de ta déclaration de revenus.',"Déclare les frais dans les cases 7GA à 7GC, après avoir retiré l'aide de la Caf.",['impots.gouv.fr','https://www.impots.gouv.fr'],null]);
   R.push(["Aide à domicile de la Caf",'<span class="amt no">Tu paies selon tes revenus</span>','Pendant la grossesse ou après la naissance.',"Regarde d'abord ta mutuelle, puis contacte un service d'aide à domicile conventionné par la Caf.",['caf.fr','https://caf.fr/allocataires/aides-et-demarches/ma-situation/vie-personnelle/je-souhaite-beneficier-d-une-aide-et-d-un-accompagnement-domicile'],null]);
   let sum='';
@@ -964,8 +1062,15 @@ function aidesResults(){
     const L=[];
     if(pr)L.push(`<b>${eur0(pr)}</b> à la naissance (prime)`);
     if(ab||af)L.push(`<b>${eur0(ab+af)} par mois</b> environ après la naissance${ab&&af?' (allocation de base et allocations familiales)':ab?' (allocation de base)':' (allocations familiales)'}`);
-    if(brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));L.push(`<b>≈ ${eur0(d*(c.pre+c.post)*7)}</b> d'indemnités pendant ton congé maternité`)}
-    L.push('<b>1 ou 2 mois</b> de congé de naissance par parent, payés 70 % puis 60 %');
+    const j=job(); const wk=c.pre+c.post;
+    if((j==='sal'||j==='cho')&&brut){const d=Math.min(104.02,Math.max(11.12,Math.min(brut,4005)*3/91.25*0.79));L.push(`<b>≈ ${eur0(d*wk*7)}</b> d'indemnités pendant ton congé maternité`)}
+    if(j==='ind')L.push(`<b>≈ ${eur0(AFRM+IJF*wk*7)}</b> pendant ton congé maternité (allocation et indemnités), si tu arrêtes toute la durée`);
+    if(j==='fp')L.push('<b>Ton salaire complet</b> pendant ton congé maternité');
+    if(j!=='sans'&&j!=='micro')L.push('<b>1 ou 2 mois</b> de congé de naissance par parent'+(j==='sal'||j==='fp'||j==='cho'?', payés 70 % puis 60 %':''));
+    {const j2=job2(),b2=A.brut2===''?null:+A.brut2;
+     if((j2==='sal'||j2==='cho')&&b2)L.push(`<b>≈ ${eur0(ijSal(b2)*pat)}</b> pour le congé du second parent (${pat} jours)`);
+     else if(j2==='ind')L.push(`<b>≈ ${eur0(IJF*pat)}</b> pour le congé du second parent (${pat} jours)`);
+     else if(j2==='fp')L.push(`<b>${pat} jours + 3</b> de congé pour le second parent, salaire maintenu`);}
     const first=L.shift();
     sum=`<div class="heroA" aria-live="polite"><span class="label">Pour toi</span>${first?`<span class="midA">${first}</span>`:''}${L.map(x=>`<p style="margin:0">${x}</p>`).join('')}</div>`;
   } else if(A.rev==='ns'){const pp=plaf('partiel',n,maj), pl=plaf('plein',n,maj);
@@ -989,14 +1094,21 @@ function vAides(){
   const A=S.aides; const ns=A.rev==='ns';
   return `<p class="sr" aria-live="polite" id="a-say"></p><div id="a-res" class="sect">${aidesResults()}</div>
     <form class="card" id="aForm" onsubmit="return false">
+      <label class="field">Ton travail<select id="a-job">${jobOpts(jobK())}</select>
+        <span class="hint">Les congés et les indemnités changent selon ton statut.</span></label>
+      <label class="field">Le travail du second parent<select id="a-job2">${jobOpts2(job2K())}</select>
+        <span class="hint">Pour calculer son congé et ses indemnités.</span></label>
       <label class="field">Ta situation<select id="a-sit"><option value="" ${A.sit?'':'selected'} disabled>Choisis ta situation</option>${[['couple2','En couple, nous travaillons tous les deux'],['couple1','En couple, un seul de nous travaille'],['seule','Seule avec mon ou mes enfants']].map(([v,l])=>`<option value="${v}" ${A.sit===v?'selected':''}>${l}</option>`).join('')}</select>
         <span class="hint">« Tous les deux » : chacun a gagné au moins 6 306 € en 2024.</span></label>
       <label class="field">Combien ton foyer a gagné en 2024 ? (en €, sur l'année)<input type="number" inputmode="numeric" id="a-rev" min="0" step="100" placeholder="${ns?'Je ne sais pas':'Ex. 42000'}" value="${ns?'':esc(A.rev)}">
         <span class="hint">Le chiffre est sur ton avis d'impôt 2025, à la ligne « revenu net imposable ». En couple, additionne les deux.</span></label>
       <button type="button" class="btn ghost sm" style="align-self:flex-start" id="a-ns" data-ans-ns="1" aria-pressed="${ns}">${ns?'✓ Je ne sais pas : on te montre les cas possibles':'Je ne sais pas'}</button>
-      <details class="more"><summary>Plus de précisions (facultatif)</summary><div class="detail">
-        <label class="field">Ton salaire brut par mois<input type="number" inputmode="numeric" id="a-brut" min="0" step="50" placeholder="Ex. 2500" value="${esc(A.brut)}">
-          <span class="hint">Pour estimer tes indemnités de congé maternité.</span></label></div></details>
+      ${job()==='sal'||job()==='cho'?`<details class="more"><summary>Plus de précisions (facultatif)</summary><div class="detail">
+        <label class="field">${job()==='cho'?'Ton dernier salaire brut par mois, avant le chômage':'Ton salaire brut par mois'}<input type="number" inputmode="numeric" id="a-brut" min="0" step="50" placeholder="Ex. 2500" value="${esc(A.brut)}">
+          <span class="hint">Pour estimer tes indemnités de congé maternité.</span></label></div></details>`:''}
+      ${job2()==='sal'||job2()==='cho'?`<details class="more"${A.brut2?' open':''}><summary>Salaire du second parent (facultatif)</summary><div class="detail">
+        <label class="field">${job2()==='cho'?'Son dernier salaire brut par mois, avant le chômage':'Son salaire brut par mois'}<input type="number" inputmode="numeric" id="a-brut2" min="0" step="50" placeholder="Ex. 2500" value="${esc(A.brut2||'')}">
+          <span class="hint">Pour estimer ses indemnités de congé.</span></label></div></details>`:''}
     </form>
     <p class="small muted" style="margin:0">Estimation faite avec les barèmes de la Caf au 1er avril 2026. C'est la Caf qui décide : vérifie avec son simulateur sur caf.fr. Sereine ne peut pas envoyer les demandes à ta place, mais chaque message est prêt : tu n'as qu'à le copier, le compléter et l'envoyer.</p>`;
 }
@@ -1130,7 +1242,7 @@ const FOOD=[
  ['Croûte de fromage','croute','prec',"Enlève la croûte de tous les fromages : elle peut être contaminée.",'a'],
  ['« Fromage » végétal','fromage vegetal vegan substitut','non',"Déconseillé : risque de listériose.",'a'],
  ['Jambon blanc, jambon cuit','jambon blanc jambon cuit jambon de paris','non',"À éviter : charcuterie vendue déjà cuite et gardée au froid, risque de listériose.",'a'],
- ['Rillettes, pâté, foie gras, produits en gelée','rillettes pate terrine foie gras gelee','non',"À éviter : risque de listériose.",'b'],
+ ['Rillettes, pâtés, mousses, foie gras, produits en gelée','rillettes pate terrine foie gras gelee','non',"À éviter : risque de listériose. Les mousses de canard, de foie ou de volaille sont des pâtés.",'b'],
  ['Saucisson sec, jambon sec','saucisson sec jambon sec jambon cru','non',"À éviter : charcuterie sèche, risque de salmonellose.",'a'],
  ['Saucisses, boudin noir','saucisse saucisses boudin','prec',"Oui s'ils sont bien cuits par toi : préfère les charcuteries à cuire soi-même.",'a'],
  ['Viande bien cuite','viande bien cuite poulet porc veau agneau boeuf steak roti','ok',"Oui, si elle est bien cuite : plus de rouge à cœur.",'a'],
@@ -1165,7 +1277,10 @@ const FOOD=[
 const nrm=t=>String(t||'').toLowerCase().replace(/œ/g,'oe').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
 const FIDX=FOOD.map(f=>[' '+nrm(f[0]+' '+f[1])+' ',f]);
 const FSTOP=new Set(['de','du','des','la','le','les','au','aux','un','une','et','a','en','avec','sans','ou','fait','faite','maison','bio']);
-function foodFind(q,max){q=nrm(q);if(q.length<2)return [];const w=q.split(' ').filter(x=>x.length>2&&!FSTOP.has(x));
+/* Plats dont le nom trompe la recherche mot à mot : on renvoie directement la bonne fiche */
+const FALIAS=[['mousse de canard',9],['mousse de foie',9],['mousse de volaille',9],['mousse de foie gras',9]];
+function foodFind(q,max){q=nrm(q);if(q.length<2)return [];
+  const al=FALIAS.filter(([p])=>(' '+q+' ').includes(' '+p+' ')); if(al.length)return [...new Set(al.map(a=>FOOD[a[1]]))];const w=q.split(' ').filter(x=>x.length>2&&!FSTOP.has(x));
   const ex=(t,x)=>t.includes(' '+x+' ')||t.includes(' '+x+'s ')||(x.endsWith('s')&&t.includes(' '+x.slice(0,-1)+' '));
   let sc=FIDX.map(([t,f])=>{let n=0,e=false;if(t.includes(' '+q+' '))n+=10;w.forEach(x=>{if(ex(t,x)){n+=4;e=true}else if(x.length>3&&t.includes(' '+x))n+=3});return [n,f,e]}).filter(a=>a[0]>=3);
   if(sc.some(a=>a[2]))sc=sc.filter(a=>a[2]);
@@ -1208,7 +1323,8 @@ async function bcLookup(code){
     const j=await r.json();
     if(!j||j.status!==1||!j.product){bcShow(`<div class="fcard"><b>Produit inconnu (${code})</b><span>Je ne le trouve pas. Tape plutôt son nom dans la recherche.</span></div>`);return}
     bcShow(bcAnalyse(j.product));say('Résultat affiché')
-  }catch(e){bcShow('<div class="fcard"><b>Recherche impossible</b><span>Je n\'arrive pas à chercher ce produit. Vérifie ta connexion, ou tape son nom dans la recherche.</span></div>')}
+  }catch(e){bcShow(window.SEREINE_SITE?'<div class="fcard"><b>Recherche impossible</b><span>Je n\'arrive pas à chercher ce produit. Vérifie ta connexion, ou tape son nom dans la recherche.</span></div>'
+    :`<div class="fcard"><b>Code ${code} bien lu</b><span>Ici, la recherche du produit est bloquée. Elle marche sur le site de Sereine, ou tape le nom du produit dans la recherche.</span><a class="small" href="https://fedy33.github.io/sereine/#manger" target="_blank" rel="noopener">Ouvrir le site de Sereine ↗</a></div>`)}
 }
 let ZX=null;
 function loadZX(){if(ZX)return ZX;ZX=new Promise((ok,ko)=>{if(window.ZXing)return ok(window.ZXing);const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=()=>ok(window.ZXing);s.onerror=()=>{ZX=null;ko()};document.head.appendChild(s)});return ZX}
@@ -1220,6 +1336,42 @@ async function bcFromPhoto(file){
   if(!code){bcShow('<div class="fcard"><b>Je n\'arrive pas à lire le code-barres</b><span>Reprends la photo de plus près, bien à plat, avec de la lumière. Ou tape ses chiffres juste au-dessus.</span></div>');return}
   const i=document.getElementById('bc-code');if(i)i.value=code; bcLookup(code);
 }
+
+/* Scan en direct : la caméra filme, le code est lu sur le téléphone. Rien n'est enregistré. */
+let SCN=null;
+function scanUI(msg){
+  let el=document.getElementById('scanbox');
+  if(!el){el=document.createElement('div');el.id='scanbox';el.className='sheet';el.innerHTML=`<div class="inner" role="dialog" aria-modal="true" aria-labelledby="scan-t" style="gap:12px">
+    <h2 id="scan-t" style="font-size:22px">Vise le code-barres</h2>
+    <div style="position:relative;border-radius:18px;overflow:hidden;background:#000;aspect-ratio:4/3"><video id="scan-v" playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+      <div aria-hidden="true" style="position:absolute;left:12%;right:12%;top:38%;bottom:38%;border:3px solid rgba(255,255,255,.9);box-shadow:0 0 0 2px rgba(0,0,0,.35);border-radius:12px"></div></div>
+    <p class="small muted" id="scan-msg" style="margin:0" aria-live="polite"></p>
+    <div class="btns"><button type="button" class="btn ghost" id="scan-photo" data-bcphoto="1">Prendre une photo</button><button type="button" class="btn ghost" id="scan-x">Annuler</button></div></div>`;
+    document.body.appendChild(el);
+    el.querySelector('#scan-x').addEventListener('click',scanStop);
+    el.querySelector('#scan-photo').addEventListener('click',()=>{scanStop();const f=document.getElementById('bc-photo');if(f)f.click()});
+    el.addEventListener('click',e=>{if(e.target===el)scanStop()});
+  }
+  el.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;
+  document.getElementById('scan-msg').textContent=msg||'Tiens le téléphone à 10 cm, le code bien à plat dans le cadre.';
+  return el;
+}
+async function scanStart(){
+  const el=scanUI(); el.querySelector('#scan-x').focus();
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){scanUI("La caméra n'est pas disponible ici. Prends plutôt une photo du code-barres.");return}
+  try{
+    const Z=await loadZX(); const rd=new Z.BrowserMultiFormatReader(); SCN=rd;
+    const res=await rd.decodeOnceFromConstraints({video:{facingMode:{ideal:'environment'}}},document.getElementById('scan-v'));
+    if(res&&SCN===rd){const code=res.getText();scanStop();try{navigator.vibrate&&navigator.vibrate(60)}catch(_){}
+      const i=document.getElementById('bc-code');if(i)i.value=code;bcLookup(code)}
+  }catch(e){const box=document.getElementById('scanbox');if(box&&!box.hidden){
+    try{SCN&&SCN.reset()}catch(_){}SCN=null;
+    scanUI(e&&e.name==='NotAllowedError'?"Tu n'as pas autorisé la caméra. Prends plutôt une photo, ou autorise la caméra dans les réglages.":"La caméra n'est pas disponible ici. Prends plutôt une photo du code-barres.")}}
+}
+function scanStop(){const rd=SCN;SCN=null;try{rd&&rd.reset()}catch(_){}
+  const v=document.getElementById('scan-v');if(v&&v.srcObject){try{v.srcObject.getTracks().forEach(t=>t.stop())}catch(_){}v.srcObject=null}
+  const el=document.getElementById('scanbox');if(el&&!el.hidden){el.hidden=true;document.getElementById('app').inert=false;document.getElementById('tabbar').inert=false;const b=document.getElementById('bc-scan');if(b)b.focus({preventScroll:true})}}
+
 const SRCH=sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>');
 function vManger(){
   return `<div class="panel">
@@ -1229,8 +1381,9 @@ function vManger(){
     <div class="fres" id="food-res" aria-live="polite">${foodResHTML()}</div>
     <section class="card" aria-labelledby="bc-t" style="gap:12px">
       <h3 id="bc-t">Un produit du magasin ?</h3>
-      <p class="small muted" style="margin:0">Prends en photo son code-barres : l'app lit ses ingrédients et te signale ceux à éviter.</p>
-      <button type="button" class="btn wide" id="bc-snap" data-bcphoto="1">Photographier le code-barres</button><input type="file" accept="image/*" capture="environment" id="bc-photo" class="photo-in" tabindex="-1">
+      <p class="small muted" style="margin:0">Vise son code-barres avec la caméra : l'app lit ses ingrédients et te signale ceux à éviter.</p>
+      <button type="button" class="btn wide" id="bc-scan" data-bcscan="1">Scanner le code-barres</button>
+      <button type="button" class="lnk" id="bc-snap" data-bcphoto="1" style="align-self:center">Ou prendre une photo</button><input type="file" accept="image/*" capture="environment" id="bc-photo" class="photo-in" tabindex="-1">
       <div class="grid2" style="align-items:end;grid-template-columns:minmax(0,1fr) auto"><label class="field">Ou tape ses chiffres<input type="text" inputmode="numeric" id="bc-code" autocomplete="off" placeholder="Ex. 3017620422003"></label><button type="button" class="btn ghost" id="bc-go" data-bcgo="1">Chercher</button></div>
       <div class="fres" id="bc-res" aria-live="polite">${bcHTML}</div>
       <p class="small muted" style="margin:0">La photo reste sur ton téléphone. Seuls les chiffres du code-barres sont envoyés à Open Food Facts, une base de produits libre.</p>
@@ -1363,6 +1516,8 @@ view.addEventListener('change',e=>{
   else if(t.id==='o-dpa'){onb.dpa=t.value}
   else if(t.id==='bc-photo'){bcFromPhoto(t.files&&t.files[0]);t.value=''}
   else if(t.id==='a-sit'){S.aides.sit=t.value;save();updAides()}
+  else if(t.id==='a-job2'){S.job2=t.value;save();render();const x=document.getElementById('a-job2');if(x)x.focus({preventScroll:true});say('Enregistré')}
+  else if(t.id==='a-job'||t.id==='o-job'){if(t.id==='a-job'){S.job=t.value;save();render();const x=document.getElementById('a-job');if(x)x.focus({preventScroll:true});say('Situation enregistrée')}else onb.job=t.value}
 });
 view.addEventListener('input',e=>{
   if(['n-h','n-w','n-t','n-k'].includes(e.target.id)){
@@ -1378,18 +1533,20 @@ view.addEventListener('input',e=>{
   if(e.target.id==='food-q'){foodQ=e.target.value;const r=document.getElementById('food-res');if(r)r.innerHTML=foodResHTML()}
   if(e.target.id==='nn-name'||e.target.id==='nn-tel'){S.nn[e.target.id.slice(3)]=e.target.value;save()}
   if(e.target.id==='cp'){S.cp=e.target.value.replace(/\D/g,'').slice(0,5);save();nearMore=false;nearType='all';nearSel=-1;const n=document.getElementById('near-links');if(n)n.innerHTML=nearLinks();fillNear()}
-  const AK={'a-rev':'rev','a-kids':'kids','a-brut':'brut'}[e.target.id];
+  const AK={'a-rev':'rev','a-kids':'kids','a-brut':'brut','a-brut2':'brut2'}[e.target.id];
   if(AK){S.aides[AK]=e.target.value;save();updAides()}
 });
 view.addEventListener('click',e=>{
   const pt=e.target.closest('[data-pt]'); if(pt){nearSel=+pt.dataset.pt;const m=document.getElementById('near-map');if(m){m.innerHTML=nearMapHTML();const q=m.querySelector('[data-pt="'+nearSel+'"]');if(q)q.focus({preventScroll:true})}return}
   const b=e.target.closest('button'); if(!b)return;
-  if(b.dataset.go)go(b.dataset.go);
+  if(b.dataset.go){if(b.id==='tile-argent')argView='versements';go(b.dataset.go)}
   else if(b.dataset.fq){foodQ=b.dataset.fq;const i=document.getElementById('food-q');if(i){i.value=foodQ;i.focus({preventScroll:true})}const r=document.getElementById('food-res');if(r)r.innerHTML=foodResHTML()}
   else if(b.dataset.bcgo){bcLookup(document.getElementById('bc-code').value)}
-  else if(b.dataset.bcphoto){const f=document.getElementById('bc-photo');if(f)f.click()}
+  else if(b.dataset.bcphoto){scanStop();const f=document.getElementById('bc-photo');if(f)f.click()}
+  else if(b.dataset.bcscan){scanStart()}
   else if(b.dataset.onbNb){onb.nb=+b.dataset.onbNb;keepOnb();render()}
   else if(b.dataset.onbM){onb.m=+b.dataset.onbM;keepOnb();render()}
+  else if(b.dataset.jobfix){openSettings();const f=document.getElementById('f-job');if(f)f.focus()}
   else if(b.dataset.fixsa){openSettings();const f=document.getElementById('f-sa');if(f){f.focus();f.select&&f.select()}}
   else if(b.dataset.onbBorn){keepOnb();onb.born=b.dataset.onbBorn==='1';onb.err=false;render()}
   else if(b.dataset.gadd){gAdding=true;render();const i=document.getElementById('g-name');if(i)i.focus()}
@@ -1453,7 +1610,7 @@ view.addEventListener('submit',e=>{
     if(!d&&!onb.born&&onb.m)d=iso(add(today,Math.round((9-onb.m)*30.44+15)));
     if(!d){onb.err=true;render();return}
     const ob=document.getElementById('o-birth');
-    onb.err=false; S.dpa=d; S.nb=onb.nb; S.rank=+document.getElementById('o-rank').value; S.birth=onb.born?d:(ob&&ob.value||''); if(saOk)S.saRef={w:saV,on:iso(today)}; else delete S.saRef;
+    onb.err=false; S.dpa=d; S.nb=onb.nb; S.rank=+document.getElementById('o-rank').value; S.job=onb.job||''; S.birth=onb.born?d:(ob&&ob.value||''); if(saOk)S.saRef={w:saV,on:iso(today)}; else delete S.saRef;
     autoG=[]; if(onb.born){steps().filter(s=>s.ph==='g'&&s.d<parse(d)&&!stillOpen(s)&&!S.done[s.id]).forEach(s=>{S.done[s.id]=true;autoG.push(s.id)})}
     S.reviewed=false; save(); tab='accueil'; render(); window.scrollTo(0,0);
   } else if(e.target.id==='bornForm'){
@@ -1472,7 +1629,7 @@ view.addEventListener('submit',e=>{
 /* ---------- Mes dates ---------- */
 const sheet=document.getElementById('settings');
 const opener=document.getElementById('openSettings');
-function openSettings(){document.getElementById('f-nb').value=String(S.nb);document.getElementById('f-rank').value=String(S.rank);document.getElementById('f-dpa').value=S.dpa;document.getElementById('f-birth').value=S.birth||'';document.getElementById('f-sa-l').hidden=!!S.birth;document.getElementById('f-sa').value=S.birth?'':String(saNow());document.getElementById('f-sa').dataset.was=document.getElementById('f-sa').value;document.getElementById('resetMsg').textContent='';sheet.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;document.getElementById('f-dpa').focus()}
+function openSettings(){document.getElementById('f-nb').value=String(S.nb);document.getElementById('f-rank').value=String(S.rank);document.getElementById('f-dpa').value=S.dpa;document.getElementById('f-birth').value=S.birth||'';document.getElementById('f-job').innerHTML=jobOpts(jobK());document.getElementById('f-job2').innerHTML=jobOpts2(job2K());document.getElementById('f-sa-l').hidden=!!S.birth;document.getElementById('f-sa').value=S.birth?'':String(saNow());document.getElementById('f-sa').dataset.was=document.getElementById('f-sa').value;document.getElementById('resetMsg').textContent='';sheet.hidden=false;document.getElementById('app').inert=true;document.getElementById('tabbar').inert=true;document.getElementById('f-dpa').focus()}
 function closeSettings(){if(sheet.hidden)return;sheet.hidden=true;document.getElementById('app').inert=false;document.getElementById('tabbar').inert=false;resetArmed=false;document.getElementById('resetAll').textContent='Tout effacer';if(!opener.hidden)opener.focus()}
 opener.addEventListener('click',openSettings);
 document.getElementById('openHelp').addEventListener('click',()=>go('aide'));
@@ -1480,21 +1637,30 @@ document.getElementById('closeSettings').addEventListener('click',closeSettings)
 document.getElementById('openPrivacy').addEventListener('click',()=>{closeSettings();go('aide');const d=document.getElementById('confidentialite');if(d){d.open=true;d.scrollIntoView({block:'start'});const sm=d.querySelector('summary');if(sm)sm.focus({preventScroll:true})}});
 sheet.addEventListener('click',e=>{if(e.target===sheet)closeSettings()});
 document.getElementById('settingsForm').addEventListener('submit',e=>{e.preventDefault();
+  const before=JSON.stringify([S.dpa,S.birth||'',S.nb,S.rank,S.saRef||null,S.job||'',S.job2||'']);
+  S.job=document.getElementById('f-job').value; S.job2=document.getElementById('f-job2').value;
   S.nb=+document.getElementById('f-nb').value;S.rank=+document.getElementById('f-rank').value;
   const fsa=document.getElementById('f-sa'), sv2=parseInt(fsa.value,10);
   if(fsa.value==='')delete S.saRef; else if(fsa.value!==fsa.dataset.was&&sv2>=3&&sv2<=42)S.saRef={w:sv2,on:iso(today)};
-  S.dpa=document.getElementById('f-dpa').value;S.birth=document.getElementById('f-birth').value;S.reviewed=false;save();closeSettings();render()});
+  S.dpa=document.getElementById('f-dpa').value;S.birth=document.getElementById('f-birth').value;
+  /* On ne repose « Qu'as-tu déjà fait ? » que si les dates ont vraiment changé */
+  if(JSON.stringify([S.dpa,S.birth||'',S.nb,S.rank,S.saRef||null,S.job||'',S.job2||''])!==before)S.reviewed=false;
+  save();closeSettings();render()});
 let resetArmed=false;
 document.getElementById('resetAll').addEventListener('click',e=>{
   if(!resetArmed){resetArmed=true;e.target.textContent="Oui, tout effacer";document.getElementById('resetMsg').textContent='Toutes tes données seront supprimées.';return}
-  S=defaults();save();onb={nb:1,dpa:'',birth:'',rank:0,born:false};closeSettings();render()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();if(e.key==='Enter'&&e.target.id==='bc-code'){e.preventDefault();bcLookup(e.target.value)}const pt=e.target.closest&&e.target.closest('[data-pt]');if(pt&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pt.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+  S=defaults();save();onb={nb:1,dpa:'',birth:'',rank:0,born:false,job:''};closeSettings();render()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSettings();scanStop()}if(e.key==='Enter'&&e.target.id==='bc-code'){e.preventDefault();bcLookup(e.target.value)}const pt=e.target.closest&&e.target.closest('[data-pt]');if(pt&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pt.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 
 render();
 notifyDue();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')notifyDue()});
 })();
 </script>
+
+
+
+
 
 
 
